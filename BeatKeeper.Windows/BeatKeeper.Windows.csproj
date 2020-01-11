@@ -93,6 +93,7 @@
     <Compile Include="StartUpForm.Designer.cs">
       <DependentUpon>StartUpForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\AppInfo.cs" />
     <Compile Include="Utils\ClientPathUtils.cs" />
     <Compile Include="Utils\MessageBoxUtils.cs" />
     <Compile Include="Utils\SettingsUtils.cs" />

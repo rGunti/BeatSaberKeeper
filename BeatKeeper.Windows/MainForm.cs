@@ -239,5 +239,10 @@ namespace BeatKeeper.Windows
                 });
             }
         }
+
+        private void aboutBeatKeeperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBoxUtils.AboutApp();
+        }
     }
 }

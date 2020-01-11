@@ -1,4 +1,5 @@
-﻿using BrightIdeasSoftware;
+﻿using BeatKeeper.Windows.Utils;
+using BrightIdeasSoftware;
 
 namespace BeatKeeper.Windows
 {
@@ -270,8 +271,9 @@ namespace BeatKeeper.Windows
             // aboutBeatKeeperToolStripMenuItem
             // 
             this.aboutBeatKeeperToolStripMenuItem.Name = "aboutBeatKeeperToolStripMenuItem";
-            this.aboutBeatKeeperToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.aboutBeatKeeperToolStripMenuItem.Text = "&About Beat Keeper";
+            this.aboutBeatKeeperToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.aboutBeatKeeperToolStripMenuItem.Text = "&About BeatSaberKeeper";
+            this.aboutBeatKeeperToolStripMenuItem.Click += new System.EventHandler(this.aboutBeatKeeperToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -300,7 +302,7 @@ namespace BeatKeeper.Windows
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Beat Keeper - Keep your BeatSaber versions!";
+            this.Text = "BeatSaberKeeper - Keep your BeatSaber versions!";
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.ArtifactListView)).EndInit();
             this.ArtifactContextMenu.ResumeLayout(false);
