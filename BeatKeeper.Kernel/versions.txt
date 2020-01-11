@@ -1,6 +1,9 @@
-Date
+ Date
 Version
 Manifest ID
+January 9, 2020 – 20:19:21 UTC
+1.6.2
+4932559146183937357
 January 7, 2020 – 17:47:38 UTC
 1.6.1
 6122319670026856947
