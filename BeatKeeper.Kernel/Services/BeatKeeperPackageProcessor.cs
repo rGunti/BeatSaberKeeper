@@ -52,6 +52,11 @@ namespace BeatKeeper.Kernel.Services
             BeatKeeperArchiveMetaData metaData,
             IEnumerable<BeatKeeperArchiveFile> files)
         {
+            if (File.Exists(targetPath))
+            {
+                File.Delete(targetPath);
+            }
+
             using (var zip = ZipFile.Open(targetPath.Replace('?', '-'),
                 ZipArchiveMode.Create))
             {
