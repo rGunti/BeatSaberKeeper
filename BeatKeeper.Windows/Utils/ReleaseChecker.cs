@@ -11,7 +11,7 @@ namespace BeatKeeper.Windows.Utils
         private const string REPO_NAME = "BeatSaberKeeper";
 
         private readonly HttpClient _client;
-        private readonly IReleaseDownloader _downloader;
+        private readonly ReleaseDownloader _downloader;
 
         public ReleaseChecker(
             bool includePreRelease,
@@ -31,7 +31,7 @@ namespace BeatKeeper.Windows.Utils
                     _client,
                     REPO_AUTHOR,
                     REPO_NAME,
-                    false,
+                    includePreRelease,
                     ""));
         }
 
@@ -44,7 +44,7 @@ namespace BeatKeeper.Windows.Utils
             {
                 return _downloader.IsLatestRelease(InstalledVersion);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
                 return false;
             }
