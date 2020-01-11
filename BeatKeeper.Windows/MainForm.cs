@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -243,6 +244,18 @@ namespace BeatKeeper.Windows
         private void aboutBeatKeeperToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBoxUtils.AboutApp();
+        }
+
+        private void openUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem source
+                && source.Tag is string url)
+            {
+                try
+                {
+                    Process.Start(url);
+                } catch (Exception ex) { }
+            }
         }
     }
 }
