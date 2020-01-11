@@ -15,6 +15,7 @@ namespace BeatKeeper.Windows
     {
         private SteamCmdService _steamCmdService;
         private IRepository<Artifact> _artifactRepository;
+        private readonly ReleaseChecker _releaseChecker;
 
         public MainForm()
         {
@@ -24,6 +25,7 @@ namespace BeatKeeper.Windows
                 new ArtifactRepository(ClientPathUtils.VanillaArchiveFolder),
                 new ArtifactRepository(ClientPathUtils.BackupArchiveFolder)
                 );
+            _releaseChecker = new ReleaseChecker(true, string.Empty);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -256,6 +258,28 @@ namespace BeatKeeper.Windows
                     Process.Start(url);
                 } catch (Exception ex) { }
             }
+        }
+
+        private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetStatus("Checking for updates ...");
+            var newReleaseAvailable = false;
+            this.RunInBackgroundThread(() =>
+            {
+                newReleaseAvailable = _releaseChecker.HasNewVersion();
+            }, () =>
+            {
+                SetStatus(newReleaseAvailable ?
+                    "New release found" :
+                    "No updates available");
+
+                if (newReleaseAvailable
+                    && MessageBoxUtils.Ask(
+                        "A new version is available to download. Do you want to download it?"))
+                {
+                    _releaseChecker.OpenReleasePage();
+                }
+            });
         }
     }
 }

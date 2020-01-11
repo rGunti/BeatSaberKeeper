@@ -49,6 +49,9 @@ namespace BeatKeeper.Windows
             this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadVanillaGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.downloadModManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modAssistantToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.beatDropToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archivesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createArchiveFromCurrentStateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,15 +59,13 @@ namespace BeatKeeper.Windows
             this.initializeSteamCMDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loginToSteamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutBeatKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sourceCodeOnGitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.wikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
-            this.downloadModManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modAssistantToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.beatDropToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutBeatKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.ArtifactListView)).BeginInit();
             this.ArtifactContextMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -219,6 +220,31 @@ namespace BeatKeeper.Windows
             this.modsToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.modsToolStripMenuItem.Text = "&Mods";
             // 
+            // downloadModManagerToolStripMenuItem
+            // 
+            this.downloadModManagerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.modAssistantToolStripMenuItem,
+            this.beatDropToolStripMenuItem});
+            this.downloadModManagerToolStripMenuItem.Name = "downloadModManagerToolStripMenuItem";
+            this.downloadModManagerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.downloadModManagerToolStripMenuItem.Text = "Download Mod Manager";
+            // 
+            // modAssistantToolStripMenuItem
+            // 
+            this.modAssistantToolStripMenuItem.Name = "modAssistantToolStripMenuItem";
+            this.modAssistantToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.modAssistantToolStripMenuItem.Tag = "https://github.com/Assistant/ModAssistant";
+            this.modAssistantToolStripMenuItem.Text = "ModAssistant";
+            this.modAssistantToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
+            // beatDropToolStripMenuItem
+            // 
+            this.beatDropToolStripMenuItem.Name = "beatDropToolStripMenuItem";
+            this.beatDropToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.beatDropToolStripMenuItem.Tag = "https://bsaber.com/beatdrop/";
+            this.beatDropToolStripMenuItem.Text = "BeatDrop 2";
+            this.beatDropToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
             // archivesToolStripMenuItem
             // 
             this.archivesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -273,17 +299,11 @@ namespace BeatKeeper.Windows
             this.sourceCodeOnGitHubToolStripMenuItem,
             this.wikiToolStripMenuItem,
             this.toolStripMenuItem3,
+            this.checkForUpdatesToolStripMenuItem,
             this.aboutBeatKeeperToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(24, 20);
             this.toolStripMenuItem1.Text = "&?";
-            // 
-            // aboutBeatKeeperToolStripMenuItem
-            // 
-            this.aboutBeatKeeperToolStripMenuItem.Name = "aboutBeatKeeperToolStripMenuItem";
-            this.aboutBeatKeeperToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.aboutBeatKeeperToolStripMenuItem.Text = "&About BeatSaberKeeper";
-            this.aboutBeatKeeperToolStripMenuItem.Click += new System.EventHandler(this.aboutBeatKeeperToolStripMenuItem_Click);
             // 
             // sourceCodeOnGitHubToolStripMenuItem
             // 
@@ -292,6 +312,26 @@ namespace BeatKeeper.Windows
             this.sourceCodeOnGitHubToolStripMenuItem.Tag = "https://github.com/rGunti/BeatSaberKeeper";
             this.sourceCodeOnGitHubToolStripMenuItem.Text = "Source &Code on GitHub";
             this.sourceCodeOnGitHubToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
+            // wikiToolStripMenuItem
+            // 
+            this.wikiToolStripMenuItem.Name = "wikiToolStripMenuItem";
+            this.wikiToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.wikiToolStripMenuItem.Tag = "https://github.com/rGunti/BeatSaberKeeper/wiki";
+            this.wikiToolStripMenuItem.Text = "Wiki";
+            this.wikiToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(196, 6);
+            // 
+            // aboutBeatKeeperToolStripMenuItem
+            // 
+            this.aboutBeatKeeperToolStripMenuItem.Name = "aboutBeatKeeperToolStripMenuItem";
+            this.aboutBeatKeeperToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.aboutBeatKeeperToolStripMenuItem.Text = "&About BeatSaberKeeper";
+            this.aboutBeatKeeperToolStripMenuItem.Click += new System.EventHandler(this.aboutBeatKeeperToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -309,43 +349,12 @@ namespace BeatKeeper.Windows
             this.StatusLabel.Size = new System.Drawing.Size(39, 17);
             this.StatusLabel.Text = "Ready";
             // 
-            // wikiToolStripMenuItem
+            // checkForUpdatesToolStripMenuItem
             // 
-            this.wikiToolStripMenuItem.Name = "wikiToolStripMenuItem";
-            this.wikiToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.wikiToolStripMenuItem.Tag = "https://github.com/rGunti/BeatSaberKeeper/wiki";
-            this.wikiToolStripMenuItem.Text = "Wiki";
-            this.wikiToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(196, 6);
-            // 
-            // downloadModManagerToolStripMenuItem
-            // 
-            this.downloadModManagerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modAssistantToolStripMenuItem,
-            this.beatDropToolStripMenuItem});
-            this.downloadModManagerToolStripMenuItem.Name = "downloadModManagerToolStripMenuItem";
-            this.downloadModManagerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-            this.downloadModManagerToolStripMenuItem.Text = "Download Mod Manager";
-            // 
-            // modAssistantToolStripMenuItem
-            // 
-            this.modAssistantToolStripMenuItem.Name = "modAssistantToolStripMenuItem";
-            this.modAssistantToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.modAssistantToolStripMenuItem.Tag = "https://github.com/Assistant/ModAssistant";
-            this.modAssistantToolStripMenuItem.Text = "ModAssistant";
-            this.modAssistantToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
-            // 
-            // beatDropToolStripMenuItem
-            // 
-            this.beatDropToolStripMenuItem.Name = "beatDropToolStripMenuItem";
-            this.beatDropToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.beatDropToolStripMenuItem.Tag = "https://bsaber.com/beatdrop/";
-            this.beatDropToolStripMenuItem.Text = "BeatDrop 2";
-            this.beatDropToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.checkForUpdatesToolStripMenuItem.Text = "Check for &Updates";
+            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -405,6 +414,7 @@ namespace BeatKeeper.Windows
         private System.Windows.Forms.ToolStripMenuItem downloadModManagerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modAssistantToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem beatDropToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
     }
 }
 
