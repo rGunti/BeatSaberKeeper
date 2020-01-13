@@ -2,11 +2,14 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
+using BeatKeeper.Controls;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Repositories;
 using BeatKeeper.Kernel.Services;
 using BeatKeeper.Windows.Utils;
+using BeatKeeper.Controls.Utils;
 using BrightIdeasSoftware;
 
 namespace BeatKeeper.Windows
@@ -98,7 +101,8 @@ namespace BeatKeeper.Windows
         {
             var forceReinit = ModifierKeys == Keys.Shift;
             if (forceReinit
-                && MessageBox.Show("Do you want to re-initialize SteamCMD? This will clear all data stored with SteamCMD including your login.",
+                && MessageBox.Show(
+                    "Do you want to re-initialize SteamCMD? This will clear all data stored with SteamCMD including your login.",
                     "Reinitialize SteamCMD",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning) != DialogResult.Yes)
@@ -199,7 +203,22 @@ namespace BeatKeeper.Windows
 
         private void RunArtifact(Artifact artifact)
         {
-            new StartUpForm(artifact).ShowDialog();
+            new BackgroundProcessControl(
+                    $"Unpacking {artifact.Name} ...",
+                    bgDialog =>
+                    {
+                        bgDialog.SetStatus("Preparing ...", -1, -1);
+
+                        BeatKeeperPackageProcessor.UnpackArchive(
+                            artifact.FullPath,
+                            SettingsUtils.BeatSaberInstallDirectory,
+                            bgDialog.SetStatus);
+
+                        bgDialog.SetStatus("Starting game ...");
+                        Process.Start(ClientPathUtils.BeatSaberExecutable);
+                        Thread.Sleep(1000);
+                    })
+                .ShowDialog();
         }
 
         private void createArchiveFromCurrentStateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -220,26 +239,31 @@ namespace BeatKeeper.Windows
 
                 Enabled = false;
                 SetStatus($"Packing {dialog.ArchiveName} ...");
-                this.RunInBackgroundThread(() =>
-                {
-                    try
+                new BackgroundProcessControl(
+                    $"Packing {dialog.ArchiveName} ...",
+                    bgDialog =>
                     {
-                        BeatKeeperPackageProcessor.PackBackupArtifactV1(
-                            SettingsUtils.BeatSaberInstallDirectory,
-                            Path.Combine(ClientPathUtils.BackupArchiveFolder, $"{dialog.ArchiveName}.bskeep"),
-                            gameVersion);
-                        SetStatus($"Artifact packed successfully");
-                    }
-                    catch (IOException ex)
+                        bgDialog.SetStatus("Packing archive ...");
+                        try
+                        {
+                            BeatKeeperPackageProcessor.PackBackupArtifactV1(
+                                SettingsUtils.BeatSaberInstallDirectory,
+                                Path.Combine(ClientPathUtils.BackupArchiveFolder, $"{dialog.ArchiveName}.bskeep"),
+                                gameVersion,
+                                bgDialog.SetStatus);
+                            SetStatus($"Artifact packed successfully");
+                        }
+                        catch (IOException ex)
+                        {
+                            SetStatus($"Artifact packing failed: {ex.Message}");
+                            MessageBoxUtils.Error($"Could not create archive.\n{ex.Message}");
+                        }
+                    }, () =>
                     {
-                        SetStatus($"Artifact packing failed: {ex.Message}");
-                        MessageBoxUtils.Error($"Could not create archive.\n{ex.Message}");
-                    }
-                }, () =>
-                {
-                    Enabled = true;
-                    UpdateGrid();
-                });
+                        Enabled = true;
+                        UpdateGrid();
+                    }, TimeSpan.FromMilliseconds(50))
+                    .ShowDialog();
             }
         }
 

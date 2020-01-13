@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Windows.Forms;
 
-namespace BeatKeeper.Windows.Utils
+namespace BeatKeeper.Controls.Utils
 {
-    public static class Threading
+    public static class ThreadingUtils
     {
         public static void WaitUntil(
             Func<bool> eval,

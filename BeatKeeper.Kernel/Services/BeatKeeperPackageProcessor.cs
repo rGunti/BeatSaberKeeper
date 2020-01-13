@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -32,7 +33,8 @@ namespace BeatKeeper.Kernel.Services
         public static void PackBackupArtifactV1(
             string sourcePath,
             string targetPath,
-            string gameVersion)
+            string gameVersion,
+            Action<string, int, int> statusReport = null)
         {
             var fileIndex = CreateFileIndex(sourcePath)
                 .Select(f => new BeatKeeperArchiveFile(f, f.Replace(sourcePath, "").Substring(1)))
@@ -44,49 +46,83 @@ namespace BeatKeeper.Kernel.Services
                     GameVersion = gameVersion,
                     Type = ArtifactType.ModBackup
                 },
-                fileIndex);
+                fileIndex,
+                statusReport);
         }
 
         public static void CreateArchive(
             string targetPath,
             BeatKeeperArchiveMetaData metaData,
-            IEnumerable<BeatKeeperArchiveFile> files)
+            IEnumerable<BeatKeeperArchiveFile> files,
+            Action<string, int, int> statusReport = null)
         {
+            statusReport?.Invoke("Preparing Archive ...", -1, -1);
             if (File.Exists(targetPath))
             {
                 File.Delete(targetPath);
             }
 
+            files = files.ToList();
+
+            var fileCount = files.Count();
+            var currentFile = 0;
             using (var zip = ZipFile.Open(targetPath.Replace('?', '-'),
                 ZipArchiveMode.Create))
             {
                 foreach (var file in files)
                 {
+                    currentFile++;
+                    statusReport?.Invoke(
+                        $"Packing file {currentFile} of {fileCount} ...\n{file.Destination}",
+                        currentFile, fileCount);
+
                     zip.CreateEntryFromFile(
                         file.SourceFile,
                         $"files/{file.Destination}");
                 }
 
+                statusReport?.Invoke(
+                    "Generating Meta data ...",
+                    -1, currentFile);
                 GenerateMetaFile(zip, metaData);
             }
         }
 
         public static void UnpackArchive(
             string artifactPath,
-            string gamePath)
+            string gamePath,
+            Action<string, int, int> statusReport = null)
         {
+            statusReport?.Invoke("Cleaning destination ...", -1, -1);
             if (Directory.Exists(gamePath))
             {
                 Directory.Delete(gamePath, true);
             }
 
-            // Unpack to parent
             var parentDirectory = Path.GetDirectoryName(gamePath);
+            var filesDir = Path.Combine(parentDirectory, "files");
+            if (Directory.Exists(filesDir))
+            {
+                Directory.Delete(filesDir, true);
+            }
+
+            var metaDataFile = Path.Combine(parentDirectory, METADATA_FILE);
+            if (File.Exists(metaDataFile))
+            {
+                File.Delete(metaDataFile);
+            }
+
+            // Unpack to parent
+            statusReport?.Invoke("Unpacking archive ...", -1, -1);
             ZipFile.ExtractToDirectory(artifactPath, parentDirectory);
+
             // Move everything up one level
+            statusReport?.Invoke("Moving files to Steam directory ...", -1, -1);
             Directory.Move(Path.Combine(parentDirectory, "files"), gamePath);
+
             // Delete the metadata file
-            File.Delete(Path.Combine(parentDirectory, METADATA_FILE));
+            statusReport?.Invoke("Cleaning up ...", -1, -1);
+            File.Delete(metaDataFile);
         }
 
         public static BeatKeeperArchiveMetaData ReadArchiveMetaData(

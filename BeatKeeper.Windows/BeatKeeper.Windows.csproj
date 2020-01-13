@@ -117,7 +117,6 @@
     <Compile Include="Utils\ReleaseChecker.cs" />
     <Compile Include="Utils\SettingsUtils.cs" />
     <Compile Include="Utils\SteamCmdServiceFactory.cs" />
-    <Compile Include="Utils\Threading.cs" />
     <EmbeddedResource Include="BackupNameForm.resx">
       <DependentUpon>BackupNameForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -163,6 +162,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BeatKeeper.Controls\BeatKeeper.Controls.csproj">
+      <Project>{bbeb88fc-cbfe-4ce5-9849-eefd2762bffb}</Project>
+      <Name>BeatKeeper.Controls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BeatKeeper.Kernel\BeatKeeper.Kernel.csproj">
       <Project>{f0dffbf7-2b2d-46e1-ae44-f49c28982867}</Project>
       <Name>BeatKeeper.Kernel</Name>

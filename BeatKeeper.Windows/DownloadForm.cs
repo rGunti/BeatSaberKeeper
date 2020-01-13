@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using BeatKeeper.Controls.Utils;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Services;
-using BeatKeeper.Kernel.Utils;
 using BeatKeeper.Windows.Utils;
 
 namespace BeatKeeper.Windows

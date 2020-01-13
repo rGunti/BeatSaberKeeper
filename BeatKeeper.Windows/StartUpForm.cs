@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
+using BeatKeeper.Controls.Utils;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Services;
 using BeatKeeper.Windows.Utils;
