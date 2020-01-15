@@ -58,12 +58,17 @@ namespace BeatKeeper.Controls
                 if (value < 0)
                 {
                     ProgressBar.Style = ProgressBarStyle.Marquee;
+
+                    PercentageLabel.Visible = false;
                 }
                 else
                 {
                     ProgressBar.Style = ProgressBarStyle.Continuous;
                     ProgressBar.Maximum = Math.Max(maxValue, 0);
                     ProgressBar.Value = Math.Min(value, maxValue);
+
+                    PercentageLabel.Text = $"{((double)value / maxValue) * 100:0} %";
+                    PercentageLabel.Visible = true;
                 }
 
                 if (_throttle > TimeSpan.Zero)
