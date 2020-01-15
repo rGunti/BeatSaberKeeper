@@ -13,6 +13,11 @@ namespace BeatKeeper.Kernel.Services
     {
         private const string METADATA_FILE = "meta.xml";
 
+        private static readonly HashSet<string> FileBlackList = new HashSet<string>()
+        {
+            METADATA_FILE
+        };
+
         public static void PackVanillaArtifactV1(
             string sourcePath,
             string targetPath,
@@ -20,6 +25,7 @@ namespace BeatKeeper.Kernel.Services
         {
             var fileIndex = CreateFileIndex(sourcePath)
                 .Select(f => new BeatKeeperArchiveFile(f, f.Replace(sourcePath, "").Substring(1)))
+                .Where(i => !FileBlackList.Contains(i.Destination))
                 .ToList();
             CreateArchive(
                 Path.Combine(targetPath, $"BeatSaber_{gameVersion}.bskeep"),
@@ -39,6 +45,7 @@ namespace BeatKeeper.Kernel.Services
         {
             var fileIndex = CreateFileIndex(sourcePath)
                 .Select(f => new BeatKeeperArchiveFile(f, f.Replace(sourcePath, "").Substring(1)))
+                .Where(i => !FileBlackList.Contains(i.Destination))
                 .ToList();
             CreateArchive(
                 targetPath,
