@@ -45,7 +45,9 @@ namespace BeatKeeper.Controls
 
         public void SetStatus(string status, int value, int maxValue = 100)
         {
-            if (_throttle > TimeSpan.Zero && _lastExecution + _throttle > DateTime.Now)
+            if (_throttle > TimeSpan.Zero
+                && _lastExecution + _throttle > DateTime.Now
+                && ProgressBar.Maximum == maxValue)
             {
                 return;
             }

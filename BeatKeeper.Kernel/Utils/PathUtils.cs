@@ -28,5 +28,14 @@ namespace BeatKeeper.Kernel.Utils
 
             return path;
         }
+
+        public static void EnsureDirectoryExists(string path)
+        {
+            var parentPath = Path.GetDirectoryName(path);
+            if (!Directory.Exists(parentPath))
+            {
+                Directory.CreateDirectory(parentPath);
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Xml.Serialization;
 using BeatKeeper.Kernel.Entities;
+using BeatKeeper.Kernel.Utils;
 
 namespace BeatKeeper.Kernel.Services
 {
@@ -114,15 +115,30 @@ namespace BeatKeeper.Kernel.Services
 
             // Unpack to parent
             statusReport?.Invoke("Unpacking archive ...", -1, -1);
-            ZipFile.ExtractToDirectory(artifactPath, parentDirectory);
+            Directory.CreateDirectory(gamePath);
+            using (var zip = ZipFile.Open(artifactPath, ZipArchiveMode.Read))
+            {
+                statusReport?.Invoke("Unpacking meta file ...", -1, -1);
+                var metaFile = zip.GetEntry(METADATA_FILE);
+                metaFile.ExtractToFile(Path.Combine(gamePath, METADATA_FILE));
 
-            // Move everything up one level
-            statusReport?.Invoke("Moving files to Steam directory ...", -1, -1);
-            Directory.Move(Path.Combine(parentDirectory, "files"), gamePath);
+                var files = zip.Entries
+                    .Where(e => e.FullName.StartsWith("files/"))
+                    .ToList();
+                var fileCount = files.Count;
+                var i = 0;
 
-            // Delete the metadata file
-            statusReport?.Invoke("Cleaning up ...", -1, -1);
-            File.Delete(metaDataFile);
+                foreach (var file in files)
+                {
+                    i++;
+                    statusReport?.Invoke($"Unpacking {i} / {fileCount} ...\n{file.FullName}",
+                        i, fileCount);
+
+                    var targetPath = Path.Combine(gamePath, file.FullName.Substring(6));
+                    PathUtils.EnsureDirectoryExists(targetPath);
+                    file.ExtractToFile(targetPath);
+                }
+            }
         }
 
         public static BeatKeeperArchiveMetaData ReadArchiveMetaData(
