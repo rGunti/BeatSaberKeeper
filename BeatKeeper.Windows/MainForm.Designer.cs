@@ -62,11 +62,17 @@ namespace BeatKeeper.Windows
             this.sourceCodeOnGitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.reportIssuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutBeatKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.reportIssuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unpackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.unpackToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.ArtifactListView)).BeginInit();
             this.ArtifactContextMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -135,29 +141,30 @@ namespace BeatKeeper.Windows
             // 
             this.ArtifactContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startToolStripMenuItem,
+            this.unpackToolStripMenuItem,
             this.toolStripMenuItem2,
             this.deleteToolStripMenuItem});
             this.ArtifactContextMenu.Name = "ArtifactContextMenu";
-            this.ArtifactContextMenu.Size = new System.Drawing.Size(108, 54);
+            this.ArtifactContextMenu.Size = new System.Drawing.Size(115, 76);
             // 
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Enabled = false;
             this.startToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.startToolStripMenuItem.Text = "Start";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(104, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(111, 6);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -185,6 +192,11 @@ namespace BeatKeeper.Windows
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.startToolStripMenuItem1,
+            this.unpackToolStripMenuItem1,
+            this.toolStripMenuItem4,
+            this.deleteToolStripMenuItem1,
+            this.toolStripMenuItem5,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -328,6 +340,14 @@ namespace BeatKeeper.Windows
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
             this.toolStripMenuItem3.Size = new System.Drawing.Size(196, 6);
             // 
+            // reportIssuesToolStripMenuItem
+            // 
+            this.reportIssuesToolStripMenuItem.Name = "reportIssuesToolStripMenuItem";
+            this.reportIssuesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.reportIssuesToolStripMenuItem.Tag = "https://github.com/rGunti/BeatSaberKeeper/issues";
+            this.reportIssuesToolStripMenuItem.Text = "&Report issues";
+            this.reportIssuesToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
             // checkForUpdatesToolStripMenuItem
             // 
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
@@ -358,13 +378,50 @@ namespace BeatKeeper.Windows
             this.StatusLabel.Size = new System.Drawing.Size(39, 17);
             this.StatusLabel.Text = "Ready";
             // 
-            // reportIssuesToolStripMenuItem
+            // unpackToolStripMenuItem
             // 
-            this.reportIssuesToolStripMenuItem.Name = "reportIssuesToolStripMenuItem";
-            this.reportIssuesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.reportIssuesToolStripMenuItem.Tag = "https://github.com/rGunti/BeatSaberKeeper/issues";
-            this.reportIssuesToolStripMenuItem.Text = "&Report issues";
-            this.reportIssuesToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            this.unpackToolStripMenuItem.Enabled = false;
+            this.unpackToolStripMenuItem.Name = "unpackToolStripMenuItem";
+            this.unpackToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unpackToolStripMenuItem.Text = "Unpack";
+            this.unpackToolStripMenuItem.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
+            // 
+            // startToolStripMenuItem1
+            // 
+            this.startToolStripMenuItem1.Enabled = false;
+            this.startToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.startToolStripMenuItem1.Name = "startToolStripMenuItem1";
+            this.startToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.startToolStripMenuItem1.Text = "&Start";
+            this.startToolStripMenuItem1.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            // 
+            // unpackToolStripMenuItem1
+            // 
+            this.unpackToolStripMenuItem1.Enabled = false;
+            this.unpackToolStripMenuItem1.Name = "unpackToolStripMenuItem1";
+            this.unpackToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
+            this.unpackToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.unpackToolStripMenuItem1.Text = "Unpack";
+            this.unpackToolStripMenuItem1.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
+            // 
+            // deleteToolStripMenuItem1
+            // 
+            this.deleteToolStripMenuItem1.Enabled = false;
+            this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
+            this.deleteToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem1.Text = "Delete";
+            this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(177, 6);
             // 
             // MainForm
             // 
@@ -426,6 +483,12 @@ namespace BeatKeeper.Windows
         private System.Windows.Forms.ToolStripMenuItem beatDropToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportIssuesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unpackToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem unpackToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
     }
 }
 
