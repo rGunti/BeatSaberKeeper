@@ -151,6 +151,7 @@ namespace BeatKeeper.Windows
             var source = (ObjectListView) sender;
 
             startToolStripMenuItem.Enabled = source.SelectedItems.Count == 1;
+            unpackToolStripMenuItem.Enabled = source.SelectedItems.Count == 1;
             deleteToolStripMenuItem.Enabled = source.SelectedItems.Count > 0;
         }
 
@@ -201,7 +202,7 @@ namespace BeatKeeper.Windows
             ArtifactListView_DoubleClick(ArtifactListView, e);
         }
 
-        private void RunArtifact(Artifact artifact)
+        private void RunArtifact(Artifact artifact, bool runGame = true)
         {
             new BackgroundProcessControl(
                     $"Unpacking {artifact.Name} ...",
@@ -214,8 +215,11 @@ namespace BeatKeeper.Windows
                             SettingsUtils.BeatSaberInstallDirectory,
                             bgDialog.SetStatus);
 
-                        bgDialog.SetStatus("Starting game ...");
-                        BeatSaberLauncher.Launch(SettingsUtils.BeatSaberInstallDirectory);
+                        if (runGame)
+                        {
+                            bgDialog.SetStatus("Starting game ...");
+                            BeatSaberLauncher.Launch(SettingsUtils.BeatSaberInstallDirectory);
+                        }
                         Thread.Sleep(1000);
                     })
                 .ShowDialog();
@@ -304,6 +308,15 @@ namespace BeatKeeper.Windows
                     _releaseChecker.OpenReleasePage();
                 }
             });
+        }
+
+        private void unpackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var selectedArtifact = ArtifactListView.SelectedObjects.OfType<Artifact>().FirstOrDefault();
+            if (selectedArtifact != null)
+            {
+                RunArtifact(selectedArtifact, false);
+            }
         }
     }
 }
