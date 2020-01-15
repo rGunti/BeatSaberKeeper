@@ -215,7 +215,7 @@ namespace BeatKeeper.Windows
                             bgDialog.SetStatus);
 
                         bgDialog.SetStatus("Starting game ...");
-                        Process.Start(ClientPathUtils.BeatSaberExecutable);
+                        BeatSaberLauncher.Launch(SettingsUtils.BeatSaberInstallDirectory);
                         Thread.Sleep(1000);
                     })
                 .ShowDialog();
