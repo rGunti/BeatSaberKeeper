@@ -153,6 +153,10 @@ namespace BeatKeeper.Windows
             startToolStripMenuItem.Enabled = source.SelectedItems.Count == 1;
             unpackToolStripMenuItem.Enabled = source.SelectedItems.Count == 1;
             deleteToolStripMenuItem.Enabled = source.SelectedItems.Count > 0;
+
+            startToolStripMenuItem1.Enabled = startToolStripMenuItem.Enabled;
+            unpackToolStripMenuItem1.Enabled = unpackToolStripMenuItem.Enabled;
+            deleteToolStripMenuItem1.Enabled = deleteToolStripMenuItem.Enabled;
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
