@@ -1,3 +1,4 @@
+/*
 using BeatKeeper.Utils;
 using System;
 using System.Diagnostics;
@@ -17,3 +18,4 @@ namespace BeatKeeper.Tests
         }
     }
 }
+*/
