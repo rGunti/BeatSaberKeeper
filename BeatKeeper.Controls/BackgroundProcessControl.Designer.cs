@@ -30,6 +30,7 @@
         {
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.StatusLabel = new System.Windows.Forms.Label();
+            this.PercentageLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // ProgressBar
@@ -43,12 +44,24 @@
             // 
             // StatusLabel
             // 
-            this.StatusLabel.AutoSize = true;
+            this.StatusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.StatusLabel.Location = new System.Drawing.Point(12, 9);
             this.StatusLabel.Name = "StatusLabel";
-            this.StatusLabel.Size = new System.Drawing.Size(78, 13);
+            this.StatusLabel.Size = new System.Drawing.Size(379, 28);
             this.StatusLabel.TabIndex = 1;
-            this.StatusLabel.Text = "Status Label ...";
+            this.StatusLabel.Text = "Status Label ...\r\nStatus Label ...\r\n";
+            // 
+            // PercentageLabel
+            // 
+            this.PercentageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PercentageLabel.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PercentageLabel.Location = new System.Drawing.Point(397, 9);
+            this.PercentageLabel.Name = "PercentageLabel";
+            this.PercentageLabel.Size = new System.Drawing.Size(70, 28);
+            this.PercentageLabel.TabIndex = 2;
+            this.PercentageLabel.Text = "0 %";
+            this.PercentageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // BackgroundProcessControl
             // 
@@ -56,8 +69,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(479, 70);
             this.ControlBox = false;
+            this.Controls.Add(this.PercentageLabel);
             this.Controls.Add(this.StatusLabel);
             this.Controls.Add(this.ProgressBar);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "BackgroundProcessControl";
@@ -68,7 +83,6 @@
             this.Text = "Background Process ...";
             this.Load += new System.EventHandler(this.BackgroundProcessControl_Load);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -76,5 +90,6 @@
 
         private System.Windows.Forms.ProgressBar ProgressBar;
         private System.Windows.Forms.Label StatusLabel;
+        private System.Windows.Forms.Label PercentageLabel;
     }
 }
