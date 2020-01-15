@@ -120,7 +120,7 @@ namespace BeatKeeper.Kernel.Services
             {
                 statusReport?.Invoke("Unpacking meta file ...", -1, -1);
                 var metaFile = zip.GetEntry(METADATA_FILE);
-                metaFile.ExtractToFile(Path.Combine(gamePath, METADATA_FILE));
+                metaFile.ExtractToFile(Path.Combine(gamePath, METADATA_FILE), true);
 
                 var files = zip.Entries
                     .Where(e => e.FullName.StartsWith("files/"))
@@ -136,7 +136,7 @@ namespace BeatKeeper.Kernel.Services
 
                     var targetPath = Path.Combine(gamePath, file.FullName.Substring(6));
                     PathUtils.EnsureDirectoryExists(targetPath);
-                    file.ExtractToFile(targetPath);
+                    file.ExtractToFile(targetPath, true);
                 }
             }
         }
