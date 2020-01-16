@@ -153,10 +153,12 @@ namespace BeatKeeper.Windows
             startToolStripMenuItem.Enabled = source.SelectedItems.Count == 1;
             unpackToolStripMenuItem.Enabled = source.SelectedItems.Count == 1;
             deleteToolStripMenuItem.Enabled = source.SelectedItems.Count > 0;
+            updateArchiveWithCurrentStateToolStripMenuItem.Enabled = source.SelectedItems.Count == 1;
 
             startToolStripMenuItem1.Enabled = startToolStripMenuItem.Enabled;
             unpackToolStripMenuItem1.Enabled = unpackToolStripMenuItem.Enabled;
             deleteToolStripMenuItem1.Enabled = deleteToolStripMenuItem.Enabled;
+            updateArchiveToolStripMenuItem.Enabled = updateArchiveWithCurrentStateToolStripMenuItem.Enabled;
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -234,21 +236,27 @@ namespace BeatKeeper.Windows
             var dialog = new BackupNameForm();
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                var versionFile = Path.Combine(SettingsUtils.BeatSaberInstallDirectory, "BeatSaberVersion.txt");
-                string gameVersion;
-                if (File.Exists(versionFile))
-                {
-                    gameVersion = File.ReadAllText(versionFile).Trim();
-                }
-                else
-                {
-                    gameVersion = "<unknown>";
-                }
+                PackArchive(dialog.ArchiveName);
+            }
+        }
 
-                Enabled = false;
-                SetStatus($"Packing {dialog.ArchiveName} ...");
-                new BackgroundProcessControl(
-                    $"Packing {dialog.ArchiveName} ...",
+        private void PackArchive(string archiveName)
+        {
+            var versionFile = Path.Combine(SettingsUtils.BeatSaberInstallDirectory, "BeatSaberVersion.txt");
+            string gameVersion;
+            if (File.Exists(versionFile))
+            {
+                gameVersion = File.ReadAllText(versionFile).Trim();
+            }
+            else
+            {
+                gameVersion = "<unknown>";
+            }
+
+            Enabled = false;
+            SetStatus($"Packing {archiveName} ...");
+            new BackgroundProcessControl(
+                    $"Packing {archiveName} ...",
                     bgDialog =>
                     {
                         bgDialog.SetStatus("Packing archive ...");
@@ -256,7 +264,7 @@ namespace BeatKeeper.Windows
                         {
                             BeatKeeperPackageProcessor.PackBackupArtifactV1(
                                 SettingsUtils.BeatSaberInstallDirectory,
-                                Path.Combine(ClientPathUtils.BackupArchiveFolder, $"{dialog.ArchiveName}.bskeep"),
+                                Path.Combine(ClientPathUtils.BackupArchiveFolder, $"{archiveName}.bskeep"),
                                 gameVersion,
                                 bgDialog.SetStatus);
                             SetStatus($"Artifact packed successfully");
@@ -271,8 +279,7 @@ namespace BeatKeeper.Windows
                         Enabled = true;
                         UpdateGrid();
                     }, TimeSpan.FromMilliseconds(50))
-                    .ShowDialog();
-            }
+                .ShowDialog();
         }
 
         private void aboutBeatKeeperToolStripMenuItem_Click(object sender, EventArgs e)
@@ -320,6 +327,27 @@ namespace BeatKeeper.Windows
             if (selectedArtifact != null)
             {
                 RunArtifact(selectedArtifact, false);
+            }
+        }
+
+        private void updateArchiveWithCurrentStateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var selectedArtifact = ArtifactListView.SelectedObjects.OfType<Artifact>().FirstOrDefault();
+            if (selectedArtifact != null)
+            {
+                if (selectedArtifact.Type == ArtifactType.ModBackup)
+                {
+                    if (MessageBoxUtils.Ask(
+                        $"Do you want to update the archive \"{selectedArtifact.Name}\"?",
+                        "Update Archive"))
+                    {
+                        PackArchive(selectedArtifact.Name);
+                    }
+                }
+                else
+                {
+                    MessageBoxUtils.Error($"Cannot update archive with current state as it is not a \"ModBackup\" archive.");
+                }
             }
         }
     }
