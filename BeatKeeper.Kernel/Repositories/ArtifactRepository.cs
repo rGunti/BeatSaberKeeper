@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Services;
+using Serilog;
 
 namespace BeatKeeper.Kernel.Repositories
 {
@@ -13,6 +14,7 @@ namespace BeatKeeper.Kernel.Repositories
 
         public ArtifactRepository(string artifactPath)
         {
+            Log.Verbose($"Constructing new Artifact Repository for {artifactPath}");
             _artifactPath = artifactPath;
         }
 
@@ -43,8 +45,8 @@ namespace BeatKeeper.Kernel.Repositories
 
         public void Delete(Artifact artifact)
         {
-            var path = Path.Combine(_artifactPath, $"{artifact.Name}.bskeep");
-            File.Delete(path);
+            Log.Debug($"Deleting artifact {artifact.Name} ({artifact.FullPath})");
+            File.Delete(artifact.FullPath);
         }
     }
 }

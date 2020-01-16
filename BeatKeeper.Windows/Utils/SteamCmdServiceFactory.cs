@@ -1,5 +1,4 @@
 ﻿using BeatKeeper.Kernel.Services;
-using BeatKeeper.Kernel.Utils;
 
 namespace BeatKeeper.Windows.Utils
 {

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using GitHub.ReleaseDownloader;
+using Serilog;
 
 namespace BeatKeeper.Windows.Utils
 {
@@ -25,6 +26,7 @@ namespace BeatKeeper.Windows.Utils
             bool includePreRelease,
             string downloadPath)
         {
+            Log.Verbose($"Constructing {GetType().Name} ...");
             _client = client;
             _downloader = new ReleaseDownloader(
                 new ReleaseDownloaderSettings(
@@ -42,10 +44,12 @@ namespace BeatKeeper.Windows.Utils
         {
             try
             {
+                Log.Debug("Checking for new version ...");
                 return _downloader.IsLatestRelease(InstalledVersion);
             }
             catch (InvalidOperationException ex)
             {
+                Log.Information(ex, "Failed to check for updates due to InvalidOperationException:");
                 return false;
             }
         }
@@ -67,6 +71,7 @@ namespace BeatKeeper.Windows.Utils
 
         public void Dispose()
         {
+            Log.Verbose($"Disposing {GetType().Name} ...");
             _downloader.DeInit();
             _client?.Dispose();
         }

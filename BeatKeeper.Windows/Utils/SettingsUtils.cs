@@ -23,5 +23,15 @@ namespace BeatKeeper.Windows.Utils
                 Settings.Default.Save();
             }
         }
+
+        public static bool EnableDebugLogging
+        {
+            get => Settings.Default.EnableDebugLogging;
+            set
+            {
+                Settings.Default.EnableDebugLogging = value;
+                Settings.Default.Save();
+            }
+        }
     }
 }
