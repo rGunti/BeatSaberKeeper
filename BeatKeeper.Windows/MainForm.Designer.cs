@@ -40,11 +40,17 @@ namespace BeatKeeper.Windows
             this.ArtifactTypeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.ArtifactContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unpackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ArtifactImageList = new System.Windows.Forms.ImageList(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.unpackToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadVanillaGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,12 +73,11 @@ namespace BeatKeeper.Windows
             this.aboutBeatKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.unpackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.startToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.unpackToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
-            this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
+            this.updateArchiveWithCurrentStateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
+            this.withCurrentStateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.ArtifactListView)).BeginInit();
             this.ArtifactContextMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -143,28 +148,38 @@ namespace BeatKeeper.Windows
             this.startToolStripMenuItem,
             this.unpackToolStripMenuItem,
             this.toolStripMenuItem2,
+            this.updateArchiveWithCurrentStateToolStripMenuItem,
+            this.toolStripMenuItem6,
             this.deleteToolStripMenuItem});
             this.ArtifactContextMenu.Name = "ArtifactContextMenu";
-            this.ArtifactContextMenu.Size = new System.Drawing.Size(115, 76);
+            this.ArtifactContextMenu.Size = new System.Drawing.Size(251, 104);
             // 
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Enabled = false;
             this.startToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.startToolStripMenuItem.Text = "Start";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            // 
+            // unpackToolStripMenuItem
+            // 
+            this.unpackToolStripMenuItem.Enabled = false;
+            this.unpackToolStripMenuItem.Name = "unpackToolStripMenuItem";
+            this.unpackToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.unpackToolStripMenuItem.Text = "Unpack";
+            this.unpackToolStripMenuItem.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(111, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(247, 6);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -195,6 +210,8 @@ namespace BeatKeeper.Windows
             this.startToolStripMenuItem1,
             this.unpackToolStripMenuItem1,
             this.toolStripMenuItem4,
+            this.updateArchiveToolStripMenuItem,
+            this.toolStripMenuItem7,
             this.deleteToolStripMenuItem1,
             this.toolStripMenuItem5,
             this.exitToolStripMenuItem});
@@ -202,11 +219,48 @@ namespace BeatKeeper.Windows
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
+            // startToolStripMenuItem1
+            // 
+            this.startToolStripMenuItem1.Enabled = false;
+            this.startToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.startToolStripMenuItem1.Name = "startToolStripMenuItem1";
+            this.startToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.startToolStripMenuItem1.Text = "&Start";
+            this.startToolStripMenuItem1.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            // 
+            // unpackToolStripMenuItem1
+            // 
+            this.unpackToolStripMenuItem1.Enabled = false;
+            this.unpackToolStripMenuItem1.Name = "unpackToolStripMenuItem1";
+            this.unpackToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
+            this.unpackToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.unpackToolStripMenuItem1.Text = "Unpack";
+            this.unpackToolStripMenuItem1.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(153, 6);
+            // 
+            // deleteToolStripMenuItem1
+            // 
+            this.deleteToolStripMenuItem1.Enabled = false;
+            this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
+            this.deleteToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.deleteToolStripMenuItem1.Text = "Delete";
+            this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(153, 6);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -378,50 +432,41 @@ namespace BeatKeeper.Windows
             this.StatusLabel.Size = new System.Drawing.Size(39, 17);
             this.StatusLabel.Text = "Ready";
             // 
-            // unpackToolStripMenuItem
+            // toolStripMenuItem6
             // 
-            this.unpackToolStripMenuItem.Enabled = false;
-            this.unpackToolStripMenuItem.Name = "unpackToolStripMenuItem";
-            this.unpackToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.unpackToolStripMenuItem.Text = "Unpack";
-            this.unpackToolStripMenuItem.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(247, 6);
             // 
-            // startToolStripMenuItem1
+            // updateArchiveWithCurrentStateToolStripMenuItem
             // 
-            this.startToolStripMenuItem1.Enabled = false;
-            this.startToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.startToolStripMenuItem1.Name = "startToolStripMenuItem1";
-            this.startToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.startToolStripMenuItem1.Text = "&Start";
-            this.startToolStripMenuItem1.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            this.updateArchiveWithCurrentStateToolStripMenuItem.Enabled = false;
+            this.updateArchiveWithCurrentStateToolStripMenuItem.Name = "updateArchiveWithCurrentStateToolStripMenuItem";
+            this.updateArchiveWithCurrentStateToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            this.updateArchiveWithCurrentStateToolStripMenuItem.Text = "Update Archive with current state";
+            this.updateArchiveWithCurrentStateToolStripMenuItem.Click += new System.EventHandler(this.updateArchiveWithCurrentStateToolStripMenuItem_Click);
             // 
-            // unpackToolStripMenuItem1
+            // updateArchiveToolStripMenuItem
             // 
-            this.unpackToolStripMenuItem1.Enabled = false;
-            this.unpackToolStripMenuItem1.Name = "unpackToolStripMenuItem1";
-            this.unpackToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.unpackToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.unpackToolStripMenuItem1.Text = "Unpack";
-            this.unpackToolStripMenuItem1.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
+            this.updateArchiveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.withCurrentStateToolStripMenuItem});
+            this.updateArchiveToolStripMenuItem.Enabled = false;
+            this.updateArchiveToolStripMenuItem.Name = "updateArchiveToolStripMenuItem";
+            this.updateArchiveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateArchiveToolStripMenuItem.Text = "Update Archive";
             // 
-            // toolStripMenuItem4
+            // toolStripMenuItem7
             // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(177, 6);
             // 
-            // deleteToolStripMenuItem1
+            // withCurrentStateToolStripMenuItem
             // 
-            this.deleteToolStripMenuItem1.Enabled = false;
-            this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
-            this.deleteToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.deleteToolStripMenuItem1.Text = "Delete";
-            this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(177, 6);
+            this.withCurrentStateToolStripMenuItem.Name = "withCurrentStateToolStripMenuItem";
+            this.withCurrentStateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.P)));
+            this.withCurrentStateToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
+            this.withCurrentStateToolStripMenuItem.Text = "... with current state";
+            this.withCurrentStateToolStripMenuItem.Click += new System.EventHandler(this.updateArchiveWithCurrentStateToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -489,6 +534,11 @@ namespace BeatKeeper.Windows
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem updateArchiveWithCurrentStateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem updateArchiveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem withCurrentStateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
     }
 }
 
