@@ -20,6 +20,7 @@ namespace BeatKeeper.Windows
         private void SettingsForm_Load(object sender, EventArgs e)
         {
             GameInstallDirectorySelector.SelectedPath = SettingsUtils.BeatSaberInstallDirectory;
+            EnableDebugLoggingCheckbox.Checked = SettingsUtils.EnableDebugLogging;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -28,6 +29,7 @@ namespace BeatKeeper.Windows
                 && Path.HasExtension(GameInstallDirectorySelector.SelectedPath) ?
                 Path.GetDirectoryName(GameInstallDirectorySelector.SelectedPath) :
                 GameInstallDirectorySelector.SelectedPath;
+            SettingsUtils.EnableDebugLogging = EnableDebugLoggingCheckbox.Checked;
             Close();
         }
     }

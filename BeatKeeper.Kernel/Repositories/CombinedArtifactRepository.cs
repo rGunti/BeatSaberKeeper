@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using BeatKeeper.Kernel.Entities;
+using Serilog;
 
 namespace BeatKeeper.Kernel.Repositories
 {
@@ -11,6 +12,7 @@ namespace BeatKeeper.Kernel.Repositories
 
         public CombinedArtifactRepository(params ArtifactRepository[] repositories)
         {
+            Log.Verbose($"Constructing new Combined Artifact Repository for {repositories.Length} repositories");
             _repositories = repositories;
         }
 
@@ -26,6 +28,7 @@ namespace BeatKeeper.Kernel.Repositories
 
         public void Delete(Artifact entity)
         {
+            Log.Debug($"Deleting artifact {entity.Name} ({entity.FullPath})");
             File.Delete(entity.FullPath);
         }
     }
