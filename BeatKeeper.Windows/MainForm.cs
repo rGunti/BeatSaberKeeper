@@ -64,6 +64,14 @@ namespace BeatKeeper.Windows
             {
                 loginToSteamToolStripMenuItem.Enabled = isInitialized;
                 downloadVanillaGameToolStripMenuItem.Enabled = isInitialized;
+
+                if (string.IsNullOrWhiteSpace(SettingsUtils.BeatSaberInstallDirectory))
+                {
+                    MessageBoxUtils.Warn(
+                        "BeatSaberKeeper doesn't know where Beat Saber is installed. " +
+                        "Please select your Beat Saber path.");
+                    new SettingsForm().ShowDialog();
+                }
             });
         }
 
