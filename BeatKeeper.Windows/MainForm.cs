@@ -29,6 +29,8 @@ namespace BeatKeeper.Windows
                 new ArtifactRepository(ClientPathUtils.BackupArchiveFolder)
                 );
             _releaseChecker = new ReleaseChecker(true, string.Empty);
+
+            ArtifactNameColumn.ImageGetter += o => "Pack16";
         }
 
         private void MainForm_Load(object sender, EventArgs e)
