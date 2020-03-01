@@ -318,15 +318,17 @@ namespace BeatKeeper.Windows
                 newReleaseAvailable = _releaseChecker.HasNewVersion();
             }, () =>
             {
-                SetStatus(newReleaseAvailable ?
-                    "New release found" :
-                    "No updates available");
-
                 if (newReleaseAvailable
                     && MessageBoxUtils.Ask(
                         "A new version is available to download. Do you want to download it?"))
                 {
                     _releaseChecker.OpenReleasePage();
+                }
+                else
+                {
+                    SetStatus(newReleaseAvailable ?
+                        "New release found" :
+                        "No updates available");
                 }
             });
         }
