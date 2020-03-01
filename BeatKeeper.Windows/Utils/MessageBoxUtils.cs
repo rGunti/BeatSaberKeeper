@@ -4,6 +4,17 @@ namespace BeatKeeper.Windows.Utils
 {
     public static class MessageBoxUtils
     {
+        public static void Warn(
+            string message,
+            string title = null)
+        {
+            MessageBox.Show(
+                message, 
+                title ?? AppInfo.AppName, 
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
+
         public static bool Ask(
             string message,
             string title = null,

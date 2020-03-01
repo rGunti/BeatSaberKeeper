@@ -29,6 +29,8 @@ namespace BeatKeeper.Windows
                 new ArtifactRepository(ClientPathUtils.BackupArchiveFolder)
                 );
             _releaseChecker = new ReleaseChecker(true, string.Empty);
+
+            ArtifactNameColumn.ImageGetter += o => "Pack16";
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -62,6 +64,14 @@ namespace BeatKeeper.Windows
             {
                 loginToSteamToolStripMenuItem.Enabled = isInitialized;
                 downloadVanillaGameToolStripMenuItem.Enabled = isInitialized;
+
+                if (string.IsNullOrWhiteSpace(SettingsUtils.BeatSaberInstallDirectory))
+                {
+                    MessageBoxUtils.Warn(
+                        "BeatSaberKeeper doesn't know where Beat Saber is installed. " +
+                        "Please select your Beat Saber path.");
+                    new SettingsForm().ShowDialog();
+                }
             });
         }
 
@@ -308,15 +318,17 @@ namespace BeatKeeper.Windows
                 newReleaseAvailable = _releaseChecker.HasNewVersion();
             }, () =>
             {
-                SetStatus(newReleaseAvailable ?
-                    "New release found" :
-                    "No updates available");
-
                 if (newReleaseAvailable
                     && MessageBoxUtils.Ask(
                         "A new version is available to download. Do you want to download it?"))
                 {
                     _releaseChecker.OpenReleasePage();
+                }
+                else
+                {
+                    SetStatus(newReleaseAvailable ?
+                        "New release found" :
+                        "No updates available");
                 }
             });
         }
