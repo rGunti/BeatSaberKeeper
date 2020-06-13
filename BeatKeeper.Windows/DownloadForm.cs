@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -85,6 +86,14 @@ namespace BeatKeeper.Windows
         private void DownloadVersionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DownloadStartButton.Enabled = DownloadVersionComboBox.SelectedItem != null;
+
+            if (DownloadVersionComboBox.SelectedItem is Artifact artifact)
+            {
+                depotDownloadTextBox.Text = $"dotnet DepotDownloader.dll -app 620980 -depot 620981 -manifest {artifact.ManifestId} -username {SettingsUtils.LastSteamUsername ?? "YourSteamUsernameHere"}";
+            } else
+            {
+                depotDownloadTextBox.Text = $"";
+            }
         }
 
         private void DownloadAllVersionsButton_Click(object sender, EventArgs e)
