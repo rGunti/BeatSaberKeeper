@@ -35,8 +35,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.DownloadStatusText = new System.Windows.Forms.Label();
             this.DownloadAllVersionsButton = new System.Windows.Forms.Button();
+            this.DownloadStatusText = new System.Windows.Forms.Label();
+            this.depotDownloadTextBox = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -67,7 +68,7 @@
             // 
             this.DownloadStartButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.DownloadStartButton.Enabled = false;
-            this.DownloadStartButton.Location = new System.Drawing.Point(293, 46);
+            this.DownloadStartButton.Location = new System.Drawing.Point(293, 98);
             this.DownloadStartButton.Name = "DownloadStartButton";
             this.DownloadStartButton.Size = new System.Drawing.Size(75, 23);
             this.DownloadStartButton.TabIndex = 2;
@@ -79,7 +80,7 @@
             // 
             this.DownloadProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.DownloadProgressBar.Location = new System.Drawing.Point(12, 132);
+            this.DownloadProgressBar.Location = new System.Drawing.Point(12, 184);
             this.DownloadProgressBar.Name = "DownloadProgressBar";
             this.DownloadProgressBar.Size = new System.Drawing.Size(382, 23);
             this.DownloadProgressBar.TabIndex = 3;
@@ -94,18 +95,19 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(382, 101);
+            this.tabControl1.Size = new System.Drawing.Size(382, 153);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.depotDownloadTextBox);
             this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.DownloadStartButton);
             this.tabPage1.Controls.Add(this.DownloadVersionComboBox);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(374, 75);
+            this.tabPage1.Size = new System.Drawing.Size(374, 127);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Single version";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -116,20 +118,10 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(395, 102);
+            this.tabPage2.Size = new System.Drawing.Size(374, 75);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Mass Download";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // DownloadStatusText
-            // 
-            this.DownloadStatusText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.DownloadStatusText.AutoSize = true;
-            this.DownloadStatusText.Location = new System.Drawing.Point(12, 116);
-            this.DownloadStatusText.Name = "DownloadStatusText";
-            this.DownloadStatusText.Size = new System.Drawing.Size(38, 13);
-            this.DownloadStatusText.TabIndex = 5;
-            this.DownloadStatusText.Text = "Ready";
             // 
             // DownloadAllVersionsButton
             // 
@@ -141,11 +133,30 @@
             this.DownloadAllVersionsButton.UseVisualStyleBackColor = true;
             this.DownloadAllVersionsButton.Click += new System.EventHandler(this.DownloadAllVersionsButton_Click);
             // 
+            // DownloadStatusText
+            // 
+            this.DownloadStatusText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.DownloadStatusText.AutoSize = true;
+            this.DownloadStatusText.Location = new System.Drawing.Point(12, 168);
+            this.DownloadStatusText.Name = "DownloadStatusText";
+            this.DownloadStatusText.Size = new System.Drawing.Size(38, 13);
+            this.DownloadStatusText.TabIndex = 5;
+            this.DownloadStatusText.Text = "Ready";
+            // 
+            // depotDownloadTextBox
+            // 
+            this.depotDownloadTextBox.Location = new System.Drawing.Point(6, 46);
+            this.depotDownloadTextBox.Multiline = true;
+            this.depotDownloadTextBox.Name = "depotDownloadTextBox";
+            this.depotDownloadTextBox.ReadOnly = true;
+            this.depotDownloadTextBox.Size = new System.Drawing.Size(362, 46);
+            this.depotDownloadTextBox.TabIndex = 3;
+            // 
             // DownloadForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(406, 167);
+            this.ClientSize = new System.Drawing.Size(406, 219);
             this.Controls.Add(this.DownloadStatusText);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.DownloadProgressBar);
@@ -176,5 +187,6 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Label DownloadStatusText;
         private System.Windows.Forms.Button DownloadAllVersionsButton;
+        private System.Windows.Forms.TextBox depotDownloadTextBox;
     }
 }
