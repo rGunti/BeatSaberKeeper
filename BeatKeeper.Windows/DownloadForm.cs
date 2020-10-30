@@ -46,7 +46,7 @@ namespace BeatKeeper.Windows
             DownloadVersionComboBox.Items.Clear();
             DownloadVersionComboBox.Items.AddRange(
                 _beatSaberVersionDownloader.Artifacts
-                    .OrderByDescending(a => a.GameVersion)
+                    .OrderByDescending(a => a.Created)
                     .ToArray());
         }
 

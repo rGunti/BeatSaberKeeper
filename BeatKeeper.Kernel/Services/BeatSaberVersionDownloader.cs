@@ -57,10 +57,31 @@ namespace BeatKeeper.Kernel.Services
                     {
                         Type = ArtifactType.DownloadableVanilla
                     };
-                    a.Created = DateTime.ParseExact(
-                        line.Trim(),
-                        "MMMM d, yyyy – HH:mm:ss 'UTC'",
-                        new CultureInfo("en-US"));
+                    try
+                    {
+                        a.Created = DateTime.ParseExact(
+                            line.Trim(),
+                            "MMMM d, yyyy – HH:mm:ss 'UTC'",
+                            new CultureInfo("en-US"));
+                    } catch (FormatException)
+                    {
+                        try
+                        {
+                            a.Created = DateTime.ParseExact(
+                                line.Trim(),
+                                "dd MMMM yyyy – HH:mm:ss 'UTC'",
+                                new CultureInfo("en-US"));
+                        } catch (FormatException)
+                        {
+                            try
+                            {
+                                a.Created = DateTime.Parse(line.Trim());
+                            } catch (FormatException)
+                            {
+                                a.Created = DateTime.MinValue;
+                            }
+                        }
+                    }
                     versions.Add(a);
                 }
                 else if (i % 3 == 1)
