@@ -39,6 +39,7 @@ namespace BeatKeeper.Windows
             InitializeDepotDownloader();
             UpdateSteamCmdInitGuard();
             UpdateGrid();
+            checkForUpdatesToolStripMenuItem_Click(sender, e);
         }
 
         private void UpdateGrid()
