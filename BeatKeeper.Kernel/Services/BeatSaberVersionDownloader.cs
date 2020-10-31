@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using BeatKeeper.Kernel.Entities;
+using BeatKeeper.Kernel.Services.DepotDownloader;
 
 namespace BeatKeeper.Kernel.Services
 {
@@ -13,22 +14,28 @@ namespace BeatKeeper.Kernel.Services
         private readonly string _username;
         private readonly string _versionFilePath;
         private readonly SteamCmdService _steamCmdService;
+        private readonly DepotDownloaderService _depotDownloaderService;
 
         public BeatSaberVersionDownloader(
             ISteamCmdServiceFactory steamCmdServiceFactory,
+            IDepotDownloaderServiceFactory depotDownloaderServiceFactory,
             string username,
             string versionFilePath = "versions.txt")
-            : this(steamCmdServiceFactory.Build(), username, versionFilePath)
+            : this(steamCmdServiceFactory.Build(),
+                  depotDownloaderServiceFactory.Build(),
+                  username, versionFilePath)
         {
         }
 
         public BeatSaberVersionDownloader(
             SteamCmdService steamCmdService,
+            DepotDownloaderService depotDownloaderService,
             string username,
             string versionFilePath = "versions.txt")
         {
             _username = username;
             _steamCmdService = steamCmdService;
+            _depotDownloaderService = depotDownloaderService;
             _versionFilePath = versionFilePath;
             ReadVersionFile();
         }
@@ -113,7 +120,9 @@ namespace BeatKeeper.Kernel.Services
 
         public void DownloadArtifact(Artifact version)
         {
-            _steamCmdService.DownloadArtifact(_username, version.ManifestId)
+            // _steamCmdService.DownloadArtifact(_username, version.ManifestId)
+            //     .WaitForExit();
+            _depotDownloaderService.DownloadArtifact("620980", "620981", version.ManifestId, _username)
                 .WaitForExit();
         }
     }

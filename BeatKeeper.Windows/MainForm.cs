@@ -147,12 +147,12 @@ namespace BeatKeeper.Windows
 
         private void downloadVanillaGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBoxUtils.Warn("Okay, so here's the deal:\n" +
-                "In Feb 2020, Steam (intentionally) broke the feature in the Steam cloud which is used to download older versions of games." +
-                "There is a workaround for it but I couldn't find the time to integrate it here.\n" +
-                "I did not disable that feature here but it won't work when downloading older game versions. Sorry for that.\n" +
-                "You can use this tool to download older game versions: https://github.com/SteamRE/DepotDownloader. " +
-                "I put a generated command line in the following window so you can copy/paste it into your terminal.");
+            //MessageBoxUtils.Warn("Okay, so here's the deal:\n" +
+            //    "In Feb 2020, Steam (intentionally) broke the feature in the Steam cloud which is used to download older versions of games." +
+            //    "There is a workaround for it but I couldn't find the time to integrate it here.\n" +
+            //    "I did not disable that feature here but it won't work when downloading older game versions. Sorry for that.\n" +
+            //    "You can use this tool to download older game versions: https://github.com/SteamRE/DepotDownloader. " +
+            //    "I put a generated command line in the following window so you can copy/paste it into your terminal.");
             new DownloadForm().ShowDialog();
             UpdateGrid();
         }
@@ -367,6 +367,23 @@ namespace BeatKeeper.Windows
                     MessageBoxUtils.Error($"Cannot update archive with current state as it is not a \"ModBackup\" archive.");
                 }
             }
+        }
+
+        private void InitializeDepotDownloader()
+        {
+            new BackgroundProcessControl("Initializing DepotDownloader ...",
+                d =>
+                {
+                    d.SetStatus("Downloading latest release ...", -1, -1);
+                    var service = DepotDownloaderServiceFactory.Instance.Build();
+                    service.DownloadLatestRelease();
+                })
+                .ShowDialog();
+        }
+
+        private void initializeDepotDownloaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InitializeDepotDownloader();
         }
     }
 }
