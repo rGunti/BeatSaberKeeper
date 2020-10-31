@@ -18,7 +18,7 @@ namespace BeatKeeper.Windows
     {
         private SteamCmdService _steamCmdService;
         private IRepository<Artifact> _artifactRepository;
-        private readonly ReleaseChecker _releaseChecker;
+        private readonly IReleaseChecker _releaseChecker;
 
         public MainForm()
         {
@@ -28,7 +28,7 @@ namespace BeatKeeper.Windows
                 new ArtifactRepository(ClientPathUtils.VanillaArchiveFolder),
                 new ArtifactRepository(ClientPathUtils.BackupArchiveFolder)
                 );
-            _releaseChecker = new ReleaseChecker(true, string.Empty);
+            _releaseChecker = new BskReleaseChecker();
 
             ArtifactNameColumn.ImageGetter += o => "Pack16";
         }
@@ -36,8 +36,10 @@ namespace BeatKeeper.Windows
         private void MainForm_Load(object sender, EventArgs e)
         {
             InitializeSteamCmd(true);
+            InitializeDepotDownloader();
             UpdateSteamCmdInitGuard();
             UpdateGrid();
+            checkForUpdatesToolStripMenuItem_Click(sender, e);
         }
 
         private void UpdateGrid()
@@ -147,12 +149,18 @@ namespace BeatKeeper.Windows
 
         private void downloadVanillaGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBoxUtils.Warn("Okay, so here's the deal:\n" +
-                "In Feb 2020, Steam (intentionally) broke the feature in the Steam cloud which is used to download older versions of games." +
-                "There is a workaround for it but I couldn't find the time to integrate it here.\n" +
-                "I did not disable that feature here but it won't work when downloading older game versions. Sorry for that.\n" +
-                "You can use this tool to download older game versions: https://github.com/SteamRE/DepotDownloader. " +
-                "I put a generated command line in the following window so you can copy/paste it into your terminal.");
+            //MessageBoxUtils.Warn("Okay, so here's the deal:\n" +
+            //    "In Feb 2020, Steam (intentionally) broke the feature in the Steam cloud which is used to download older versions of games." +
+            //    "There is a workaround for it but I couldn't find the time to integrate it here.\n" +
+            //    "I did not disable that feature here but it won't work when downloading older game versions. Sorry for that.\n" +
+            //    "You can use this tool to download older game versions: https://github.com/SteamRE/DepotDownloader. " +
+            //    "I put a generated command line in the following window so you can copy/paste it into your terminal.");
+
+            MessageBoxUtils.Warn("Beat Saber Keeper uses DepotDownloader to download older game versions. Currently, this requires that you have installed the " +
+                                 ".NET Core 2.1 runtime environment. I am currently working with the developers of DepotDownloader to create a library so Beat Saber Keeper " +
+                                 "can integrate this feature and provide the download feature internally without the need for SteamCMD or another external executable.\n\n" +
+                                 "Stay tuned for updates coming soon! :)");
+
             new DownloadForm().ShowDialog();
             UpdateGrid();
         }
@@ -319,22 +327,25 @@ namespace BeatKeeper.Windows
         {
             SetStatus("Checking for updates ...");
             var newReleaseAvailable = false;
+            string latestVersion = null;
             this.RunInBackgroundThread(() =>
             {
-                newReleaseAvailable = _releaseChecker.HasNewVersion();
+                latestVersion = _releaseChecker.CheckForNewVersion();
+                //newReleaseAvailable = _releaseChecker.HasNewVersion();
             }, () =>
             {
-                if (newReleaseAvailable
-                    && MessageBoxUtils.Ask(
-                        "A new version is available to download. Do you want to download it?"))
+                if (_releaseChecker.HasNewVersion(latestVersion))
                 {
-                    _releaseChecker.OpenReleasePage();
+                    SetStatus($"New version found: {latestVersion}");
+                    if (MessageBoxUtils.Ask(
+                        $"A new version {latestVersion} is available to download. Do you want to download it?"))
+                    {
+                        _releaseChecker.DownloadLatestVersion();
+                    }
                 }
                 else
                 {
-                    SetStatus(newReleaseAvailable ?
-                        "New release found" :
-                        "No updates available");
+                    SetStatus("No updates available");
                 }
             });
         }
@@ -367,6 +378,26 @@ namespace BeatKeeper.Windows
                     MessageBoxUtils.Error($"Cannot update archive with current state as it is not a \"ModBackup\" archive.");
                 }
             }
+        }
+
+        private void InitializeDepotDownloader()
+        {
+            var service = DepotDownloaderServiceFactory.Instance.Build();
+            if (!service.IsInitialized)
+            {
+                new BackgroundProcessControl("Initializing DepotDownloader ...",
+                        d =>
+                        {
+                            d.SetStatus("Downloading latest release ...", -1, -1);
+                            service.DownloadLatestRelease();
+                        })
+                    .ShowDialog();
+            }
+        }
+
+        private void initializeDepotDownloaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InitializeDepotDownloader();
         }
     }
 }

@@ -64,6 +64,7 @@ namespace BeatKeeper.Windows
             this.modAssistantToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.beatDropToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archivesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createArchiveFromCurrentStateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.initializeSteamCMDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,10 +75,11 @@ namespace BeatKeeper.Windows
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.reportIssuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutBeatKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.createArchiveFromCurrentStateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutBeatKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
+            this.initializeDepotDownloaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.ArtifactListView)).BeginInit();
             this.ArtifactContextMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -239,7 +241,7 @@ namespace BeatKeeper.Windows
             this.startToolStripMenuItem1.Enabled = false;
             this.startToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.startToolStripMenuItem1.Name = "startToolStripMenuItem1";
-            this.startToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.startToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
             this.startToolStripMenuItem1.Text = "&Start";
             this.startToolStripMenuItem1.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
@@ -248,14 +250,14 @@ namespace BeatKeeper.Windows
             this.unpackToolStripMenuItem1.Enabled = false;
             this.unpackToolStripMenuItem1.Name = "unpackToolStripMenuItem1";
             this.unpackToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.unpackToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.unpackToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
             this.unpackToolStripMenuItem1.Text = "Unpack";
             this.unpackToolStripMenuItem1.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(153, 6);
             // 
             // updateArchiveToolStripMenuItem
             // 
@@ -263,7 +265,7 @@ namespace BeatKeeper.Windows
             this.withCurrentStateToolStripMenuItem});
             this.updateArchiveToolStripMenuItem.Enabled = false;
             this.updateArchiveToolStripMenuItem.Name = "updateArchiveToolStripMenuItem";
-            this.updateArchiveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateArchiveToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.updateArchiveToolStripMenuItem.Text = "Update Archive";
             // 
             // withCurrentStateToolStripMenuItem
@@ -279,27 +281,27 @@ namespace BeatKeeper.Windows
             // toolStripMenuItem7
             // 
             this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(153, 6);
             // 
             // deleteToolStripMenuItem1
             // 
             this.deleteToolStripMenuItem1.Enabled = false;
             this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
             this.deleteToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
             this.deleteToolStripMenuItem1.Text = "Delete";
             this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(153, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -338,7 +340,7 @@ namespace BeatKeeper.Windows
             // modAssistantToolStripMenuItem
             // 
             this.modAssistantToolStripMenuItem.Name = "modAssistantToolStripMenuItem";
-            this.modAssistantToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.modAssistantToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.modAssistantToolStripMenuItem.Tag = "https://github.com/Assistant/ModAssistant";
             this.modAssistantToolStripMenuItem.Text = "ModAssistant";
             this.modAssistantToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
@@ -346,7 +348,7 @@ namespace BeatKeeper.Windows
             // beatDropToolStripMenuItem
             // 
             this.beatDropToolStripMenuItem.Name = "beatDropToolStripMenuItem";
-            this.beatDropToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.beatDropToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.beatDropToolStripMenuItem.Tag = "https://bsaber.com/beatdrop/";
             this.beatDropToolStripMenuItem.Text = "BeatDrop 2";
             this.beatDropToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
@@ -359,12 +361,22 @@ namespace BeatKeeper.Windows
             this.archivesToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
             this.archivesToolStripMenuItem.Text = "&Archives";
             // 
+            // createArchiveFromCurrentStateToolStripMenuItem
+            // 
+            this.createArchiveFromCurrentStateToolStripMenuItem.Image = global::BeatKeeper.Windows.Properties.Resources.saber_pack_16;
+            this.createArchiveFromCurrentStateToolStripMenuItem.Name = "createArchiveFromCurrentStateToolStripMenuItem";
+            this.createArchiveFromCurrentStateToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.createArchiveFromCurrentStateToolStripMenuItem.Text = "&Create Archive from current state";
+            this.createArchiveFromCurrentStateToolStripMenuItem.Click += new System.EventHandler(this.createArchiveFromCurrentStateToolStripMenuItem_Click);
+            // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
             this.initializeSteamCMDToolStripMenuItem,
-            this.loginToSteamToolStripMenuItem});
+            this.loginToSteamToolStripMenuItem,
+            this.toolStripMenuItem8,
+            this.initializeDepotDownloaderToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -374,21 +386,21 @@ namespace BeatKeeper.Windows
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+,";
             this.settingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Oemcomma)));
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.settingsToolStripMenuItem.Text = "&Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // initializeSteamCMDToolStripMenuItem
             // 
             this.initializeSteamCMDToolStripMenuItem.Name = "initializeSteamCMDToolStripMenuItem";
-            this.initializeSteamCMDToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.initializeSteamCMDToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.initializeSteamCMDToolStripMenuItem.Text = "Initialize Steam&CMD";
             this.initializeSteamCMDToolStripMenuItem.Click += new System.EventHandler(this.initializeSteamCMDToolStripMenuItem_Click);
             // 
             // loginToSteamToolStripMenuItem
             // 
             this.loginToSteamToolStripMenuItem.Name = "loginToSteamToolStripMenuItem";
-            this.loginToSteamToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loginToSteamToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.loginToSteamToolStripMenuItem.Text = "Login to Steam";
             this.loginToSteamToolStripMenuItem.Click += new System.EventHandler(this.loginToSteamToolStripMenuItem_Click);
             // 
@@ -441,6 +453,14 @@ namespace BeatKeeper.Windows
             this.checkForUpdatesToolStripMenuItem.Text = "Check for &Updates";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
             // 
+            // aboutBeatKeeperToolStripMenuItem
+            // 
+            this.aboutBeatKeeperToolStripMenuItem.Image = global::BeatKeeper.Windows.Properties.Resources.lightsaber;
+            this.aboutBeatKeeperToolStripMenuItem.Name = "aboutBeatKeeperToolStripMenuItem";
+            this.aboutBeatKeeperToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.aboutBeatKeeperToolStripMenuItem.Text = "&About BeatSaberKeeper";
+            this.aboutBeatKeeperToolStripMenuItem.Click += new System.EventHandler(this.aboutBeatKeeperToolStripMenuItem_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -457,21 +477,17 @@ namespace BeatKeeper.Windows
             this.StatusLabel.Size = new System.Drawing.Size(39, 17);
             this.StatusLabel.Text = "Ready";
             // 
-            // createArchiveFromCurrentStateToolStripMenuItem
+            // toolStripMenuItem8
             // 
-            this.createArchiveFromCurrentStateToolStripMenuItem.Image = global::BeatKeeper.Windows.Properties.Resources.saber_pack_16;
-            this.createArchiveFromCurrentStateToolStripMenuItem.Name = "createArchiveFromCurrentStateToolStripMenuItem";
-            this.createArchiveFromCurrentStateToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
-            this.createArchiveFromCurrentStateToolStripMenuItem.Text = "&Create Archive from current state";
-            this.createArchiveFromCurrentStateToolStripMenuItem.Click += new System.EventHandler(this.createArchiveFromCurrentStateToolStripMenuItem_Click);
+            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(213, 6);
             // 
-            // aboutBeatKeeperToolStripMenuItem
+            // initializeDepotDownloaderToolStripMenuItem
             // 
-            this.aboutBeatKeeperToolStripMenuItem.Image = global::BeatKeeper.Windows.Properties.Resources.lightsaber;
-            this.aboutBeatKeeperToolStripMenuItem.Name = "aboutBeatKeeperToolStripMenuItem";
-            this.aboutBeatKeeperToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.aboutBeatKeeperToolStripMenuItem.Text = "&About BeatSaberKeeper";
-            this.aboutBeatKeeperToolStripMenuItem.Click += new System.EventHandler(this.aboutBeatKeeperToolStripMenuItem_Click);
+            this.initializeDepotDownloaderToolStripMenuItem.Name = "initializeDepotDownloaderToolStripMenuItem";
+            this.initializeDepotDownloaderToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.initializeDepotDownloaderToolStripMenuItem.Text = "Initialize DepotDownloader";
+            this.initializeDepotDownloaderToolStripMenuItem.Click += new System.EventHandler(this.initializeDepotDownloaderToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -545,6 +561,8 @@ namespace BeatKeeper.Windows
         private System.Windows.Forms.ToolStripMenuItem updateArchiveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem withCurrentStateToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem8;
+        private System.Windows.Forms.ToolStripMenuItem initializeDepotDownloaderToolStripMenuItem;
     }
 }
 
