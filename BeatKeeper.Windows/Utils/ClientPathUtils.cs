@@ -12,10 +12,14 @@ namespace BeatKeeper.Windows.Utils
         public static readonly string SteamCmdFolder = PathUtils.GetResourcePath("steamcmd");
         public static readonly string SteamCmdDownloadFolder = Path.Combine(SteamCmdFolder, "steamapps", "content", "app_620980", "depot_620981");
 
+        public static readonly string DepotDownloaderFolder = PathUtils.GetResourcePath("depotdownloader");
+        public static readonly string DepotDownloaderDownloadFolder = Path.Combine(DepotDownloaderFolder, "depots", "620981", "5700490");
+
         private static readonly string[] EnsureDirectoriesEnabled = new[]
         {
             ArchiveFolder, VanillaArchiveFolder, BackupArchiveFolder,
-            SteamCmdFolder, SteamCmdDownloadFolder
+            SteamCmdFolder, SteamCmdDownloadFolder,
+            DepotDownloaderFolder
         };
 
         static ClientPathUtils()

@@ -51,11 +51,11 @@
     <ApplicationIcon>saber.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GitHub.ReleaseDownloader, Version=0.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GitHub.ReleaseDownloader.0.1.2\lib\net472\GitHub.ReleaseDownloader.dll</HintPath>
-    </Reference>
     <Reference Include="ObjectListView, Version=2.9.1.1072, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
       <HintPath>..\packages\ObjectListView.Official.2.9.1\lib\net20\ObjectListView.dll</HintPath>
+    </Reference>
+    <Reference Include="Octokit, Version=0.48.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Octokit.0.48.0\lib\net46\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="Utils\AppInfo.cs" />
     <Compile Include="Utils\ClientPathUtils.cs" />
+    <Compile Include="Utils\DepotDownloaderServiceFactory.cs" />
     <Compile Include="Utils\MessageBoxUtils.cs" />
     <Compile Include="Utils\ReleaseChecker.cs" />
     <Compile Include="Utils\SettingsUtils.cs" />

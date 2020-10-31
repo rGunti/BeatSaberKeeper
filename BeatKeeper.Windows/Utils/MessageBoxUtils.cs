@@ -56,5 +56,14 @@ namespace BeatKeeper.Windows.Utils
                 MessageBoxIcon.Information
             );
         }
+
+        public static void NotImplemented()
+        {
+            MessageBox.Show(
+                "This feature is not yet implemented!",
+                AppInfo.AppName,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
     }
 }

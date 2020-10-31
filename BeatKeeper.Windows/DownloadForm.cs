@@ -19,6 +19,7 @@ namespace BeatKeeper.Windows
             InitializeComponent();
             _beatSaberVersionDownloader = new BeatSaberVersionDownloader(
                 SteamCmdServiceFactory.Instance.Build(),
+                DepotDownloaderServiceFactory.Instance.Build(),
                 SettingsUtils.LastSteamUsername);
         }
 
@@ -70,7 +71,7 @@ namespace BeatKeeper.Windows
 
                 SetStatus($"Packing BeatSaber v{downloadArtifact.GameVersion} ...");
                 BeatKeeperPackageProcessor.PackVanillaArtifactV1(
-                    ClientPathUtils.SteamCmdDownloadFolder,
+                    ClientPathUtils.DepotDownloaderDownloadFolder,
                     ClientPathUtils.VanillaArchiveFolder,
                     downloadArtifact.GameVersion
                 );
@@ -82,7 +83,7 @@ namespace BeatKeeper.Windows
                 Close();
             });
         }
-
+        
         private void DownloadVersionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DownloadStartButton.Enabled = DownloadVersionComboBox.SelectedItem != null;
@@ -121,16 +122,16 @@ namespace BeatKeeper.Windows
                     i++;
                     SetStatus($"({i}/{total}) Downloading BeatSaber {artifact} ...");
                     SetProgress(i - 1, total * 2);
-                    if (Directory.Exists(ClientPathUtils.SteamCmdDownloadFolder))
+                    if (Directory.Exists(ClientPathUtils.DepotDownloaderDownloadFolder))
                     {
-                        Directory.Delete(ClientPathUtils.SteamCmdDownloadFolder, true);
+                        Directory.Delete(ClientPathUtils.DepotDownloaderDownloadFolder, true);
                     }
                     _beatSaberVersionDownloader.DownloadArtifact(artifact);
 
                     SetStatus($"({i}/{total}) Packing BeatSaber {artifact} ...");
                     SetProgress(i, total * 2);
                     BeatKeeperPackageProcessor.PackVanillaArtifactV1(
-                        ClientPathUtils.SteamCmdDownloadFolder,
+                        ClientPathUtils.DepotDownloaderDownloadFolder,
                         ClientPathUtils.VanillaArchiveFolder,
                         artifact.GameVersion);
                 }
