@@ -18,7 +18,7 @@ namespace BeatKeeper.Windows
     {
         private SteamCmdService _steamCmdService;
         private IRepository<Artifact> _artifactRepository;
-        private readonly ReleaseChecker _releaseChecker;
+        private readonly IReleaseChecker _releaseChecker;
 
         public MainForm()
         {
@@ -28,7 +28,7 @@ namespace BeatKeeper.Windows
                 new ArtifactRepository(ClientPathUtils.VanillaArchiveFolder),
                 new ArtifactRepository(ClientPathUtils.BackupArchiveFolder)
                 );
-            _releaseChecker = new ReleaseChecker(true, string.Empty);
+            _releaseChecker = new BskReleaseChecker();
 
             ArtifactNameColumn.ImageGetter += o => "Pack16";
         }
@@ -326,22 +326,25 @@ namespace BeatKeeper.Windows
         {
             SetStatus("Checking for updates ...");
             var newReleaseAvailable = false;
+            string latestVersion = null;
             this.RunInBackgroundThread(() =>
             {
-                newReleaseAvailable = _releaseChecker.HasNewVersion();
+                latestVersion = _releaseChecker.CheckForNewVersion();
+                //newReleaseAvailable = _releaseChecker.HasNewVersion();
             }, () =>
             {
-                if (newReleaseAvailable
-                    && MessageBoxUtils.Ask(
-                        "A new version is available to download. Do you want to download it?"))
+                if (_releaseChecker.HasNewVersion(latestVersion))
                 {
-                    _releaseChecker.OpenReleasePage();
+                    SetStatus($"New version found: {latestVersion}");
+                    if (MessageBoxUtils.Ask(
+                        $"A new version {latestVersion} is available to download. Do you want to download it?"))
+                    {
+                        _releaseChecker.DownloadLatestVersion();
+                    }
                 }
                 else
                 {
-                    SetStatus(newReleaseAvailable ?
-                        "New release found" :
-                        "No updates available");
+                    SetStatus("No updates available");
                 }
             });
         }
