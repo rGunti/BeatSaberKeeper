@@ -31,6 +31,9 @@ namespace BeatKeeper.Kernel.Services.DepotDownloader
         private string DotNetExecutable
             => Path.Combine(_basePath, "depotdownloader.dll");
 
+        public bool IsInitialized
+            => File.Exists(DotNetExecutable) && File.Exists(Executable);
+
         private void ClearBaseFolder()
         {
             try

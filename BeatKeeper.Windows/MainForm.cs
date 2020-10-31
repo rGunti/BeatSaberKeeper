@@ -36,6 +36,7 @@ namespace BeatKeeper.Windows
         private void MainForm_Load(object sender, EventArgs e)
         {
             InitializeSteamCmd(true);
+            InitializeDepotDownloader();
             UpdateSteamCmdInitGuard();
             UpdateGrid();
         }
@@ -153,6 +154,12 @@ namespace BeatKeeper.Windows
             //    "I did not disable that feature here but it won't work when downloading older game versions. Sorry for that.\n" +
             //    "You can use this tool to download older game versions: https://github.com/SteamRE/DepotDownloader. " +
             //    "I put a generated command line in the following window so you can copy/paste it into your terminal.");
+
+            MessageBoxUtils.Warn("Beat Saber Keeper uses DepotDownloader to download older game versions. Currently, this requires that you have installed the " +
+                                 ".NET Core 2.1 runtime environment. I am currently working with the developers of DepotDownloader to create a library so Beat Saber Keeper " +
+                                 "can integrate this feature and provide the download feature internally without the need for SteamCMD or another external executable.\n\n" +
+                                 "Stay tuned for updates coming soon! :)");
+
             new DownloadForm().ShowDialog();
             UpdateGrid();
         }
@@ -371,14 +378,17 @@ namespace BeatKeeper.Windows
 
         private void InitializeDepotDownloader()
         {
-            new BackgroundProcessControl("Initializing DepotDownloader ...",
-                d =>
-                {
-                    d.SetStatus("Downloading latest release ...", -1, -1);
-                    var service = DepotDownloaderServiceFactory.Instance.Build();
-                    service.DownloadLatestRelease();
-                })
-                .ShowDialog();
+            var service = DepotDownloaderServiceFactory.Instance.Build();
+            if (!service.IsInitialized)
+            {
+                new BackgroundProcessControl("Initializing DepotDownloader ...",
+                        d =>
+                        {
+                            d.SetStatus("Downloading latest release ...", -1, -1);
+                            service.DownloadLatestRelease();
+                        })
+                    .ShowDialog();
+            }
         }
 
         private void initializeDepotDownloaderToolStripMenuItem_Click(object sender, EventArgs e)
