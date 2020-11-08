@@ -130,8 +130,13 @@ namespace BeatKeeper.App.Services
 
             lock (_sentryLock)
             {
-                using (var s = new MemoryStream(_sentryFile))
+                using (var s = new MemoryStream())
                 {
+                    if (_sentryFile.Length > 0)
+                    {
+                        s.Write(_sentryFile, 0, _sentryFile.Length);
+                    }
+
                     s.Seek(e.Offset, SeekOrigin.Begin);
                     s.Write(e.Data, 0, e.BytesToWrite);
                     size = (int)s.Length;
@@ -243,6 +248,11 @@ namespace BeatKeeper.App.Services
 
         public void Dispose()
         {
+            if (IsConnected)
+            {
+                Disconnect().GetAwaiter().GetResult();
+            }
+
             _onClientConnectedSub?.Dispose();
             _onClientDisconnectedSub?.Dispose();
             _onUpdateMachineAuthSub?.Dispose();

@@ -44,6 +44,12 @@ namespace BeatKeeper.App
                 if (login == SteamLoginResult.Requires2FA)
                 {
                     InSteamGuardMode = true;
+                    SteamGuardTextBox.Focus();
+                }
+                else if (login == SteamLoginResult.Success)
+                {
+                    DialogResult = DialogResult.OK;
+                    Close();
                 }
                 else
                 {
@@ -66,6 +72,7 @@ namespace BeatKeeper.App
             } else
             {
                 DialogResult = DialogResult.Cancel;
+                Close();
             }
         }
     }
