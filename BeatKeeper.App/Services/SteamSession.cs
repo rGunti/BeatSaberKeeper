@@ -48,7 +48,7 @@ namespace BeatKeeper.App.Services
                 _ => IsConnected = true);
             _onClientDisconnectedSub = SubscribeToEvent(
                 OnClientDisconnected,
-                _ => IsConnected = false,
+                e => ClientDisconnected(e),
                 _ => Debug.WriteLine("*** STEAM CLIENT DISCONNECTED ***"));
 
             _onUpdateMachineAuthSub = SubscribeToEvent<SteamUser.UpdateMachineAuthCallback>(
@@ -56,6 +56,9 @@ namespace BeatKeeper.App.Services
         }
 
         public bool IsConnected { get; private set; }
+        public bool IsLoggedIn { get; private set; }
+        public string LoggedInUser { get; private set; }
+        public SteamID LoggedInAccount { get; private set; }
 
         private IDisposable SubscribeToEvent<T>(
             SteamSessionEventHandler<T> eventHandler,
@@ -166,6 +169,13 @@ namespace BeatKeeper.App.Services
             });
         }
 
+        private void ClientDisconnected(SteamClient.DisconnectedCallback e)
+        {
+            IsConnected = false;
+            IsLoggedIn = false;
+            LoggedInUser = null;
+        }
+
         public async Task<SteamClient.ConnectedCallback> Connect()
         {
             return await CallbackResult<SteamClient.ConnectedCallback>(
@@ -242,6 +252,9 @@ namespace BeatKeeper.App.Services
             }
             else
             {
+                IsLoggedIn = true;
+                LoggedInUser = username;
+                LoggedInAccount = logon.ClientSteamID;
                 return SteamLoginResult.Success;
             }
         }

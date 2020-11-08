@@ -30,11 +30,13 @@ namespace BeatKeeper.App
         private void InitializeComponent()
         {
             this.LoginButton = new System.Windows.Forms.Button();
+            this.LoginStatusLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LoginButton
             // 
-            this.LoginButton.Location = new System.Drawing.Point(12, 12);
+            this.LoginButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoginButton.Location = new System.Drawing.Point(566, 12);
             this.LoginButton.Name = "LoginButton";
             this.LoginButton.Size = new System.Drawing.Size(75, 23);
             this.LoginButton.TabIndex = 0;
@@ -42,11 +44,22 @@ namespace BeatKeeper.App
             this.LoginButton.UseVisualStyleBackColor = true;
             this.LoginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
+            // LoginStatusLabel
+            // 
+            this.LoginStatusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoginStatusLabel.Location = new System.Drawing.Point(273, 12);
+            this.LoginStatusLabel.Name = "LoginStatusLabel";
+            this.LoginStatusLabel.Size = new System.Drawing.Size(287, 23);
+            this.LoginStatusLabel.TabIndex = 1;
+            this.LoginStatusLabel.Text = "Logged out";
+            this.LoginStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // DownloadGameArchiveForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(653, 391);
+            this.Controls.Add(this.LoginStatusLabel);
             this.Controls.Add(this.LoginButton);
             this.Name = "DownloadGameArchiveForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -58,5 +71,6 @@ namespace BeatKeeper.App
         #endregion
 
         private System.Windows.Forms.Button LoginButton;
+        private System.Windows.Forms.Label LoginStatusLabel;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeatKeeper.App.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,7 +20,15 @@ namespace BeatKeeper.App
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
-            new SteamLoginForm().ShowDialog();
+            var result = new SteamLoginForm().ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                var session = SteamSession.Instance;
+                if (session.IsLoggedIn)
+                {
+                    LoginStatusLabel.Text = $"Logged in as {SteamSession.Instance.LoggedInUser}";
+                }
+            }
         }
     }
 }
