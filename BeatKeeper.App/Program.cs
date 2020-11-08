@@ -1,3 +1,4 @@
+using BeatKeeper.App.Core.Logging;
 using BeatKeeper.App.Core.Steam;
 using System;
 using System.Windows.Forms;
@@ -12,6 +13,8 @@ namespace BeatKeeper.App
         [STAThread]
         static void Main()
         {
+            LogInitializer.Init(enableFile: true);
+
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

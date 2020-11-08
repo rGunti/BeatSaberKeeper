@@ -1,4 +1,5 @@
-﻿using SteamKit2;
+﻿using Serilog;
+using SteamKit2;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +19,8 @@ namespace BeatKeeper.App.Core.Steam
 
         public event SteamSessionEventHandler<SteamClient.DisconnectedCallback> OnClientDisconnected;
 
+        private readonly ILogger _logger;
+
         private readonly SteamClient _steamClient;
         private readonly CallbackManager _callbackManager;
         private readonly SteamUser _steamUser;
@@ -36,6 +39,8 @@ namespace BeatKeeper.App.Core.Steam
 
         protected SteamSession()
         {
+            _logger = Log.ForContext<SteamSession>();
+
             _steamClient = new SteamClient();
             _callbackManager = new CallbackManager(_steamClient);
             _steamUser = _steamClient.GetHandler<SteamUser>();
@@ -46,8 +51,7 @@ namespace BeatKeeper.App.Core.Steam
                 _ => IsConnected = true);
             _onClientDisconnectedSub = SubscribeToEvent(
                 OnClientDisconnected,
-                e => ClientDisconnected(e),
-                _ => Debug.WriteLine("*** STEAM CLIENT DISCONNECTED ***"));
+                e => ClientDisconnected(e));
 
             _onUpdateMachineAuthSub = SubscribeToEvent<SteamUser.UpdateMachineAuthCallback>(
                 UpdateMachineAuth);
@@ -166,7 +170,7 @@ namespace BeatKeeper.App.Core.Steam
 
         private void UpdateMachineAuth(SteamSession session, SteamUser.UpdateMachineAuthCallback e)
         {
-            Debug.WriteLine("*** STEAM REQUESTED UPDATE MACHINE AUTH ***");
+            _logger.Debug("Update machine auth request received");
 
             int size;
             byte[] sentryHash;
@@ -211,6 +215,7 @@ namespace BeatKeeper.App.Core.Steam
 
         private void ClientDisconnected(SteamClient.DisconnectedCallback e)
         {
+            _logger.Debug("Client disconnected");
             IsConnected = false;
             IsLoggedIn = false;
             LoggedInUser = null;
@@ -218,6 +223,7 @@ namespace BeatKeeper.App.Core.Steam
 
         private void LicenseListReceived(SteamSession session, SteamApps.LicenseListCallback e)
         {
+            _logger.Debug("Received License List");
             if (e.Result == EResult.OK)
             {
                 _userLicenses = e.LicenseList;
@@ -226,6 +232,7 @@ namespace BeatKeeper.App.Core.Steam
 
         private void LoginKeyReceived(SteamSession session, SteamUser.LoginKeyCallback e)
         {
+            _logger.Debug("Received Login Key");
             SaveLoginKey(LoggedInUser, e.LoginKey);
             _steamUser.AcceptNewLoginKey(e);
         }
@@ -256,12 +263,14 @@ namespace BeatKeeper.App.Core.Steam
 
         public async Task<SteamClient.ConnectedCallback> Connect()
         {
+            _logger.Information("Connecting to Steam ...");
             return await CallbackResult<SteamClient.ConnectedCallback>(
                 () => _steamClient.Connect());
         }
 
         public async Task<SteamClient.DisconnectedCallback> Disconnect()
         {
+            _logger.Information("Disconnecting Steam session ...");
             return await CallbackResult<SteamClient.DisconnectedCallback>(
                 () => _steamClient.Disconnect());
         }
@@ -272,6 +281,8 @@ namespace BeatKeeper.App.Core.Steam
             bool rememeberPassword = false,
             bool tryLoadingFromSaved = false)
         {
+            _logger.Debug($"Starting login process ...");
+
             string loginKey = null;
             if (tryLoadingFromSaved)
             {
@@ -297,6 +308,7 @@ namespace BeatKeeper.App.Core.Steam
             }
             if (!IsConnected)
             {
+                _logger.Error($"Connection failed, could not connect to Steam!");
                 throw new Exception("Cannot login because client is not connected to Steam.");
             }
 
@@ -323,8 +335,11 @@ namespace BeatKeeper.App.Core.Steam
                 SentryFileHash = sentryHash
             };
 
+            _logger.Debug("Logging on as {username} ...", username);
             var logon = await CallbackResult<SteamUser.LoggedOnCallback>(
                 () => _steamUser.LogOn(logonDetails));
+
+            _logger.Debug("Logon resulted: {result} / {extendedResult}", logon.Result, logon.ExtendedResult);
 
             bool isSteamGuard = logon.Result == EResult.AccountLogonDenied;
             bool is2FA = logon.Result == EResult.AccountLoginDeniedNeedTwoFactor;
@@ -355,6 +370,7 @@ namespace BeatKeeper.App.Core.Steam
 
         public async Task<bool> CheckAccountAccessForApp(uint appId)
         {
+            _logger.Debug("Checking licenses for app {appId} ...", appId);
             if (!IsConnected)
             {
                 throw new Exception($"Not connected to Steam");
@@ -380,6 +396,7 @@ namespace BeatKeeper.App.Core.Steam
 
         public void Dispose()
         {
+            _logger.Debug("Disposing Steam Session ...");
             if (IsConnected)
             {
                 Disconnect().GetAwaiter().GetResult();
@@ -389,6 +406,9 @@ namespace BeatKeeper.App.Core.Steam
             _onClientDisconnectedSub?.Dispose();
             _onUpdateMachineAuthSub?.Dispose();
             _onLicenseListReceived?.Dispose();
+            _onLoginKeyReceived?.Dispose();
+
+            _logger.Information("Steam Session disposed");
         }
     }
 }
