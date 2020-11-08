@@ -1,12 +1,6 @@
 ﻿using BeatKeeper.App.Services;
+using BeatKeeper.App.Utils;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BeatKeeper.App
@@ -18,17 +12,48 @@ namespace BeatKeeper.App
             InitializeComponent();
         }
 
+        private void UpdateStatus(string status)
+        {
+            this.RunInUiThread(() =>
+            {
+                StatusLabel.Text = status;
+            });
+        }
+
         private void LoginButton_Click(object sender, EventArgs e)
         {
-            var result = new SteamLoginForm().ShowDialog();
-            if (result == DialogResult.OK)
+            if (SteamSession.Instance.IsLoggedIn)
+            {
+                MessageBoxUtils.NotImplemented();
+            } else
+            {
+                new SteamLoginForm().ShowDialog();
+                UpdateFormState();
+            }
+        }
+
+        private void DownloadGameArchiveForm_Load(object sender, EventArgs e)
+        {
+            UpdateFormState();
+        }
+
+        private void UpdateFormState()
+        {
+            this.RunInUiThread(() =>
             {
                 var session = SteamSession.Instance;
+                DownloaderPanel.Enabled = session.IsLoggedIn;
                 if (session.IsLoggedIn)
                 {
-                    LoginStatusLabel.Text = $"Logged in as {SteamSession.Instance.LoggedInUser}";
+                    UpdateStatus("Ready");
+                    LoginStatusLabel.Text = $"Logged in as {session.LoggedInUser}";
                 }
-            }
+                else
+                {
+                    UpdateStatus("User is not logged in, Downloader disabled");
+                }
+                LoginButton.Text = session.IsLoggedIn ? "Logout" : "Login";
+            });
         }
     }
 }
