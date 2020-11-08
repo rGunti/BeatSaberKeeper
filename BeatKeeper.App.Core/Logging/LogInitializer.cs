@@ -5,7 +5,7 @@ namespace BeatKeeper.App.Core.Logging
     public static class LogInitializer
     {
         private const string LOG_FORMAT =
-            "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
+            "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} | {SourceContext} | [{Level:u3}] {Message:lj}{NewLine}{Exception}";
         private const string LOG_FILE = "bsk-.log";
 
         public static void Init(bool enableFile = true)
