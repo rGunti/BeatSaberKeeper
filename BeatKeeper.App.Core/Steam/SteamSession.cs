@@ -16,6 +16,8 @@ namespace BeatKeeper.App.Core.Steam
         private static SteamSession instance = new SteamSession();
         public static SteamSession Instance => instance;
 
+        public event SteamSessionEventHandler<SteamClient.DisconnectedCallback> OnClientDisconnected;
+
         private readonly SteamClient _steamClient;
         private readonly CallbackManager _callbackManager;
         private readonly SteamUser _steamUser;
@@ -23,10 +25,9 @@ namespace BeatKeeper.App.Core.Steam
 
         private readonly IDisposable _onClientConnectedSub;
         private readonly IDisposable _onClientDisconnectedSub;
-        public event SteamSessionEventHandler<SteamClient.DisconnectedCallback> OnClientDisconnected;
-
         private readonly IDisposable _onUpdateMachineAuthSub;
         private readonly IDisposable _onLicenseListReceived;
+        private readonly IDisposable _onLoginKeyReceived;
 
         private IReadOnlyCollection<SteamApps.LicenseListCallback.License> _userLicenses;
 
@@ -52,6 +53,8 @@ namespace BeatKeeper.App.Core.Steam
                 UpdateMachineAuth);
             _onLicenseListReceived = SubscribeToEvent<SteamApps.LicenseListCallback>(
                 LicenseListReceived);
+            _onLoginKeyReceived = SubscribeToEvent<SteamUser.LoginKeyCallback>(
+                LoginKeyReceived);
         }
 
         public bool IsConnected { get; private set; }
@@ -221,6 +224,36 @@ namespace BeatKeeper.App.Core.Steam
             }
         }
 
+        private void LoginKeyReceived(SteamSession session, SteamUser.LoginKeyCallback e)
+        {
+            SaveLoginKey(LoggedInUser, e.LoginKey);
+            _steamUser.AcceptNewLoginKey(e);
+        }
+
+        internal void SaveLoginKey(string username, string key)
+        {
+            // TODO: replace
+            File.WriteAllText("login.sav", $"{username}\n{key}");
+        }
+        internal Tuple<string, string> LoadLoginKey()
+        {
+            // TODO: replace
+            if (File.Exists("login.sav"))
+            {
+                var fileContent = File.ReadAllText("login.sav").Split('\n');
+                try
+                {
+                    return new Tuple<string, string>(fileContent[0], fileContent[1]);
+                } catch (Exception)
+                {
+                    File.Delete("login.sav");
+                }
+            }
+            return null;
+        }
+        public string GetSavedLoginName() => LoadLoginKey()?.Item1;
+        public bool HasSavedLogin => File.Exists("login.sav");
+
         public async Task<SteamClient.ConnectedCallback> Connect()
         {
             return await CallbackResult<SteamClient.ConnectedCallback>(
@@ -235,9 +268,24 @@ namespace BeatKeeper.App.Core.Steam
 
         public async Task<SteamLoginResult> Login(
             string username, string password,
-            string authCode = null, string twoFACode = null)
+            string authCode = null, string twoFACode = null,
+            bool rememeberPassword = false,
+            bool tryLoadingFromSaved = false)
         {
-            // TODO: Remember credentials
+            string loginKey = null;
+            if (tryLoadingFromSaved)
+            {
+                var loginInfo = LoadLoginKey();
+                if (loginInfo == null)
+                {
+                    return SteamLoginResult.SavedLoginNotExistant;
+                }
+                username = loginInfo.Item1;
+                loginKey = loginInfo.Item2;
+                authCode = null;
+                twoFACode = null;
+            }
+
             if (IsConnected)
             {
                 await Disconnect();
@@ -264,9 +312,10 @@ namespace BeatKeeper.App.Core.Steam
             var logonDetails = new SteamUser.LogOnDetails()
             {
                 Username = username,
-                Password = password,
-                ShouldRememberPassword = true,
+                Password = tryLoadingFromSaved ? null : password,
+                ShouldRememberPassword = rememeberPassword,
                 LoginID = 0x534b32,
+                LoginKey = tryLoadingFromSaved ? loginKey : null,
 
                 AuthCode = authCode,
                 TwoFactorCode = twoFACode,

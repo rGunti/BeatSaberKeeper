@@ -53,6 +53,7 @@ namespace BeatKeeper.App
         private void DownloadGameArchiveForm_Load(object sender, EventArgs e)
         {
             UpdateFormState();
+            Login();
         }
 
         private void UpdateFormState()

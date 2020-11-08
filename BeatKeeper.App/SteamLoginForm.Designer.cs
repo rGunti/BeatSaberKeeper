@@ -37,6 +37,7 @@ namespace BeatKeeper.App
             this.CancelLoginButton = new System.Windows.Forms.Button();
             this.SteamGuardLabel = new System.Windows.Forms.Label();
             this.SteamGuardTextBox = new System.Windows.Forms.TextBox();
+            this.RememberLoginCheckbox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -116,6 +117,17 @@ namespace BeatKeeper.App
             this.SteamGuardTextBox.TabIndex = 7;
             this.SteamGuardTextBox.Visible = false;
             // 
+            // RememberLoginCheckbox
+            // 
+            this.RememberLoginCheckbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RememberLoginCheckbox.AutoSize = true;
+            this.RememberLoginCheckbox.Location = new System.Drawing.Point(12, 106);
+            this.RememberLoginCheckbox.Name = "RememberLoginCheckbox";
+            this.RememberLoginCheckbox.Size = new System.Drawing.Size(117, 19);
+            this.RememberLoginCheckbox.TabIndex = 8;
+            this.RememberLoginCheckbox.Text = "Remember Login";
+            this.RememberLoginCheckbox.UseVisualStyleBackColor = true;
+            // 
             // SteamLoginForm
             // 
             this.AcceptButton = this.OkButton;
@@ -123,6 +135,7 @@ namespace BeatKeeper.App
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CancelLoginButton;
             this.ClientSize = new System.Drawing.Size(408, 138);
+            this.Controls.Add(this.RememberLoginCheckbox);
             this.Controls.Add(this.SteamGuardTextBox);
             this.Controls.Add(this.SteamGuardLabel);
             this.Controls.Add(this.CancelLoginButton);
@@ -139,6 +152,7 @@ namespace BeatKeeper.App
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Login to Steam";
+            this.Load += new System.EventHandler(this.SteamLoginForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,5 +168,6 @@ namespace BeatKeeper.App
         private System.Windows.Forms.Button CancelLoginButton;
         private System.Windows.Forms.Label SteamGuardLabel;
         private System.Windows.Forms.TextBox SteamGuardTextBox;
+        private System.Windows.Forms.CheckBox RememberLoginCheckbox;
     }
 }

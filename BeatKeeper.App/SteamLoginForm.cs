@@ -18,6 +18,7 @@ namespace BeatKeeper.App
                 {
                     UsernameTextBox.Enabled = !_inSteamGuardMode;
                     PasswordTextBox.Enabled = !_inSteamGuardMode;
+                    RememberLoginCheckbox.Enabled = !_inSteamGuardMode;
 
                     SteamGuardLabel.Visible = _inSteamGuardMode;
                     SteamGuardTextBox.Visible = _inSteamGuardMode;
@@ -30,16 +31,27 @@ namespace BeatKeeper.App
             InitializeComponent();
         }
 
-        private async void OkButton_Click(object sender, EventArgs e)
+        private void OkButton_Click(object sender, EventArgs e)
         {
-            var username = UsernameTextBox.Text;
-            var password = PasswordTextBox.Text;
-            var steamGuardCode = SteamGuardTextBox.Text;
+            RunLogin(
+                UsernameTextBox.Text,
+                PasswordTextBox.Text,
+                SteamGuardTextBox.Text,
+                RememberLoginCheckbox.Checked);
+        }
+
+        private async void RunLogin(string username, string password, string steamGuardCode, bool rememberLogin,
+            bool tryLoadingFromSaved = false)
+        {
+            UsernameTextBox.Text = username;
+            RememberLoginCheckbox.Checked = rememberLogin;
 
             try
             {
-                var login = await SteamSession.Instance.Login(username, password,
-                null, InSteamGuardMode ? steamGuardCode : null);
+                var login = await SteamSession.Instance.Login(
+                    username, password,
+                    null, InSteamGuardMode ? steamGuardCode : null,
+                    rememberLogin, tryLoadingFromSaved);
 
                 if (login == SteamLoginResult.Requires2FA)
                 {
@@ -56,9 +68,10 @@ namespace BeatKeeper.App
                 else
                 {
                     InSteamGuardMode = false;
-                    MessageBox.Show($"Login result was: {login}");
+                    MessageBoxUtils.Warn($"Login result was: {login}");
                 }
-            } catch (TimeoutException ex)
+            }
+            catch (TimeoutException ex)
             {
                 MessageBoxUtils.Error($"Login process timed out!\n\n{ex.Message}");
             }
@@ -75,6 +88,19 @@ namespace BeatKeeper.App
             {
                 DialogResult = DialogResult.Cancel;
                 Close();
+            }
+        }
+
+        private void SteamLoginForm_Load(object sender, EventArgs e)
+        {
+            var session = SteamSession.Instance;
+            if (session.HasSavedLogin)
+            {
+                string username = session.GetSavedLoginName();
+                if (username != null)
+                {
+                    RunLogin(username, null, null, true, true);
+                }
             }
         }
     }

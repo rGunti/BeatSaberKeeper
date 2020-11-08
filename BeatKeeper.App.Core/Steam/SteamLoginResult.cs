@@ -6,6 +6,8 @@
         Success,
         Failed,
         RequiresSteamGuard,
-        Requires2FA
+        Requires2FA,
+        SavedLoginNotExistant,
+        SavedLoginInvalid
     }
 }
