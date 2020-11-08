@@ -1,4 +1,5 @@
-﻿using BeatKeeper.App.Core.Steam;
+﻿using BeatKeeper.App.Core;
+using BeatKeeper.App.Core.Steam;
 using BeatKeeper.App.Utils;
 using System;
 using System.Windows.Forms;
@@ -20,15 +21,32 @@ namespace BeatKeeper.App
             });
         }
 
+        private void Login()
+        {
+            _ = new SteamLoginForm().ShowDialog();
+            UpdateFormState();
+            if (SteamSession.Instance.IsLoggedIn)
+            {
+                this.RunInBackgroundThread(() =>
+                {
+                    UpdateLicenseInfo();
+                }, () => { });
+            }
+        }
+
+        private void Logout()
+        {
+            MessageBoxUtils.NotImplemented("Logging out");
+        }
+
         private void LoginButton_Click(object sender, EventArgs e)
         {
             if (SteamSession.Instance.IsLoggedIn)
             {
-                MessageBoxUtils.NotImplemented();
+                Logout();
             } else
             {
-                new SteamLoginForm().ShowDialog();
-                UpdateFormState();
+                Login();
             }
         }
 
@@ -54,6 +72,20 @@ namespace BeatKeeper.App
                 }
                 LoginButton.Text = session.IsLoggedIn ? "Logout" : "Login";
             });
+        }
+
+        private async void UpdateLicenseInfo()
+        {
+            var session = SteamSession.Instance;
+            if (await session.CheckAccountAccessForApp(BSKConstants.Steam.BEAT_SABER_APP_ID))
+            {
+                MessageBoxUtils.Info("License checked. Your account is in posession of a valid Beat Saber license.");
+            } else
+            {
+                MessageBoxUtils.Error("Your account does not have the required license to download Beat Saber.\n\n" +
+                    "Please login with a Steam account owning a valid license or purchase the game.");
+                Logout();
+            }
         }
     }
 }

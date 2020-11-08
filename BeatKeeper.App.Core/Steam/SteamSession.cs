@@ -1,5 +1,6 @@
 ﻿using SteamKit2;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -18,12 +19,16 @@ namespace BeatKeeper.App.Core.Steam
         private readonly SteamClient _steamClient;
         private readonly CallbackManager _callbackManager;
         private readonly SteamUser _steamUser;
+        private readonly SteamApps _steamApps;
 
         private readonly IDisposable _onClientConnectedSub;
         private readonly IDisposable _onClientDisconnectedSub;
         public event SteamSessionEventHandler<SteamClient.DisconnectedCallback> OnClientDisconnected;
 
         private readonly IDisposable _onUpdateMachineAuthSub;
+        private readonly IDisposable _onLicenseListReceived;
+
+        private IReadOnlyCollection<SteamApps.LicenseListCallback.License> _userLicenses;
 
         private object _sentryLock = new object();
         private byte[] _sentryFile = new byte[0];
@@ -33,6 +38,7 @@ namespace BeatKeeper.App.Core.Steam
             _steamClient = new SteamClient();
             _callbackManager = new CallbackManager(_steamClient);
             _steamUser = _steamClient.GetHandler<SteamUser>();
+            _steamApps = _steamClient.GetHandler<SteamApps>();
 
             _onClientConnectedSub = SubscribeToEvent<SteamClient.ConnectedCallback>(
                 null,
@@ -44,6 +50,8 @@ namespace BeatKeeper.App.Core.Steam
 
             _onUpdateMachineAuthSub = SubscribeToEvent<SteamUser.UpdateMachineAuthCallback>(
                 UpdateMachineAuth);
+            _onLicenseListReceived = SubscribeToEvent<SteamApps.LicenseListCallback>(
+                LicenseListReceived);
         }
 
         public bool IsConnected { get; private set; }
@@ -115,6 +123,44 @@ namespace BeatKeeper.App.Core.Steam
             });
         }
 
+        private Task<T> CallbackResult<T>(
+            AsyncJob<T> job,
+            TimeSpan timeout,
+            params Action<T>[] doBeforeReturn) where T : CallbackMsg
+        {
+            return Task.Run(() =>
+            {
+                bool didCallbackRun = false;
+                T returnValue = default;
+                var started = DateTime.UtcNow;
+
+                var sub = _callbackManager.Subscribe<T>(job, t =>
+                {
+                    returnValue = t;
+                    didCallbackRun = true;
+
+                    if (doBeforeReturn?.Any() ?? false)
+                    {
+                        foreach (var action in doBeforeReturn)
+                            action?.Invoke(t);
+                    }
+                });
+
+                while (!didCallbackRun && (DateTime.UtcNow - started) < timeout)
+                {
+                    _callbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
+                }
+                sub.Dispose();
+
+                if (!didCallbackRun)
+                {
+                    throw new TimeoutException($"Did not receive callback for {typeof(T)} within {timeout}");
+                }
+
+                return returnValue;
+            });
+        }
+
         private void UpdateMachineAuth(SteamSession session, SteamUser.UpdateMachineAuthCallback e)
         {
             Debug.WriteLine("*** STEAM REQUESTED UPDATE MACHINE AUTH ***");
@@ -165,6 +211,14 @@ namespace BeatKeeper.App.Core.Steam
             IsConnected = false;
             IsLoggedIn = false;
             LoggedInUser = null;
+        }
+
+        private void LicenseListReceived(SteamSession session, SteamApps.LicenseListCallback e)
+        {
+            if (e.Result == EResult.OK)
+            {
+                _userLicenses = e.LicenseList;
+            }
         }
 
         public async Task<SteamClient.ConnectedCallback> Connect()
@@ -250,6 +304,31 @@ namespace BeatKeeper.App.Core.Steam
             }
         }
 
+        public async Task<bool> CheckAccountAccessForApp(uint appId)
+        {
+            if (!IsConnected)
+            {
+                throw new Exception($"Not connected to Steam");
+            }
+
+            var tokens = await CallbackResult(
+                _steamApps.PICSGetAccessTokens(new[] { appId }, Array.Empty<uint>()),
+                TimeSpan.FromSeconds(10));
+            return !tokens.AppTokensDenied.Contains(appId);
+            /* if (tokens.AppTokensDenied.Contains(appId))
+            {
+                return false;
+            }
+
+            var appTokens = new Dictionary<uint, ulong>();
+            foreach (var token in tokens.AppTokens)
+            {
+                appTokens[token.Key] = token.Value;
+            }
+
+            var picsRequest = */
+        }
+
         public void Dispose()
         {
             if (IsConnected)
@@ -260,6 +339,7 @@ namespace BeatKeeper.App.Core.Steam
             _onClientConnectedSub?.Dispose();
             _onClientDisconnectedSub?.Dispose();
             _onUpdateMachineAuthSub?.Dispose();
+            _onLicenseListReceived?.Dispose();
         }
     }
 }

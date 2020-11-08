@@ -6,13 +6,24 @@ namespace BeatKeeper.App.Utils
     {
         private const string APP_NAME = "Beat Saber Keeper";
 
+        public static void Info(
+            string message,
+            string title = null)
+        {
+            MessageBox.Show(
+                message,
+                title ?? APP_NAME,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
         public static void Warn(
             string message,
             string title = null)
         {
             MessageBox.Show(
-                message, 
-                title ?? APP_NAME, 
+                message,
+                title ?? APP_NAME,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
         }
@@ -59,10 +70,10 @@ namespace BeatKeeper.App.Utils
             );
         }
 
-        public static void NotImplemented()
+        public static void NotImplemented(string featureName = null)
         {
             MessageBox.Show(
-                "This feature is not yet implemented!",
+                $"{featureName ?? "This feature"} is not yet implemented!",
                 APP_NAME,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
