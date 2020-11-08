@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-namespace BeatKeeper.App.Services
+namespace BeatKeeper.App.Core.Steam
 {
     public delegate void SteamSessionEventHandler<TEvent>(SteamSession session, TEvent e);
 

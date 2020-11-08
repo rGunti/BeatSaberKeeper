@@ -1,4 +1,4 @@
-﻿using BeatKeeper.App.Services;
+﻿using BeatKeeper.App.Core.Steam;
 using BeatKeeper.App.Utils;
 using System;
 using System.Windows.Forms;

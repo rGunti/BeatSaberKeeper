@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatKeeper.Controls", "Beat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatKeeper.App", "BeatKeeper.App\BeatKeeper.App.csproj", "{409F7B30-CF6C-4239-BDDC-F291FD0A6D85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatKeeper.App.Core", "BeatKeeper.App.Core\BeatKeeper.App.Core.csproj", "{8281BC2B-BDFF-435F-8CEF-F2441D4AD9C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{409F7B30-CF6C-4239-BDDC-F291FD0A6D85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{409F7B30-CF6C-4239-BDDC-F291FD0A6D85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{409F7B30-CF6C-4239-BDDC-F291FD0A6D85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8281BC2B-BDFF-435F-8CEF-F2441D4AD9C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8281BC2B-BDFF-435F-8CEF-F2441D4AD9C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8281BC2B-BDFF-435F-8CEF-F2441D4AD9C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8281BC2B-BDFF-435F-8CEF-F2441D4AD9C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

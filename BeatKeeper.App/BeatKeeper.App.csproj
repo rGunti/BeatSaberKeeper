@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SteamKit2" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BeatKeeper.Kernel\BeatKeeper.Kernel.csproj" />
+    <ProjectReference Include="..\BeatKeeper.App.Core\BeatKeeper.App.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -34,7 +34,7 @@ namespace BeatKeeper.App
             this.label2 = new System.Windows.Forms.Label();
             this.PasswordTextBox = new System.Windows.Forms.TextBox();
             this.OkButton = new System.Windows.Forms.Button();
-            this.CancelButton = new System.Windows.Forms.Button();
+            this.CancelLoginButton = new System.Windows.Forms.Button();
             this.SteamGuardLabel = new System.Windows.Forms.Label();
             this.SteamGuardTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
@@ -87,16 +87,16 @@ namespace BeatKeeper.App
             this.OkButton.UseVisualStyleBackColor = true;
             this.OkButton.Click += new System.EventHandler(this.OkButton_Click);
             // 
-            // CancelButton
+            // CancelLoginButton
             // 
-            this.CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CancelButton.Location = new System.Drawing.Point(240, 103);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelButton.TabIndex = 5;
-            this.CancelButton.Text = "Cancel";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.CancelLoginButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.CancelLoginButton.Location = new System.Drawing.Point(240, 103);
+            this.CancelLoginButton.Name = "CancelLoginButton";
+            this.CancelLoginButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelLoginButton.TabIndex = 5;
+            this.CancelLoginButton.Text = "Cancel";
+            this.CancelLoginButton.UseVisualStyleBackColor = true;
+            this.CancelLoginButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // SteamGuardLabel
             // 
@@ -121,10 +121,11 @@ namespace BeatKeeper.App
             this.AcceptButton = this.OkButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.CancelLoginButton;
             this.ClientSize = new System.Drawing.Size(408, 138);
             this.Controls.Add(this.SteamGuardTextBox);
             this.Controls.Add(this.SteamGuardLabel);
-            this.Controls.Add(this.CancelButton);
+            this.Controls.Add(this.CancelLoginButton);
             this.Controls.Add(this.OkButton);
             this.Controls.Add(this.PasswordTextBox);
             this.Controls.Add(this.label2);
@@ -150,7 +151,7 @@ namespace BeatKeeper.App
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox PasswordTextBox;
         private System.Windows.Forms.Button OkButton;
-        private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Button CancelLoginButton;
         private System.Windows.Forms.Label SteamGuardLabel;
         private System.Windows.Forms.TextBox SteamGuardTextBox;
     }
