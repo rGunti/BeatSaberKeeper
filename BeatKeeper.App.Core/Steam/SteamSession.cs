@@ -10,15 +10,6 @@ namespace BeatKeeper.App.Core.Steam
 {
     public delegate void SteamSessionEventHandler<TEvent>(SteamSession session, TEvent e);
 
-    public enum SteamLoginResult
-    {
-        Unknown,
-        Success,
-        Failed,
-        RequiresSteamGuard,
-        Requires2FA
-    }
-
     public class SteamSession : IDisposable
     {
         private static SteamSession instance = new SteamSession();
