@@ -45,6 +45,8 @@ namespace BeatKeeper.App
                 {
                     InSteamGuardMode = true;
                     SteamGuardTextBox.Focus();
+
+                    await SteamSession.Instance.Disconnect();
                 }
                 else if (login == SteamLoginResult.Success)
                 {
