@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace BeatKeeper.App.Utils
 {
@@ -40,13 +41,26 @@ namespace BeatKeeper.App.Utils
                 icon) == DialogResult.Yes;
         }
 
-        public static void Error(string errorMessage)
+        public static void Error(
+            string errorMessage,
+            string title = null)
         {
             MessageBox.Show(
                 errorMessage,
-                APP_NAME,
+                title ?? APP_NAME,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
+        }
+
+        public static void Ex(Exception ex, string processDescription)
+        {
+            var exText = $"An exception occurred while {processDescription}.";
+            exText += $"\n\n{ex.GetType().FullName}: {ex.Message}";
+#if DEBUG
+            exText += $"\n\n{ex.StackTrace}";
+#endif
+            Error(exText,
+                "Exception during runtime");
         }
 
         public static void AboutApp()

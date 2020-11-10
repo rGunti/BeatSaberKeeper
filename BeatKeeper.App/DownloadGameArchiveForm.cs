@@ -14,11 +14,19 @@ namespace BeatKeeper.App
             InitializeComponent();
         }
 
-        private void UpdateStatus(string status)
+        private void UpdateStatus(string status, int percentage = 0)
         {
             this.RunInUiThread(() =>
             {
                 StatusLabel.Text = status;
+                if (percentage >= 0)
+                {
+                    progressBar1.Value = percentage;
+                    progressBar1.Style = ProgressBarStyle.Continuous;
+                } else
+                {
+                    progressBar1.Style = ProgressBarStyle.Marquee;
+                }
             });
         }
 
@@ -55,6 +63,11 @@ namespace BeatKeeper.App
         {
             UpdateFormState();
             Login();
+
+            SteamManifestIdTextBox.Text = $"{BSKConstants.Steam.TEST_MANIFEST_ID}";
+            SteamAppIdTextBox.Text = $"{BSKConstants.Steam.BEAT_SABER_APP_ID}";
+            SteamDepotIdTextBox.Text = $"{BSKConstants.Steam.BEAT_SABER_DEPOT_ID}";
+            SteamBranchTextBox.Text = BSKConstants.Steam.DEFAULT_BRANCH;
         }
 
         private void UpdateFormState()
@@ -90,23 +103,55 @@ namespace BeatKeeper.App
             }
         }
 
-        private async void DownloadArchiveButton_Click(object sender, EventArgs e)
+        private void DownloadArchiveButton_Click(object sender, EventArgs e)
         {
+        }
+
+        private void EditAdvancedValuesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var newValue = !(sender as CheckBox).Checked;
+            SteamAppIdTextBox.ReadOnly = newValue;
+            SteamDepotIdTextBox.ReadOnly = newValue;
+            SteamBranchTextBox.ReadOnly = newValue;
+        }
+
+        private async void StartAdvancedDownloadButton_Click(object sender, EventArgs e)
+        {
+            string branch = SteamBranchTextBox.Text;
+
+            if (!uint.TryParse(SteamAppIdTextBox.Text, out uint appId)
+                || !uint.TryParse(SteamDepotIdTextBox.Text, out uint depotId)
+                || !ulong.TryParse(SteamManifestIdTextBox.Text, out ulong manifestId))
+            {
+                MessageBoxUtils.Error("One of the provided parameters is invalid! All IDs must be numerical.");
+                return;
+            }
+
             var session = SteamSession.Instance;
             if (session.IsConnected && session.IsLoggedIn)
             {
-                var downloadInfo = await session.GetDepotDownloadInfo(
-                    BSKConstants.Steam.BEAT_SABER_APP_ID,
-                    BSKConstants.Steam.BEAT_SABER_DEPOT_ID,
-                    BSKConstants.Steam.TEST_MANIFEST_ID,
-                    BSKConstants.Steam.DEFAULT_BRANCH);
+                UpdateStatus("Getting depot information ...", -1);
+
+                var downloadInfo = await session.GetDepotDownloadInfo(appId, depotId, manifestId, branch);
                 if (downloadInfo != null)
                 {
+                    UpdateStatus("Initiating download ...");
                     var cts = new CancellationTokenSource();
-                    session.ProcessDepotManifestAndFiles(BSKConstants.Steam.BEAT_SABER_APP_ID, downloadInfo, cts);
-                } else
+                    try
+                    {
+                        session.ProcessDepotManifestAndFiles(appId, downloadInfo, cts);
+                        UpdateStatus("Done!", 100);
+                    }
+                    catch (Exception ex)
+                    {
+                        UpdateStatus("Failed with exception!");
+                        MessageBoxUtils.Ex(ex, "initializing manifest download");
+                    }
+                }
+                else
                 {
-                    MessageBoxUtils.Error("I screwed up :(");
+                    UpdateStatus("Requested Depot or Manifest could not be found!");
+                    MessageBoxUtils.Error("Could not find requested depot or manifest info!");
                 }
             }
         }
