@@ -38,5 +38,10 @@ namespace BeatKeeper.App.Core.Utils
         {
             return $"{path}{extension}";
         }
+
+        public static string ConstructStagingFilePath(uint appId, uint depotId, ulong manifest)
+        {
+            return Path.Combine(BSKConstants.Paths.Staging, $"{appId}", $"{depotId}_{manifest}");
+        }
     }
 }

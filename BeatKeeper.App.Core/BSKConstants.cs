@@ -22,8 +22,12 @@ namespace BeatKeeper.App.Core
             public static readonly string BaseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             public const string DEFAULT_WORKING_DIRECTORY = ".bsk_tmp";
+            public const string DEFAULT_TEMP_DIRECTORY = "temp";
+            public const string DEFAULT_STAGING_DIRECTORY = "staging";
+
             public static readonly string DefaultWorkingPath = Path.Combine(BaseDirectory, DEFAULT_WORKING_DIRECTORY);
-            public static readonly string Temp = Path.Combine(DefaultWorkingPath, "temp");
+            public static readonly string Temp = Path.Combine(DefaultWorkingPath, DEFAULT_TEMP_DIRECTORY);
+            public static readonly string Staging = Path.Combine(DefaultWorkingPath, DEFAULT_STAGING_DIRECTORY);
         }
 
         public static class FileExtensions

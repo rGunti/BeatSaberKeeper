@@ -50,7 +50,7 @@ namespace BeatKeeper.App
             this.SteamManifestIdTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.StatusLabel = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.DownloadStatusProgressBarr = new System.Windows.Forms.ProgressBar();
             this.label7 = new System.Windows.Forms.Label();
             this.SteamBranchTextBox = new System.Windows.Forms.TextBox();
             this.DownloaderPanel.SuspendLayout();
@@ -87,7 +87,7 @@ namespace BeatKeeper.App
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DownloaderPanel.Controls.Add(this.tabControl1);
             this.DownloaderPanel.Controls.Add(this.StatusLabel);
-            this.DownloaderPanel.Controls.Add(this.progressBar1);
+            this.DownloaderPanel.Controls.Add(this.DownloadStatusProgressBarr);
             this.DownloaderPanel.Enabled = false;
             this.DownloaderPanel.Location = new System.Drawing.Point(0, 41);
             this.DownloaderPanel.Name = "DownloaderPanel";
@@ -277,12 +277,12 @@ namespace BeatKeeper.App
             // 
             // progressBar1
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.DownloadStatusProgressBarr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(12, 318);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(388, 23);
-            this.progressBar1.TabIndex = 3;
+            this.DownloadStatusProgressBarr.Location = new System.Drawing.Point(12, 318);
+            this.DownloadStatusProgressBarr.Name = "progressBar1";
+            this.DownloadStatusProgressBarr.Size = new System.Drawing.Size(388, 23);
+            this.DownloadStatusProgressBarr.TabIndex = 3;
             // 
             // label7
             // 
@@ -336,7 +336,7 @@ namespace BeatKeeper.App
         private System.Windows.Forms.ComboBox GameVersionDropdown;
         private System.Windows.Forms.Button DownloadArchiveButton;
         private System.Windows.Forms.Label StatusLabel;
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar DownloadStatusProgressBarr;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage SingleVersionTab;
         private System.Windows.Forms.TabPage AdvancedVersionTab;

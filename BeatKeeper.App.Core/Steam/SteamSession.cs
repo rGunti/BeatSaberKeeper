@@ -507,7 +507,7 @@ namespace BeatKeeper.App.Core.Steam
             }
         }
 
-        public async void ProcessDepotManifestAndFiles(uint appId, DepotDownloadInfo depot, CancellationTokenSource cts)
+        public async Task<DepotFileData> GetFileListForDepotAndManifest(uint appId, DepotDownloadInfo depot, CancellationTokenSource cts)
         {
             var pool = new CDNClientPool(this, appId);
             var counter = new DepotDownloadCounter();
@@ -556,10 +556,13 @@ namespace BeatKeeper.App.Core.Steam
                             connection, cdnToken, depot.DepotKey);
 
                         pool.ReturnConnection(connection);
+                    } catch (OperationCanceledException)
+                    {
+                        break;
                     } catch (SteamKitWebRequestException ex)
                     {
                         _logger.Error("Encountered HTTP error {ex} while downloading {depotId},{manifestId}", ex.StatusCode, depot.Id, depot.ManifestId);
-                        if (ex.StatusCode == HttpStatusCode.Unauthorized || ex.StatusCode == HttpStatusCode.Forbidden)
+                        if (ex.StatusCode == HttpStatusCode.Unauthorized || ex.StatusCode == HttpStatusCode.Forbidden || ex.StatusCode == HttpStatusCode.NotFound)
                         {
                             break;
                         }
@@ -590,13 +593,43 @@ namespace BeatKeeper.App.Core.Steam
             newProtoManifest.Files.Sort((x,y) => string.Compare(x.FileName, y.FileName, StringComparison.Ordinal));
             _logger.Debug("Manifest {depotId},{manifestId} received, created {creationTime}", depot.Id, depot.ManifestId, newProtoManifest.CreationTime);
 
-            if (true) // TODO: Config through parameter?
+#if DEBUG
+            var manifestDump = Path.Combine(tempFolder, $"manifest_{depot.Id}_{depot.ManifestId}.json");
+            ManifestSaver.WriteManifestToFile(newProtoManifest, manifestDump);
+#endif
+
+            var filesToDownload = newProtoManifest.Files;
+            var allFileNames = new HashSet<string>(filesToDownload.Count);
+            _logger.Debug("{count} files to download from {depotId},{manifestId}", allFileNames, depot.Id, depot.ManifestId);
+
+            var baseStagingPath = PathUtils.ConstructStagingFilePath(appId, depot.Id, depot.ManifestId).EnsureDirectory();
+
+            foreach (var file in filesToDownload)
             {
-                var manifestDump = Path.Combine(tempFolder, $"manifest_{depot.Id}_{depot.ManifestId}.json");
-                ManifestSaver.WriteManifestToFile(newProtoManifest, manifestDump);
+                allFileNames.Add(file.FileName);
+            
+                var stagingFilePath = Path.Combine(baseStagingPath, file.FileName);
+                if (file.Flags.HasFlag(EDepotFileFlag.Directory))
+                {
+                    // TODO: Let's do this in the downloader instead
+                    //stagingFilePath.EnsureDirectory();
+                } else
+                {
+                    // TODO: Let's do this in the downloader instead
+                    //Path.GetDirectoryName(stagingFilePath).EnsureDirectory();
+                    counter.CompleteDownloadSize += file.TotalSize;
+                }
             }
 
-            // TODO: Run Download
+            return new DepotFileData {
+                AllFileNames = allFileNames,
+                DepotDownloadInfo = depot,
+                DepotCounter = counter,
+                StagingDir = baseStagingPath,
+                Manifest = newProtoManifest,
+                PreviousManifest = oldProtoManifest,
+                FilteredFiles = null
+            };
         }
 
         public async Task<DepotDownloadInfo> GetDepotDownloadInfo(uint appId, uint depotId, ulong manifestId, string branch)

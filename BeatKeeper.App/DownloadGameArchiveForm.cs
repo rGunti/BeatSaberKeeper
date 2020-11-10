@@ -14,18 +14,20 @@ namespace BeatKeeper.App
             InitializeComponent();
         }
 
-        private void UpdateStatus(string status, int percentage = 0)
+        private void UpdateStatus(string status, int value = 0, int maxValue = 100)
         {
             this.RunInUiThread(() =>
             {
                 StatusLabel.Text = status;
-                if (percentage >= 0)
+                if (value >= 0)
                 {
-                    progressBar1.Value = percentage;
-                    progressBar1.Style = ProgressBarStyle.Continuous;
-                } else
+                    DownloadStatusProgressBarr.Value = value;
+                    DownloadStatusProgressBarr.Maximum = maxValue;
+                    DownloadStatusProgressBarr.Style = ProgressBarStyle.Continuous;
+                }
+                else
                 {
-                    progressBar1.Style = ProgressBarStyle.Marquee;
+                    DownloadStatusProgressBarr.Style = ProgressBarStyle.Marquee;
                 }
             });
         }
@@ -53,7 +55,8 @@ namespace BeatKeeper.App
             if (SteamSession.Instance.IsLoggedIn)
             {
                 Logout();
-            } else
+            }
+            else
             {
                 Login();
             }
@@ -62,7 +65,10 @@ namespace BeatKeeper.App
         private void DownloadGameArchiveForm_Load(object sender, EventArgs e)
         {
             UpdateFormState();
-            Login();
+            if (!SteamSession.Instance.IsLoggedIn)
+            {
+                Login();
+            }
 
             SteamManifestIdTextBox.Text = $"{BSKConstants.Steam.TEST_MANIFEST_ID}";
             SteamAppIdTextBox.Text = $"{BSKConstants.Steam.BEAT_SABER_APP_ID}";
@@ -95,7 +101,8 @@ namespace BeatKeeper.App
             if (await session.CheckAccountAccessForApp(BSKConstants.Steam.BEAT_SABER_APP_ID))
             {
                 MessageBoxUtils.Info("License checked. Your account is in posession of a valid Beat Saber license.");
-            } else
+            }
+            else
             {
                 MessageBoxUtils.Error("Your account does not have the required license to download Beat Saber.\n\n" +
                     "Please login with a Steam account owning a valid license or purchase the game.");
@@ -139,8 +146,13 @@ namespace BeatKeeper.App
                     var cts = new CancellationTokenSource();
                     try
                     {
-                        session.ProcessDepotManifestAndFiles(appId, downloadInfo, cts);
-                        UpdateStatus("Done!", 100);
+                        var fileList = await session.GetFileListForDepotAndManifest(appId, downloadInfo, cts);
+                        UpdateStatus($"Download initialized, got {fileList.AllFileNames.Count} file(s) and {fileList.DepotCounter.CompleteDownloadSize / 1024 / 1024:0.00} MiB to download!", 100);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        UpdateStatus("Cancelled");
+                        MessageBoxUtils.Error("Could not get information for download. The requested resource probably doesn't exist or you don't have access to it.");
                     }
                     catch (Exception ex)
                     {
