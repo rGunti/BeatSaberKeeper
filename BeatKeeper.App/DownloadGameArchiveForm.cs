@@ -2,6 +2,7 @@
 using BeatKeeper.App.Core.Steam;
 using BeatKeeper.App.Utils;
 using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace BeatKeeper.App
@@ -86,6 +87,27 @@ namespace BeatKeeper.App
                 MessageBoxUtils.Error("Your account does not have the required license to download Beat Saber.\n\n" +
                     "Please login with a Steam account owning a valid license or purchase the game.");
                 Logout();
+            }
+        }
+
+        private async void DownloadArchiveButton_Click(object sender, EventArgs e)
+        {
+            var session = SteamSession.Instance;
+            if (session.IsConnected && session.IsLoggedIn)
+            {
+                var downloadInfo = await session.GetDepotDownloadInfo(
+                    BSKConstants.Steam.BEAT_SABER_APP_ID,
+                    BSKConstants.Steam.BEAT_SABER_DEPOT_ID,
+                    BSKConstants.Steam.TEST_MANIFEST_ID,
+                    BSKConstants.Steam.DEFAULT_BRANCH);
+                if (downloadInfo != null)
+                {
+                    var cts = new CancellationTokenSource();
+                    session.ProcessDepotManifestAndFiles(BSKConstants.Steam.BEAT_SABER_APP_ID, downloadInfo, cts);
+                } else
+                {
+                    MessageBoxUtils.Error("I screwed up :(");
+                }
             }
         }
     }

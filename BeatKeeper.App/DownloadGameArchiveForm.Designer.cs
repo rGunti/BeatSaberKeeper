@@ -103,6 +103,7 @@ namespace BeatKeeper.App
             this.DownloadArchiveButton.TabIndex = 2;
             this.DownloadArchiveButton.Text = "Download Archive";
             this.DownloadArchiveButton.UseVisualStyleBackColor = true;
+            this.DownloadArchiveButton.Click += new System.EventHandler(this.DownloadArchiveButton_Click);
             // 
             // GameVersionDropdown
             // 
