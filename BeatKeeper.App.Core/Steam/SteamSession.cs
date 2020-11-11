@@ -772,6 +772,7 @@ namespace BeatKeeper.App.Core.Steam
             };
 
             CDNClient.DepotChunk chunkData = null;
+            // TODO: This pool needs to be reusable
             var pool = new CDNClientPool(this, appId);
 
             _logger.Debug("{fileName}: Downloading file chunk {chunkId} ...", file.FileName, chunkId);
