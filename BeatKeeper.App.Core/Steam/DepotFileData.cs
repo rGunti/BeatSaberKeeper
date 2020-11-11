@@ -11,5 +11,6 @@ namespace BeatKeeper.App.Core.Steam
         public ProtoManifest PreviousManifest { get; set; }
         public List<ProtoManifest.FileData> FilteredFiles { get; set; }
         public HashSet<string> AllFileNames { get; set; }
+        public List<ProtoManifest.FileData> AllFiles { get; internal set; }
     }
 }

@@ -147,7 +147,10 @@ namespace BeatKeeper.App
                     try
                     {
                         var fileList = await session.GetFileListForDepotAndManifest(appId, downloadInfo, cts);
-                        UpdateStatus($"Download initialized, got {fileList.AllFileNames.Count} file(s) and {fileList.DepotCounter.CompleteDownloadSize / 1024 / 1024:0.00} MiB to download!", 100);
+                        UpdateStatus($"Downloading; got {fileList.AllFileNames.Count} file(s) and {fileList.DepotCounter.CompleteDownloadSize / 1024 / 1024:0.00} MiB to download!", -1);
+
+                        await session.DownloadDepot(appId, fileList, cts);
+                        UpdateStatus($"Download completed!", 100);
                     }
                     catch (OperationCanceledException)
                     {

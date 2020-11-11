@@ -3,6 +3,7 @@ using BeatKeeper.App.Core.Utils;
 using Serilog;
 using SteamKit2;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -41,6 +42,8 @@ namespace BeatKeeper.App.Core.Steam
         private Dictionary<uint, ulong> _appTokens = new Dictionary<uint, ulong>();
         private Dictionary<uint, SteamApps.PICSProductInfoCallback.PICSProductInfo> _appInfo
             = new Dictionary<uint, SteamApps.PICSProductInfoCallback.PICSProductInfo>();
+        private ConcurrentDictionary<string, SteamApps.CDNAuthTokenCallback> _cdnAuthTokens
+            = new ConcurrentDictionary<string, SteamApps.CDNAuthTokenCallback>();
 
         private object _sentryLock = new object();
         private byte[] _sentryFile = Array.Empty<byte>();
@@ -168,7 +171,7 @@ namespace BeatKeeper.App.Core.Steam
 
                 while (!didCallbackRun && (DateTime.UtcNow - started) < timeout)
                 {
-                    _callbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
+                    _callbackManager.RunWaitCallbacks();
                 }
                 sub.Dispose();
 
@@ -187,7 +190,8 @@ namespace BeatKeeper.App.Core.Steam
             TimeSpan timeout,
             bool returnOnTimeout = false) where T : CallbackMsg
         {
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 bool didFinish = false;
                 var returnValue = new List<T>();
                 var started = DateTime.UtcNow;
@@ -297,7 +301,8 @@ namespace BeatKeeper.App.Core.Steam
                 try
                 {
                     return new Tuple<string, string>(fileContent[0], fileContent[1]);
-                } catch (Exception)
+                }
+                catch (Exception)
                 {
                     File.Delete("login.sav");
                 }
@@ -361,7 +366,7 @@ namespace BeatKeeper.App.Core.Steam
             byte[] sentryHash = null;
             if (_sentryFile.Length > 0)
             {
-                lock(_sentryLock)
+                lock (_sentryLock)
                 {
                     sentryHash = CryptoHelper.SHAHash(_sentryFile);
                 }
@@ -445,9 +450,18 @@ namespace BeatKeeper.App.Core.Steam
         public async Task<SteamApps.CDNAuthTokenCallback> RequestCDNAuthToken(uint appId, uint depotId, string host)
         {
             _logger.Debug("Requesting CDN auth token for app {appId}, depot {depotId}, host {host}", appId, depotId, host);
+            var key = $"{depotId:D}:{host}";
+
+            if (_cdnAuthTokens.ContainsKey(key))
+                return _cdnAuthTokens.GetValueOrDefault(key);
+
             var authResult = await CallbackResult(
                 _steamApps.GetCDNAuthToken(appId, depotId, host),
                 TimeSpan.FromSeconds(10));
+            if (authResult.Result == EResult.OK)
+            {
+                _cdnAuthTokens.AddOrUpdate(key, _ => authResult, (_, _) => authResult);
+            }
             return (authResult.Result == EResult.OK) ? authResult : null;
         }
 
@@ -524,14 +538,15 @@ namespace BeatKeeper.App.Core.Steam
             {
                 _logger.Debug("Reading checksum for {manifestFile}", manifestFileName);
                 expectedChecksum = File.ReadAllBytes(manifestShaFileName);
-            } catch (IOException)
+            }
+            catch (IOException)
             {
                 _logger.Debug("Could not read checksum for {manifestFile}", manifestFileName);
                 expectedChecksum = null;
             }
 
             newProtoManifest = ProtoManifest.LoadFromFile(manifestFileName, out var currentChecksum);
-            if (newProtoManifest != null && (expectedChecksum == null ||!expectedChecksum.SequenceEqual(currentChecksum)))
+            if (newProtoManifest != null && (expectedChecksum == null || !expectedChecksum.SequenceEqual(currentChecksum)))
             {
                 _logger.Error("Manifest {depotId},{manifestId} on disk did not match expected checksum", depot.Id, depot.ManifestId);
                 newProtoManifest = null;
@@ -541,7 +556,8 @@ namespace BeatKeeper.App.Core.Steam
             {
                 _logger.Information("Already have manifest {depotId},{manifestId}",
                     depot.Id, depot.ManifestId);
-            } else
+            }
+            else
             {
                 _logger.Debug("Downloading depot manifest {depotId},{manifestId} ...", depot.Id, depot.ManifestId);
                 DepotManifest depotManifest = null;
@@ -556,17 +572,20 @@ namespace BeatKeeper.App.Core.Steam
                             connection, cdnToken, depot.DepotKey);
 
                         pool.ReturnConnection(connection);
-                    } catch (OperationCanceledException)
+                    }
+                    catch (OperationCanceledException)
                     {
                         break;
-                    } catch (SteamKitWebRequestException ex)
+                    }
+                    catch (SteamKitWebRequestException ex)
                     {
                         _logger.Error("Encountered HTTP error {ex} while downloading {depotId},{manifestId}", ex.StatusCode, depot.Id, depot.ManifestId);
                         if (ex.StatusCode == HttpStatusCode.Unauthorized || ex.StatusCode == HttpStatusCode.Forbidden || ex.StatusCode == HttpStatusCode.NotFound)
                         {
                             break;
                         }
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         _logger.Fatal(ex,
                             "Encountered error while downloading manifest {depotId},{manifestId}",
@@ -590,7 +609,7 @@ namespace BeatKeeper.App.Core.Steam
                 _logger.Debug("Downloaded manifest {depotId},{manifestId}", depot.Id, depot.ManifestId);
             }
 
-            newProtoManifest.Files.Sort((x,y) => string.Compare(x.FileName, y.FileName, StringComparison.Ordinal));
+            newProtoManifest.Files.Sort((x, y) => string.Compare(x.FileName, y.FileName, StringComparison.Ordinal));
             _logger.Debug("Manifest {depotId},{manifestId} received, created {creationTime}", depot.Id, depot.ManifestId, newProtoManifest.CreationTime);
 
 #if DEBUG
@@ -600,20 +619,21 @@ namespace BeatKeeper.App.Core.Steam
 
             var filesToDownload = newProtoManifest.Files;
             var allFileNames = new HashSet<string>(filesToDownload.Count);
-            _logger.Debug("{count} files to download from {depotId},{manifestId}", allFileNames, depot.Id, depot.ManifestId);
+            _logger.Debug("{count} files to download from {depotId},{manifestId}", allFileNames.Count, depot.Id, depot.ManifestId);
 
             var baseStagingPath = PathUtils.ConstructStagingFilePath(appId, depot.Id, depot.ManifestId).EnsureDirectory();
 
             foreach (var file in filesToDownload)
             {
                 allFileNames.Add(file.FileName);
-            
+
                 var stagingFilePath = Path.Combine(baseStagingPath, file.FileName);
                 if (file.Flags.HasFlag(EDepotFileFlag.Directory))
                 {
                     // TODO: Let's do this in the downloader instead
                     //stagingFilePath.EnsureDirectory();
-                } else
+                }
+                else
                 {
                     // TODO: Let's do this in the downloader instead
                     //Path.GetDirectoryName(stagingFilePath).EnsureDirectory();
@@ -621,15 +641,224 @@ namespace BeatKeeper.App.Core.Steam
                 }
             }
 
-            return new DepotFileData {
+            return new DepotFileData
+            {
+                AllFiles = filesToDownload,
                 AllFileNames = allFileNames,
                 DepotDownloadInfo = depot,
                 DepotCounter = counter,
                 StagingDir = baseStagingPath,
                 Manifest = newProtoManifest,
-                PreviousManifest = oldProtoManifest,
-                FilteredFiles = null
+                PreviousManifest = oldProtoManifest
             };
+        }
+
+        public async Task DownloadDepot(uint appId, DepotFileData depotFileData, CancellationTokenSource cts)
+        {
+            var depot = depotFileData.DepotDownloadInfo;
+            var counter = depotFileData.DepotCounter;
+
+            var files = depotFileData.AllFiles
+                .Where(f => !f.Flags.HasFlag(EDepotFileFlag.Directory))
+                .ToArray();
+            var networkChunkQueue = new ConcurrentQueue<Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData>>();
+
+            await files.Select(f => new Func<Task>(async () =>
+                await Task.Run(() => DownloadFileInfoAsync(depotFileData, f, networkChunkQueue, cts))))
+                .RunParallel();
+
+            await networkChunkQueue.Select(x => new Func<Task>(async () =>
+                await Task.Run(() => DownloadFileChunkAsync(appId, counter, depotFileData, x, cts))))
+                .RunParallel();
+        }
+
+        private void DownloadFileInfoAsync(
+            DepotFileData depotFileData,
+            ProtoManifest.FileData file,
+            ConcurrentQueue<Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData>> networkChunkQueue,
+            CancellationTokenSource cts)
+        {
+            cts.Token.ThrowIfCancellationRequested();
+
+            var depot = depotFileData.DepotDownloadInfo;
+            var stagingDir = depotFileData.StagingDir;
+            var counter = depotFileData.DepotCounter;
+
+            _logger.Verbose("Downloading file info for {fileName} ...", file.FileName);
+
+            string stagingFilePath = Path.Combine(stagingDir, file.FileName).EnsureDirectoryForFile();
+            if (File.Exists(stagingFilePath))
+            {
+                File.Delete(stagingFilePath);
+            }
+
+            FileStream fs = null;
+            List<ProtoManifest.ChunkData> neededChunks;
+            FileInfo fi = new FileInfo(stagingFilePath);
+            if (!fi.Exists)
+            {
+                _logger.Verbose("{fileName}: Reserving space for file ...", file.FileName);
+                fs = File.Create(stagingFilePath);
+                fs.SetLength((long)file.TotalSize);
+                neededChunks = new List<ProtoManifest.ChunkData>(file.Chunks);
+            }
+            else
+            {
+                _logger.Verbose("{fileName}: Validating existing file ...", file.FileName);
+                fs = File.Open(stagingFilePath, FileMode.Open);
+                if ((ulong)fi.Length != file.TotalSize)
+                {
+                    fs.SetLength((long)file.TotalSize);
+                }
+                neededChunks = SteamUtils.ValidateSteamFileChecksums(fs, file.Chunks.OrderBy(x => x.Offset).ToArray());
+            }
+
+            if (neededChunks.None())
+            {
+                _logger.Debug("{fileName}: No more chunks needed, disposing ...", file.FileName);
+                lock (counter)
+                {
+                    counter.SizeDownloaded += file.TotalSize;
+                }
+                if (fs != null)
+                    fs.Dispose();
+                return;
+            }
+            else
+            {
+                var sizeOnDisk = file.TotalSize - (ulong)neededChunks.Select(x => (long)x.UncompressedLength).Sum();
+                lock (counter)
+                {
+                    counter.SizeDownloaded += sizeOnDisk;
+                }
+            }
+
+            var fsData = new FileStreamData
+            {
+                Stream = fs,
+                Lock = new SemaphoreSlim(1),
+                chunksToDownload = neededChunks.Count
+            };
+            _logger.Debug("{fileName}: Queueing {chunkCount} required chunks ...", file.FileName, neededChunks.Count);
+            foreach (var chunk in neededChunks)
+            {
+                networkChunkQueue.Enqueue(Tuple.Create(fsData, file, chunk));
+            }
+        }
+
+        private async void DownloadFileChunkAsync(
+            uint appId,
+            DepotDownloadCounter globalCounter,
+            DepotFileData depotFileData,
+            Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData> chunkInfo,
+            CancellationTokenSource cts)
+        {
+            cts.Token.ThrowIfCancellationRequested();
+
+            var depot = depotFileData.DepotDownloadInfo;
+            var counter = depotFileData.DepotCounter;
+
+            var fsData = chunkInfo.Item1;
+            var file = chunkInfo.Item2;
+            var chunk = chunkInfo.Item3;
+            
+            string chunkId = Convert.ToHexString(chunk.ChunkID);
+            var data = new DepotManifest.ChunkData {
+                ChunkID = chunk.ChunkID,
+                Checksum = chunk.Checksum,
+                Offset = chunk.Offset,
+                CompressedLength = chunk.CompressedLength,
+                UncompressedLength = chunk.UncompressedLength
+            };
+
+            CDNClient.DepotChunk chunkData = null;
+            var pool = new CDNClientPool(this, appId);
+
+            _logger.Debug("{fileName}: Downloading file chunk {chunkId} ...", file.FileName, chunkId);
+
+            do
+            {
+                cts.Token.ThrowIfCancellationRequested();
+                CDNClient.Server connection;
+
+                try
+                {
+                    connection = pool.GetConnection(cts.Token);
+                    var token = await pool.AuthenticateConnection(appId, depot.Id, connection);
+
+                    chunkData = await pool.CDNClient.DownloadDepotChunkAsync(depot.Id, data,
+                        connection, token, depot.DepotKey).ConfigureAwait(false);
+
+                    pool.ReturnConnection(connection);
+                } catch (TaskCanceledException)
+                {
+                    _logger.Warning("{fileName}: Connection timed out while downloading chunk {chunk}", file.FileName, chunkId);
+                } catch (SteamKitWebRequestException e)
+                {
+                    if (e.StatusCode == HttpStatusCode.Unauthorized || e.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        _logger.Warning("{fileName}: Encountered 401 for chunk {chunk}, aborting!", file.FileName, chunkId);
+                        break;
+                    }
+                    else
+                    {
+                        _logger.Warning("{fileName}: Failed to download chunk {chunk}, got {statusCode}", file.FileName, chunkId, e.StatusCode);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                } catch (Exception e)
+                {
+                    _logger.Error(e, "{fileName}: Unexpected exception while downloading chunk {chunk}", file.FileName, chunkId);
+                }
+            } while (chunkData == null);
+
+            if (chunkData == null)
+            {
+                _logger.Warning("Failed to find any server with chunk {chunkId} for depot {depotId}, aborting ...",
+                    chunkId, depot.Id);
+                cts.Cancel();
+            }
+            cts.Token.ThrowIfCancellationRequested();
+
+            try
+            {
+                await fsData.Lock.WaitAsync().ConfigureAwait(false);
+
+                var stream = fsData.Stream;
+                stream.Seek((long)chunkData.ChunkInfo.Offset, SeekOrigin.Begin);
+                await stream.WriteAsync(chunkData.Data.AsMemory(0, chunkData.Data.Length));
+            }
+            finally
+            {
+                fsData.Lock.Release();
+            }
+
+            int remainingChunks = Interlocked.Decrement(ref fsData.chunksToDownload);
+            if (remainingChunks == 0)
+            {
+                _logger.Debug("{fileName}: No more chunks needed, disposing File Stream and lock ...", file.FileName);
+                fsData.Stream.Dispose();
+                fsData.Lock.Dispose();
+            }
+
+            ulong sizeDownloaded = 0;
+            lock (counter)
+            {
+                sizeDownloaded = counter.SizeDownloaded + (ulong)chunkData.Data.Length;
+                counter.SizeDownloaded = sizeDownloaded;
+                counter.DepotBytesCompressed += chunk.CompressedLength;
+                counter.DepotBytesUncompressed += chunk.UncompressedLength;
+
+                _logger.Verbose("{fileName}: Downloaded {size} bytes", file.FileName, sizeDownloaded);
+            }
+
+            // TODO global counter
+            if (remainingChunks == 0)
+            {
+                // TODO report progress
+            }
         }
 
         public async Task<DepotDownloadInfo> GetDepotDownloadInfo(uint appId, uint depotId, ulong manifestId, string branch)

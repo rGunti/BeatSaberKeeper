@@ -34,6 +34,26 @@ namespace BeatKeeper.App.Core.Utils
             return path;
         }
 
+        public static string EnsureDirectoryForFile(
+            this string path,
+            bool throwOnConflict = true)
+        {
+            if (!File.Exists(path))
+            {
+                if (Directory.Exists(path))
+                {
+                    if (throwOnConflict)
+                    {
+                        throw new PathCreationException(path, "Directory with file name already exists.");
+                    }
+                } else
+                {
+                    Path.GetDirectoryName(path).EnsureDirectory(throwOnConflict);
+                }
+            }
+            return path;
+        }
+
         public static string AppendExtension(this string path, string extension)
         {
             return $"{path}{extension}";
