@@ -170,8 +170,6 @@ namespace BeatKeeper.App
 
         private System.Windows.Forms.Label LoggingInStatusLabel;
 
-        private System.Windows.Forms.Label label3;
-
         #endregion
 
         private System.Windows.Forms.Label label1;

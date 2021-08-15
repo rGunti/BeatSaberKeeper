@@ -34,7 +34,10 @@ namespace BeatKeeper.App
 
         private void Login()
         {
-            _ = new SteamLoginForm().ShowDialog();
+            _ = new SteamLoginForm
+            {
+                StartPosition = FormStartPosition.CenterScreen
+            }.ShowDialog();
             UpdateFormState();
             if (SteamSession.Instance.IsLoggedIn)
             {

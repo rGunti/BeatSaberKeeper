@@ -19,7 +19,10 @@ namespace BeatKeeper.App
 
         private void DownloadVanillaArchiveMenuItem_Click(object sender, EventArgs e)
         {
-            new DownloadGameArchiveForm().ShowDialog();
+            new DownloadGameArchiveForm
+            {
+                StartPosition = FormStartPosition.CenterParent
+            }.ShowDialog();
         }
     }
 }

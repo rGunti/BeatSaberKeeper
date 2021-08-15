@@ -21,7 +21,10 @@ namespace BeatKeeper.App
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new DownloadGameArchiveForm
+            {
+                StartPosition = FormStartPosition.CenterScreen
+            });
 
             SteamSession.Instance?.Dispose();
         }

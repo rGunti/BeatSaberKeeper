@@ -314,7 +314,6 @@ namespace BeatKeeper.App
             this.Name = "DownloadGameArchiveForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Beat Saber Vanilla Archive Downloader";
             this.Load += new System.EventHandler(this.DownloadGameArchiveForm_Load);
             this.DownloaderPanel.ResumeLayout(false);
