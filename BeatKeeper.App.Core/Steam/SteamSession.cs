@@ -653,7 +653,7 @@ namespace BeatKeeper.App.Core.Steam
             };
         }
 
-        public async Task DownloadDepot(uint appId, DepotFileData depotFileData, CancellationTokenSource cts)
+        public async Task DownloadDepot(uint appId, DepotFileData depotFileData, Action<string> actionReport, CancellationTokenSource cts)
         {
             var depot = depotFileData.DepotDownloadInfo;
             var counter = depotFileData.DepotCounter;
@@ -664,11 +664,11 @@ namespace BeatKeeper.App.Core.Steam
             var networkChunkQueue = new ConcurrentQueue<Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData>>();
 
             await files.Select(f => new Func<Task>(async () =>
-                await Task.Run(() => DownloadFileInfoAsync(depotFileData, f, networkChunkQueue, cts))))
+                await Task.Run(() => DownloadFileInfoAsync(depotFileData, f, networkChunkQueue, actionReport, cts))))
                 .RunParallel();
 
             await networkChunkQueue.Select(x => new Func<Task>(async () =>
-                await Task.Run(() => DownloadFileChunkAsync(appId, counter, depotFileData, x, cts))))
+                await Task.Run(() => DownloadFileChunkAsync(appId, counter, depotFileData, x, actionReport, cts))))
                 .RunParallel();
         }
 
@@ -676,6 +676,7 @@ namespace BeatKeeper.App.Core.Steam
             DepotFileData depotFileData,
             ProtoManifest.FileData file,
             ConcurrentQueue<Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData>> networkChunkQueue,
+            Action<string> actionReport,
             CancellationTokenSource cts)
         {
             cts.Token.ThrowIfCancellationRequested();
@@ -684,6 +685,7 @@ namespace BeatKeeper.App.Core.Steam
             var stagingDir = depotFileData.StagingDir;
             var counter = depotFileData.DepotCounter;
 
+            actionReport?.Invoke($"{file.FileName}: Preparing download ...");
             _logger.Verbose("Downloading file info for {fileName} ...", file.FileName);
 
             string stagingFilePath = Path.Combine(stagingDir, file.FileName).EnsureDirectoryForFile();
@@ -697,6 +699,7 @@ namespace BeatKeeper.App.Core.Steam
             FileInfo fi = new FileInfo(stagingFilePath);
             if (!fi.Exists)
             {
+                actionReport?.Invoke($"{file.FileName}: Reserving disk space ...");
                 _logger.Verbose("{fileName}: Reserving space for file ...", file.FileName);
                 fs = File.Create(stagingFilePath);
                 fs.SetLength((long)file.TotalSize);
@@ -704,6 +707,7 @@ namespace BeatKeeper.App.Core.Steam
             }
             else
             {
+                actionReport?.Invoke($"{file.FileName}: Validating existing file ...");
                 _logger.Verbose("{fileName}: Validating existing file ...", file.FileName);
                 fs = File.Open(stagingFilePath, FileMode.Open);
                 if ((ulong)fi.Length != file.TotalSize)
@@ -739,6 +743,7 @@ namespace BeatKeeper.App.Core.Steam
                 Lock = new SemaphoreSlim(1),
                 chunksToDownload = neededChunks.Count
             };
+            actionReport?.Invoke($"{file.FileName}: Queueing {neededChunks.Count} to download ...");
             _logger.Debug("{fileName}: Queueing {chunkCount} required chunks ...", file.FileName, neededChunks.Count);
             foreach (var chunk in neededChunks)
             {
@@ -751,6 +756,7 @@ namespace BeatKeeper.App.Core.Steam
             DepotDownloadCounter globalCounter,
             DepotFileData depotFileData,
             Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData> chunkInfo,
+            Action<string> actionReport,
             CancellationTokenSource cts)
         {
             cts.Token.ThrowIfCancellationRequested();
@@ -787,6 +793,7 @@ namespace BeatKeeper.App.Core.Steam
                     connection = pool.GetConnection(cts.Token);
                     var token = await pool.AuthenticateConnection(appId, depot.Id, connection);
 
+                    actionReport?.Invoke($"{file.FileName}: Downloading file chunks ({chunkId}) ...");
                     chunkData = await pool.CDNClient.DownloadDepotChunkAsync(depot.Id, data,
                         connection, token, depot.DepotKey).ConfigureAwait(false);
 
@@ -825,6 +832,7 @@ namespace BeatKeeper.App.Core.Steam
 
             try
             {
+                actionReport?.Invoke($"{file.FileName}: Writing file to disk ...");
                 await fsData.Lock.WaitAsync().ConfigureAwait(false);
 
                 var stream = fsData.Stream;
