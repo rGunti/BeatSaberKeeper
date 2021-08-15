@@ -1033,7 +1033,10 @@ namespace BeatKeeper.App.Core.Steam
             _logger.Debug("Disposing Steam Session ...");
             if (IsConnected)
             {
-                Disconnect().GetAwaiter().GetResult();
+                try
+                {
+                    Disconnect().GetAwaiter().GetResult();
+                } catch { /* ignore */ }
             }
 
             _onClientConnectedSub?.Dispose();
