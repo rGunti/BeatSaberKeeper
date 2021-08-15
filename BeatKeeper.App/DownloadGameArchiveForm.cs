@@ -108,7 +108,7 @@ namespace BeatKeeper.App
             var session = SteamSession.Instance;
             if (await session.CheckAccountAccessForApp(BSKConstants.Steam.BEAT_SABER_APP_ID))
             {
-                MessageBoxUtils.Info("License checked. Your account is in posession of a valid Beat Saber license.");
+                UpdateStatus("License checked. Your account is in possession of a valid Beat Saber license.");
             }
             else
             {
