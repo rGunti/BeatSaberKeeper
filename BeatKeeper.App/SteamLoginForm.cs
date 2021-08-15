@@ -14,16 +14,34 @@ namespace BeatKeeper.App
             set
             {
                 _inSteamGuardMode = value;
-                this.RunInUiThread(() =>
-                {
-                    UsernameTextBox.Enabled = !_inSteamGuardMode;
-                    PasswordTextBox.Enabled = !_inSteamGuardMode;
-                    RememberLoginCheckbox.Enabled = !_inSteamGuardMode;
-
-                    SteamGuardLabel.Visible = _inSteamGuardMode;
-                    SteamGuardTextBox.Visible = _inSteamGuardMode;
-                });
+                this.RunInUiThread(UpdateUI);
             }
+        }
+
+        private bool _isLoggingIn;
+        public bool IsLoggingIn
+        {
+            get => _isLoggingIn;
+            set
+            {
+                _isLoggingIn = value;
+                this.RunInUiThread(UpdateUI);
+            }
+        }
+
+        private void UpdateUI()
+        {
+            UsernameTextBox.Enabled = !_inSteamGuardMode && !_isLoggingIn;
+            PasswordTextBox.Enabled = !_inSteamGuardMode && !_isLoggingIn;
+            RememberLoginCheckbox.Enabled = !_inSteamGuardMode && !_isLoggingIn;
+
+            SteamGuardLabel.Visible = _inSteamGuardMode;
+            SteamGuardTextBox.Visible = _inSteamGuardMode;
+
+            CancelLoginButton.Enabled = !_isLoggingIn;
+            OkButton.Enabled = !_isLoggingIn;
+
+            LoggingInStatusLabel.Visible = _isLoggingIn && !_inSteamGuardMode;
         }
 
         public SteamLoginForm()
@@ -45,6 +63,8 @@ namespace BeatKeeper.App
         {
             UsernameTextBox.Text = username;
             RememberLoginCheckbox.Checked = rememberLogin;
+
+            IsLoggingIn = true;
 
             try
             {
@@ -74,6 +94,10 @@ namespace BeatKeeper.App
             catch (TimeoutException ex)
             {
                 MessageBoxUtils.Error($"Login process timed out!\n\n{ex.Message}");
+            }
+            finally
+            {
+                IsLoggingIn = false;
             }
         }
 
