@@ -89,7 +89,7 @@ namespace BeatKeeper.App
             this.DownloaderPanel.Enabled = false;
             this.DownloaderPanel.Location = new System.Drawing.Point(0, 36);
             this.DownloaderPanel.Name = "DownloaderPanel";
-            this.DownloaderPanel.Size = new System.Drawing.Size(441, 309);
+            this.DownloaderPanel.Size = new System.Drawing.Size(441, 227);
             this.DownloaderPanel.TabIndex = 2;
             // 
             // tabControl1
@@ -100,7 +100,7 @@ namespace BeatKeeper.App
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(441, 257);
+            this.tabControl1.Size = new System.Drawing.Size(441, 175);
             this.tabControl1.TabIndex = 5;
             // 
             // SingleVersionTab
@@ -111,7 +111,7 @@ namespace BeatKeeper.App
             this.SingleVersionTab.Location = new System.Drawing.Point(4, 22);
             this.SingleVersionTab.Name = "SingleVersionTab";
             this.SingleVersionTab.Padding = new System.Windows.Forms.Padding(3);
-            this.SingleVersionTab.Size = new System.Drawing.Size(433, 231);
+            this.SingleVersionTab.Size = new System.Drawing.Size(433, 149);
             this.SingleVersionTab.TabIndex = 0;
             this.SingleVersionTab.Text = "Single Version";
             this.SingleVersionTab.UseVisualStyleBackColor = true;
@@ -163,14 +163,14 @@ namespace BeatKeeper.App
             this.AdvancedVersionTab.Location = new System.Drawing.Point(4, 22);
             this.AdvancedVersionTab.Name = "AdvancedVersionTab";
             this.AdvancedVersionTab.Padding = new System.Windows.Forms.Padding(3);
-            this.AdvancedVersionTab.Size = new System.Drawing.Size(433, 231);
+            this.AdvancedVersionTab.Size = new System.Drawing.Size(433, 149);
             this.AdvancedVersionTab.TabIndex = 1;
             this.AdvancedVersionTab.Text = "Advanced Download";
             this.AdvancedVersionTab.UseVisualStyleBackColor = true;
             // 
             // SteamBranchTextBox
             // 
-            this.SteamBranchTextBox.Location = new System.Drawing.Point(99, 135);
+            this.SteamBranchTextBox.Location = new System.Drawing.Point(192, 121);
             this.SteamBranchTextBox.Name = "SteamBranchTextBox";
             this.SteamBranchTextBox.ReadOnly = true;
             this.SteamBranchTextBox.Size = new System.Drawing.Size(86, 20);
@@ -179,7 +179,7 @@ namespace BeatKeeper.App
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 138);
+            this.label7.Location = new System.Drawing.Point(192, 105);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(77, 13);
             this.label7.TabIndex = 10;
@@ -188,7 +188,7 @@ namespace BeatKeeper.App
             // EditAdvancedValuesCheckBox
             // 
             this.EditAdvancedValuesCheckBox.AutoSize = true;
-            this.EditAdvancedValuesCheckBox.Location = new System.Drawing.Point(3, 62);
+            this.EditAdvancedValuesCheckBox.Location = new System.Drawing.Point(8, 79);
             this.EditAdvancedValuesCheckBox.Name = "EditAdvancedValuesCheckBox";
             this.EditAdvancedValuesCheckBox.Size = new System.Drawing.Size(174, 17);
             this.EditAdvancedValuesCheckBox.TabIndex = 9;
@@ -198,8 +198,8 @@ namespace BeatKeeper.App
             // 
             // StartAdvancedDownloadButton
             // 
-            this.StartAdvancedDownloadButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.StartAdvancedDownloadButton.Location = new System.Drawing.Point(325, 211);
+            this.StartAdvancedDownloadButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.StartAdvancedDownloadButton.Location = new System.Drawing.Point(323, 123);
             this.StartAdvancedDownloadButton.Name = "StartAdvancedDownloadButton";
             this.StartAdvancedDownloadButton.Size = new System.Drawing.Size(102, 20);
             this.StartAdvancedDownloadButton.TabIndex = 8;
@@ -210,7 +210,7 @@ namespace BeatKeeper.App
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 47);
+            this.label6.Location = new System.Drawing.Point(8, 58);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(312, 13);
             this.label6.TabIndex = 7;
@@ -219,7 +219,7 @@ namespace BeatKeeper.App
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 113);
+            this.label5.Location = new System.Drawing.Point(100, 105);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(86, 13);
             this.label5.TabIndex = 6;
@@ -228,7 +228,7 @@ namespace BeatKeeper.App
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 88);
+            this.label4.Location = new System.Drawing.Point(8, 105);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(76, 13);
             this.label4.TabIndex = 5;
@@ -236,7 +236,7 @@ namespace BeatKeeper.App
             // 
             // SteamDepotIdTextBox
             // 
-            this.SteamDepotIdTextBox.Location = new System.Drawing.Point(99, 110);
+            this.SteamDepotIdTextBox.Location = new System.Drawing.Point(100, 121);
             this.SteamDepotIdTextBox.Name = "SteamDepotIdTextBox";
             this.SteamDepotIdTextBox.ReadOnly = true;
             this.SteamDepotIdTextBox.Size = new System.Drawing.Size(86, 20);
@@ -244,7 +244,7 @@ namespace BeatKeeper.App
             // 
             // SteamAppIdTextBox
             // 
-            this.SteamAppIdTextBox.Location = new System.Drawing.Point(99, 85);
+            this.SteamAppIdTextBox.Location = new System.Drawing.Point(8, 121);
             this.SteamAppIdTextBox.Name = "SteamAppIdTextBox";
             this.SteamAppIdTextBox.ReadOnly = true;
             this.SteamAppIdTextBox.Size = new System.Drawing.Size(86, 20);
@@ -253,7 +253,7 @@ namespace BeatKeeper.App
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 18);
+            this.label3.Location = new System.Drawing.Point(8, 38);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 13);
             this.label3.TabIndex = 2;
@@ -261,17 +261,17 @@ namespace BeatKeeper.App
             // 
             // SteamManifestIdTextBox
             // 
-            this.SteamManifestIdTextBox.Location = new System.Drawing.Point(99, 16);
+            this.SteamManifestIdTextBox.Location = new System.Drawing.Point(111, 35);
             this.SteamManifestIdTextBox.Name = "SteamManifestIdTextBox";
             this.SteamManifestIdTextBox.Size = new System.Drawing.Size(129, 20);
             this.SteamManifestIdTextBox.TabIndex = 1;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 0);
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.Location = new System.Drawing.Point(8, 8);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(166, 13);
+            this.label2.Size = new System.Drawing.Size(417, 24);
             this.label2.TabIndex = 0;
             this.label2.Text = "Use this function at your own risk!";
             // 
@@ -279,7 +279,7 @@ namespace BeatKeeper.App
             // 
             this.StatusLabel.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.StatusLabel.AutoSize = true;
-            this.StatusLabel.Location = new System.Drawing.Point(10, 260);
+            this.StatusLabel.Location = new System.Drawing.Point(12, 178);
             this.StatusLabel.Name = "StatusLabel";
             this.StatusLabel.Size = new System.Drawing.Size(38, 13);
             this.StatusLabel.TabIndex = 4;
@@ -288,16 +288,16 @@ namespace BeatKeeper.App
             // DownloadStatusProgressBarr
             // 
             this.DownloadStatusProgressBarr.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.DownloadStatusProgressBarr.Location = new System.Drawing.Point(10, 276);
+            this.DownloadStatusProgressBarr.Location = new System.Drawing.Point(12, 194);
             this.DownloadStatusProgressBarr.Name = "DownloadStatusProgressBarr";
-            this.DownloadStatusProgressBarr.Size = new System.Drawing.Size(421, 20);
+            this.DownloadStatusProgressBarr.Size = new System.Drawing.Size(417, 20);
             this.DownloadStatusProgressBarr.TabIndex = 3;
             // 
             // DownloadGameArchiveForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(441, 344);
+            this.ClientSize = new System.Drawing.Size(441, 262);
             this.Controls.Add(this.DownloaderPanel);
             this.Controls.Add(this.LoginStatusLabel);
             this.Controls.Add(this.LoginButton);

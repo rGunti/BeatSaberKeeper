@@ -2,9 +2,11 @@
 using BeatKeeper.App.Core.Steam;
 using BeatKeeper.App.Utils;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using BeatKeeper.App.Core.Utils;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Services;
 using BeatKeeper.Kernel.Services.DepotDownloader;
@@ -207,7 +209,21 @@ namespace BeatKeeper.App
                     {
                         UpdateStatus(message, (int)((percentage ?? -1f) * 100), force: false);
                     }, _cancellationTokenSource);
-                    UpdateStatus("Download completed!", 100);
+
+                    UpdateStatus("Download completed, backing archive ...", -1);
+
+                    string path = PathUtils.ConstructStagingFilePath(
+                        appId, depotId, manifestId);
+                    BSKConstants.Paths.VanillaArchives.EnsureDirectory();
+                    BeatKeeperPackageProcessor.PackVanillaArtifactV1(
+                        path,
+                        BSKConstants.Paths.VanillaArchives,
+                        currentVersion.GameVersion,
+                        (status, val, maxVal) =>
+                        {
+                            UpdateStatus(status, val, maxVal, false);
+                        });
+                    UpdateStatus("Archive created!", 100);
                 }
                 catch (OperationCanceledException)
                 {
