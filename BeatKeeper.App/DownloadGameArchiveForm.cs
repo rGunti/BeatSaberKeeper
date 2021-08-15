@@ -9,13 +9,23 @@ namespace BeatKeeper.App
 {
     public partial class DownloadGameArchiveForm : Form
     {
+        private DateTime _lastUpdated = DateTime.MinValue;
+        
         public DownloadGameArchiveForm()
         {
             InitializeComponent();
         }
 
-        private void UpdateStatus(string status, int value = 0, int maxValue = 100)
+        private void UpdateStatus(string status, int value = 0, int maxValue = 100, bool force = true)
         {
+            if (!force)
+            {
+                TimeSpan dif = DateTime.UtcNow - _lastUpdated;
+                if (dif < TimeSpan.FromMilliseconds(1000))
+                {
+                    return;
+                }
+            }
             this.RunInUiThread(() =>
             {
                 StatusLabel.Text = status;
@@ -29,6 +39,8 @@ namespace BeatKeeper.App
                 {
                     DownloadStatusProgressBarr.Style = ProgressBarStyle.Marquee;
                 }
+
+                _lastUpdated = DateTime.UtcNow;
             });
         }
 
@@ -157,9 +169,9 @@ namespace BeatKeeper.App
                         var fileList = await session.GetFileListForDepotAndManifest(appId, downloadInfo, cts);
                         UpdateStatus($"Downloading; got {fileList.AllFileNames.Count} file(s) and {fileList.DepotCounter.CompleteDownloadSize / 1024 / 1024:0.00} MiB to download!", -1);
 
-                        await session.DownloadDepot(appId, fileList, l =>
+                        await session.DownloadDepot(appId, fileList, (message, percentage) =>
                         {
-                            UpdateStatus(l, -1);
+                            UpdateStatus(message, (int)((percentage ?? -1f) * 100), force: false);
                         }, cts);
                         UpdateStatus($"Download completed!", 100);
                     }
