@@ -695,12 +695,17 @@ namespace BeatKeeper.App.Core.Steam
 
             int i = 0;
             var total = networkChunkQueue.Count;
-            await networkChunkQueue.Select(x => new Func<Task>(async () =>
-            {
-                i++;
-                actionReport?.Invoke($"Downloading chunk {i}/{total} {x.Item2.FileName} ...", i / (float)total);
-                await DownloadFileChunkAsync(appId, counter, depotFileData, x, cts);
-            })).RunParallel();
+            await networkChunkQueue
+                .Select(x => new Func<Task>(async () =>
+                {
+                    await Task.Run(async () =>
+                    {
+                        i++;
+                        actionReport?.Invoke($"Downloading chunk {i} / {total} ...", i / (float) total);
+                        await DownloadFileChunkAsync(appId, counter, depotFileData, x, cts);
+                    });
+                }))
+                .RunParallel();
         }
 
         private void DownloadFileInfoAsync(

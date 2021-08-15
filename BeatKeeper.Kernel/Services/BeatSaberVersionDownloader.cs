@@ -45,13 +45,15 @@ namespace BeatKeeper.Kernel.Services
             ReadVersionFile();
         }
 
-        public static void DownloadRecentVersionFile(
+        public static string DownloadRecentVersionFile(
             string url = VERSIONS_URL)
         {
+            const string VERSION_TXT = "versions.txt.online";
             using (var client = new WebClient())
             {
                 Log.Debug("Downloading ");
-                client.DownloadFile(url, "versions.txt.online");
+                client.DownloadFile(url, VERSION_TXT);
+                return VERSION_TXT;
             }
         }
 

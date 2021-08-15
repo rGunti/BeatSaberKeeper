@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyName>BeatSaberKeeper</AssemblyName>
+    <AssemblyName>BeatSaberKeeper_Reborn</AssemblyName>
     <IsPackable>false</IsPackable>
     <Company />
     <Product>BeatSaberKeeper Reborn</Product>
@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BeatKeeper.App.Core\BeatKeeper.App.Core.csproj" />
+    <ProjectReference Include="..\BeatKeeper.Kernel\BeatKeeper.Kernel.csproj" />
   </ItemGroup>
 
 </Project>

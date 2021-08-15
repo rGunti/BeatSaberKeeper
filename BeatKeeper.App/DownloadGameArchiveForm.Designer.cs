@@ -119,9 +119,9 @@ namespace BeatKeeper.App
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Location = new System.Drawing.Point(8, 8);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(429, 82);
+            this.label1.Size = new System.Drawing.Size(417, 82);
             this.label1.TabIndex = 0;
             this.label1.Text = resources.GetString("label1.Text");
             // 
@@ -130,15 +130,15 @@ namespace BeatKeeper.App
             this.GameVersionDropdown.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.GameVersionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.GameVersionDropdown.FormattingEnabled = true;
-            this.GameVersionDropdown.Location = new System.Drawing.Point(3, 93);
+            this.GameVersionDropdown.Location = new System.Drawing.Point(8, 93);
             this.GameVersionDropdown.Name = "GameVersionDropdown";
-            this.GameVersionDropdown.Size = new System.Drawing.Size(430, 21);
+            this.GameVersionDropdown.Size = new System.Drawing.Size(417, 21);
             this.GameVersionDropdown.TabIndex = 1;
             // 
             // DownloadArchiveButton
             // 
             this.DownloadArchiveButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.DownloadArchiveButton.Location = new System.Drawing.Point(324, 118);
+            this.DownloadArchiveButton.Location = new System.Drawing.Point(317, 120);
             this.DownloadArchiveButton.Name = "DownloadArchiveButton";
             this.DownloadArchiveButton.Size = new System.Drawing.Size(108, 20);
             this.DownloadArchiveButton.TabIndex = 2;

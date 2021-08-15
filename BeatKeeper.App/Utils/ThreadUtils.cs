@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BeatKeeper.App.Utils
 {
     public static class ThreadUtils
     {
+        public static readonly Action NoAction = () => { };
+        
         public static void WaitUntil(
             Func<bool> eval,
             Action callback,
@@ -31,12 +34,24 @@ namespace BeatKeeper.App.Utils
         public static void RunInBackgroundThread(
             this Control ctrl,
             Action action,
-            Action callback)
+            Action callback = null)
         {
             ThreadPool.QueueUserWorkItem(delegate
             {
                 action();
-                RunInUiThread(ctrl, callback);
+                RunInUiThread(ctrl, callback ?? NoAction);
+            }, null);
+        }
+
+        public static void RunInBackgroundThread(
+            this Control ctrl,
+            Func<Task> action,
+            Action callback = null)
+        {
+            ThreadPool.QueueUserWorkItem(async delegate
+            {
+                await action();
+                RunInUiThread(ctrl, callback ?? NoAction);
             }, null);
         }
 
