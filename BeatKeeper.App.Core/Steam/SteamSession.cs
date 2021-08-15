@@ -309,6 +309,11 @@ namespace BeatKeeper.App.Core.Steam
             }
             return null;
         }
+
+        internal void DeleteLoginKey()
+        {
+            File.Delete("login.sav");
+        }
         public string GetSavedLoginName() => LoadLoginKey()?.Item1;
         public bool HasSavedLogin => File.Exists("login.sav");
 
@@ -418,6 +423,27 @@ namespace BeatKeeper.App.Core.Steam
                 LastLogonInfo = logon;
                 return SteamLoginResult.Success;
             }
+        }
+
+        public async Task Logout()
+        {
+            if (!IsLoggedIn)
+            {
+                _logger.Debug("Requested logout but wasn't logged in, ignoring");
+                return;
+            }
+
+            if (HasSavedLogin)
+            {
+                _logger.Information("Found login key, deleting it ...");
+                DeleteLoginKey();
+            }
+
+            _logger.Debug("Informing Steam that user wants to log off ...");
+            _steamUser.LogOff();
+            
+            _logger.Debug("Disconnecting from Steam network ...");
+            _steamClient.Disconnect();
         }
 
         public async Task<SteamApps.PICSTokensCallback> GetAppTokens(uint appId)

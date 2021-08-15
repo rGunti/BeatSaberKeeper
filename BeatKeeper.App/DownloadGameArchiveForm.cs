@@ -47,7 +47,8 @@ namespace BeatKeeper.App
 
         private void Logout()
         {
-            MessageBoxUtils.NotImplemented("Logging out");
+            SteamSession.Instance.Logout();
+            Close();
         }
 
         private void LoginButton_Click(object sender, EventArgs e)

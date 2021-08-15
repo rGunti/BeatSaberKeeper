@@ -136,6 +136,7 @@ namespace BeatKeeper.App
             this.LoggingInStatusLabel.TabIndex = 9;
             this.LoggingInStatusLabel.Text = "Logging in...";
             this.LoggingInStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.LoggingInStatusLabel.Visible = false;
             // 
             // SteamLoginForm
             // 
