@@ -45,9 +45,13 @@ namespace BeatKeeper.App
             }
         }
 
-        private void Logout()
+        private async void Logout()
         {
-            SteamSession.Instance.Logout();
+            this.RunInUiThread(() =>
+            {
+                LoginButton.Enabled = false;
+            });
+            await SteamSession.Instance.Logout();
             Close();
         }
 

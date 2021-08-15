@@ -443,7 +443,7 @@ namespace BeatKeeper.App.Core.Steam
             _steamUser.LogOff();
             
             _logger.Debug("Disconnecting from Steam network ...");
-            _steamClient.Disconnect();
+            await Disconnect();
         }
 
         public async Task<SteamApps.PICSTokensCallback> GetAppTokens(uint appId)
