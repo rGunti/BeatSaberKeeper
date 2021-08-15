@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Services.DepotDownloader;
+using Serilog;
 
 namespace BeatKeeper.Kernel.Services
 {
     public class BeatSaberVersionDownloader
     {
+        private const string VERSIONS_URL =
+            "https://raw.githubusercontent.com/rGunti/BeatSaberKeeper/master/BeatKeeper/versions.txt";
+        
         private IReadOnlyDictionary<string, Artifact> _versionIds;
         private readonly string _username;
         private readonly string _versionFilePath;
@@ -38,6 +43,16 @@ namespace BeatKeeper.Kernel.Services
             _depotDownloaderService = depotDownloaderService;
             _versionFilePath = versionFilePath;
             ReadVersionFile();
+        }
+
+        public static void DownloadRecentVersionFile(
+            string url = VERSIONS_URL)
+        {
+            using (var client = new WebClient())
+            {
+                Log.Debug("Downloading ");
+                client.DownloadFile(url, "versions.txt.online");
+            }
         }
 
         private void ReadVersionFile()
