@@ -35,6 +35,24 @@ namespace BeatKeeper.App
             UpdateGrids();
         }
 
+        private void SetStatus(string statusString, int percentage = -1)
+        {
+            this.RunInUiThread(() =>
+            {
+                StatusLabel.Text = statusString;
+                if (percentage < 0)
+                {
+                    StatusProgressBar.Style = ProgressBarStyle.Marquee;
+                    StatusProgressBar.Value = 0;
+                }
+                else
+                {
+                    StatusProgressBar.Style = ProgressBarStyle.Continuous;
+                    StatusProgressBar.Value = Math.Min(percentage, StatusProgressBar.Maximum);
+                }
+            });
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             UpdateGrids();
@@ -42,10 +60,15 @@ namespace BeatKeeper.App
 
         private void UpdateGrids()
         {
+            SetStatus("Listing archives ....");
             this.RunInBackgroundThread(() =>
             {
                 _artifacts = _artifactRepository.GetAll().ToList();
-            }, RenderGrids);
+            }, () =>
+            {
+                RenderGrids();
+                SetStatus($"Done, found {_artifacts.Count} archives", 0);
+            });
         }
 
         private void RenderGrids()
@@ -89,6 +112,11 @@ namespace BeatKeeper.App
 
             VanillaArchivesListView.EndUpdate();
             BackupArchivesListView.EndUpdate();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

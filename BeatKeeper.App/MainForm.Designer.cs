@@ -33,9 +33,12 @@ namespace BeatKeeper.App
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.FileMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ArchiveMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.DownloadVanillaArchiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewSourceCodeOnGitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutBeatSaberKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.BackupTabPage = new System.Windows.Forms.TabPage();
             this.BackupArchivesListView = new System.Windows.Forms.ListView();
@@ -43,18 +46,19 @@ namespace BeatKeeper.App
             this.BackupGameVersionColumn = new System.Windows.Forms.ColumnHeader();
             this.BackupAgeColumn = new System.Windows.Forms.ColumnHeader();
             this.BackupSizeColumn = new System.Windows.Forms.ColumnHeader();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.VanillaTabPage = new System.Windows.Forms.TabPage();
             this.VanillaArchivesListView = new System.Windows.Forms.ListView();
             this.VanillaGameVersionColumn = new System.Windows.Forms.ColumnHeader();
             this.VanillaSizeColumn = new System.Windows.Forms.ColumnHeader();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.StatusProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.BackupTabPage.SuspendLayout();
             this.VanillaTabPage.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
+            this.StatusBar.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -69,9 +73,18 @@ namespace BeatKeeper.App
             // 
             // FileMenu
             // 
+            this.FileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.exitToolStripMenuItem});
             this.FileMenu.Name = "FileMenu";
             this.FileMenu.Size = new System.Drawing.Size(37, 20);
             this.FileMenu.Text = "&File";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // ArchiveMenu
             // 
@@ -89,9 +102,22 @@ namespace BeatKeeper.App
             // 
             // HelpMenu
             // 
+            this.HelpMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.viewSourceCodeOnGitHubToolStripMenuItem, this.aboutBeatSaberKeeperToolStripMenuItem});
             this.HelpMenu.Name = "HelpMenu";
             this.HelpMenu.Size = new System.Drawing.Size(24, 20);
             this.HelpMenu.Text = "&?";
+            // 
+            // viewSourceCodeOnGitHubToolStripMenuItem
+            // 
+            this.viewSourceCodeOnGitHubToolStripMenuItem.Name = "viewSourceCodeOnGitHubToolStripMenuItem";
+            this.viewSourceCodeOnGitHubToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.viewSourceCodeOnGitHubToolStripMenuItem.Text = "View Source Code on GitHub";
+            // 
+            // aboutBeatSaberKeeperToolStripMenuItem
+            // 
+            this.aboutBeatSaberKeeperToolStripMenuItem.Name = "aboutBeatSaberKeeperToolStripMenuItem";
+            this.aboutBeatSaberKeeperToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.aboutBeatSaberKeeperToolStripMenuItem.Text = "About Beat Saber Keeper ...";
             // 
             // tabControl1
             // 
@@ -154,6 +180,13 @@ namespace BeatKeeper.App
             this.BackupSizeColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.BackupSizeColumn.Width = 90;
             // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer) (resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "Saber");
+            this.imageList1.Images.SetKeyName(1, "SaberPack");
+            // 
             // VanillaTabPage
             // 
             this.VanillaTabPage.Controls.Add(this.VanillaArchivesListView);
@@ -192,28 +225,28 @@ namespace BeatKeeper.App
             this.VanillaSizeColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.VanillaSizeColumn.Width = 100;
             // 
-            // statusStrip1
+            // StatusBar
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.StatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 344);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 12, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(531, 22);
-            this.statusStrip1.TabIndex = 2;
-            this.statusStrip1.Text = "statusStrip1";
+            this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.StatusLabel, this.StatusProgressBar});
+            this.StatusBar.Location = new System.Drawing.Point(0, 344);
+            this.StatusBar.Name = "StatusBar";
+            this.StatusBar.Padding = new System.Windows.Forms.Padding(1, 0, 12, 0);
+            this.StatusBar.Size = new System.Drawing.Size(531, 22);
+            this.StatusBar.TabIndex = 2;
+            this.StatusBar.Text = "StatusBar";
             // 
             // StatusLabel
             // 
             this.StatusLabel.Name = "StatusLabel";
-            this.StatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.StatusLabel.Size = new System.Drawing.Size(416, 17);
+            this.StatusLabel.Spring = true;
             this.StatusLabel.Text = "Ready";
+            this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // imageList1
+            // toolStripProgressBar1
             // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer) (resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "Saber");
-            this.imageList1.Images.SetKeyName(1, "SaberPack");
+            this.StatusProgressBar.Name = "StatusProgressBar";
+            this.StatusProgressBar.Size = new System.Drawing.Size(100, 16);
             // 
             // MainForm
             // 
@@ -221,7 +254,7 @@ namespace BeatKeeper.App
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(531, 366);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
@@ -232,11 +265,19 @@ namespace BeatKeeper.App
             this.tabControl1.ResumeLayout(false);
             this.BackupTabPage.ResumeLayout(false);
             this.VanillaTabPage.ResumeLayout(false);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.StatusBar.ResumeLayout(false);
+            this.StatusBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.StatusStrip StatusBar;
+
+        private System.Windows.Forms.ToolStripProgressBar StatusProgressBar;
+
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutBeatSaberKeeperToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewSourceCodeOnGitHubToolStripMenuItem;
 
         private System.Windows.Forms.ImageList imageList1;
 
@@ -246,7 +287,6 @@ namespace BeatKeeper.App
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage BackupTabPage;
         private System.Windows.Forms.TabPage VanillaTabPage;
-        private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
         private System.Windows.Forms.ListView BackupArchivesListView;
         private System.Windows.Forms.ColumnHeader BackupNameColumn;
