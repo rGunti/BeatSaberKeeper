@@ -21,7 +21,7 @@ namespace BeatKeeper.App
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DownloadGameArchiveForm
+            Application.Run(new MainForm
             {
                 StartPosition = FormStartPosition.CenterScreen
             });
