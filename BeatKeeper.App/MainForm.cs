@@ -223,5 +223,16 @@ namespace BeatKeeper.App
                 }, UpdateGrids);
             }
         }
+
+        private void showInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem) sender;
+            if (menuItem.Tag is not Artifact selectedArchive)
+            {
+                return;
+            }
+            
+            WindowsUtils.ShowFileInExplorer(selectedArchive.FullPath);
+        }
     }
 }
