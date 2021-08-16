@@ -31,8 +31,8 @@ namespace BeatKeeper.App.Core
             public static readonly string Staging = Path.Combine(DefaultWorkingPath, DEFAULT_STAGING_DIRECTORY);
 
             public static readonly string Archives = Path.Combine(DefaultWorkingPath, DEFAULT_ARCHIVES_DIRECTORY);
-            public static readonly string VanillaArchives = Path.Combine(Archives, "vanilla");
-            public static readonly string BackupArchives = Path.Combine(Archives, "backup");
+            //public static readonly string VanillaArchives = Path.Combine(Archives, "vanilla");
+            //public static readonly string BackupArchives = Path.Combine(Archives, "backup");
         }
 
         public static class FileExtensions

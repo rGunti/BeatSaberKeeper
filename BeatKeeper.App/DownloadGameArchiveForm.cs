@@ -214,10 +214,10 @@ namespace BeatKeeper.App
 
                     string path = PathUtils.ConstructStagingFilePath(
                         appId, depotId, manifestId);
-                    BSKConstants.Paths.VanillaArchives.EnsureDirectory();
+                    BSKConstants.Paths.Archives.EnsureDirectory();
                     BeatKeeperPackageProcessor.PackVanillaArtifactV1(
                         path,
-                        BSKConstants.Paths.VanillaArchives,
+                        BSKConstants.Paths.Archives,
                         currentVersion.GameVersion,
                         (status, val, maxVal) =>
                         {
