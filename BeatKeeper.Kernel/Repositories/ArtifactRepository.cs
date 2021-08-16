@@ -33,9 +33,17 @@ namespace BeatKeeper.Kernel.Repositories
                         LastUpdated = fi.LastWriteTime,
                         Size = fi.Length,
                         GameVersion = artifact?.GameVersion,
-                        Type = artifact?.Type ?? ArtifactType.Unknown
+                        Type = artifact?.Type ?? ArtifactType.Unknown,
+                        ArchiveVersion = artifact?.ArchiveVersion ?? BeatKeeperArchiveMetaData.UNKNOWN
                     };
                 });
+        }
+
+        public void Clone(Artifact entity, string newName)
+        {
+            string newFileName = Path.Combine(Path.GetDirectoryName(entity.FullPath) ??
+                                              throw new InvalidOperationException(), $"{newName}.bskeep");
+            File.Copy(entity.FullPath, newFileName);
         }
 
         public Artifact Get(string id)

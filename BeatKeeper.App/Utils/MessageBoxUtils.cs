@@ -18,6 +18,16 @@ namespace BeatKeeper.App.Utils
                 MessageBoxIcon.Information);
         }
 
+        public static void Show(
+            string message,
+            string title = null)
+        {
+            MessageBox.Show(
+                message,
+                title ?? APP_NAME,
+                MessageBoxButtons.OK);
+        }
+
         public static void Warn(
             string message,
             string title = null)

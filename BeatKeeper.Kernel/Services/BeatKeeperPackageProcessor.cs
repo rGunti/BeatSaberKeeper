@@ -213,6 +213,7 @@ namespace BeatKeeper.Kernel.Services
 
     public class BeatKeeperArchiveMetaData
     {
+        public const string UNKNOWN = "unknown";
         public const string V1 = "v1";
 
         public string ArchiveVersion { get; set; } = V1;

@@ -67,9 +67,13 @@ namespace BeatKeeper.App
             }, () =>
             {
                 RenderGrids();
+                UpdateTabCaptions();
                 SetStatus($"Done, found {_artifacts.Count} archives", 0);
             });
         }
+
+        private static readonly Func<Artifact, bool> IsVanillaArchive = a => a.Type == ArtifactType.Vanilla;
+        private static readonly Func<Artifact, bool> IsBackupArchive = a => a.Type == ArtifactType.ModBackup;
 
         private void RenderGrids()
         {
@@ -80,7 +84,7 @@ namespace BeatKeeper.App
             BackupArchivesListView.BeginUpdate();
 
             VanillaArchivesListView.Items.AddRange(_artifacts
-                .Where(a => a.Type == ArtifactType.Vanilla)
+                .Where(IsVanillaArchive)
                 .Select(a =>
                 {
                     var item = new ListViewItem
@@ -94,7 +98,7 @@ namespace BeatKeeper.App
                 })
                 .ToArray());
             BackupArchivesListView.Items.AddRange(_artifacts
-                .Where(a => a.Type == ArtifactType.ModBackup)
+                .Where(IsBackupArchive)
                 .Select(a =>
                 {
                     var item = new ListViewItem
@@ -114,9 +118,110 @@ namespace BeatKeeper.App
             BackupArchivesListView.EndUpdate();
         }
 
+        private void UpdateTabCaptions()
+        {
+            BackupTabPage.Text = $"Backups ({_artifacts.Where(IsBackupArchive).Count()})";
+            VanillaTabPage.Text = $"Vanilla Archives ({_artifacts.Where(IsVanillaArchive).Count()})";
+        }
+
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void UpdateContextMenuControlState(
+            Artifact selectedArtifact)
+        {
+            // First, run over the whole menu and enable / disable everything based on if something is selected
+            // and add the artifact as a tag.
+            foreach (ToolStripItem item in ArchiveContextMenuStrip.Items)
+            {
+                item.Enabled = selectedArtifact != null;
+                item.Tag = selectedArtifact;
+            }
+
+            // Then, change some controls specifically when an artifact is selected
+            if (selectedArtifact != null)
+            {
+                bool isModBackup = IsBackupArchive(selectedArtifact);
+                cloneToolStripMenuItem.Enabled = isModBackup;
+                updateToolStripMenuItem.Enabled = isModBackup;
+                renameToolStripMenuItem.Enabled = isModBackup;
+            }
+        }
+
+        private void ArchiveContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            var contextMenuStrip = (ContextMenuStrip) sender;
+            if (!(contextMenuStrip.SourceControl is ListView ctxMenuSourceList))
+            {
+                UpdateContextMenuControlState(null);
+                return;
+            }
+
+            ListView.SelectedListViewItemCollection selectedItems = ctxMenuSourceList.SelectedItems;
+            if (selectedItems.Count != 1)
+            {
+                UpdateContextMenuControlState(null);
+                return;
+            }
+
+            ListViewItem selectedListViewItem = selectedItems[0];
+            var selectedArchive = selectedListViewItem.Tag as Artifact;
+            UpdateContextMenuControlState(selectedArchive);
+        }
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem) sender;
+            if (menuItem.Tag is Artifact selectedArchive)
+            {
+                MessageBoxUtils.Show(
+                    $"Size: {selectedArchive.HumanReadableSize} ({selectedArchive.Size} bytes)\n" +
+                    $"Archive Type: {selectedArchive.Type} [{selectedArchive.ArchiveVersion}]\n" +
+                    $"Game Version: {selectedArchive.GameVersion}\n" +
+                    $"Created: {selectedArchive.Created}\n" +
+                    $"Last updated: {selectedArchive.LastUpdated}\n\n" +
+                    $"Stored at: {selectedArchive.FullPath}",
+                    $"About Archive {selectedArchive.Name}");
+            }
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem) sender;
+            if (menuItem.Tag is not Artifact selectedArchive)
+            {
+                return;
+            }
+
+            if (MessageBoxUtils.Ask($"Do you want to delete the archive {selectedArchive.Name}?"))
+            {
+                SetStatus($"Deleting archive {selectedArchive.Name} ...");
+                this.RunInBackgroundThread(() =>
+                {
+                    _artifactRepository.Delete(selectedArchive);
+                }, UpdateGrids);
+            }
+        }
+
+        private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem) sender;
+            if (menuItem.Tag is not Artifact selectedArchive)
+            {
+                return;
+            }
+
+            if (MessageBoxUtils.Ask($"Do you want to clone the archive {selectedArchive.Name}?"))
+            {
+                SetStatus($"Cloning archive {selectedArchive.Name} ...");
+                this.RunInBackgroundThread(() =>
+                {
+                    var newName = $"{selectedArchive.Name}_CLONE";
+                    _artifactRepository.Clone(selectedArchive, newName);
+                }, UpdateGrids);
+            }
         }
     }
 }

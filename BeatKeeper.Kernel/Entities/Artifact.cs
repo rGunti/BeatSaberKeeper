@@ -16,6 +16,8 @@ namespace BeatKeeper.Kernel.Entities
         public string ManifestId { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastUpdated { get; set; }
+        
+        public string ArchiveVersion { get; set; }
 
         public string HumanReadableSize => Size.ToHumanReadableFileSize();
 
