@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using BeatKeeper.App.Config;
 using BeatKeeper.App.Core;
 using BeatKeeper.App.Utils;
 using BeatKeeper.Kernel.Entities;
@@ -14,13 +16,30 @@ namespace BeatKeeper.App
     public partial class MainForm : Form
     {
         private readonly ArtifactRepository _artifactRepository;
+        private readonly ConfigManager _configManager;
 
         private List<Artifact> _artifacts = new();
+        
+        private readonly OpenFileDialog _selectGameExeDialog = new()
+        {
+            Title = @"Select BeatSaber executable",
+            Filter = @"Beat Saber Executable|Beat Saber.exe|Executables|*.exe|Any Files|*"
+        };
 
         public MainForm()
         {
             InitializeComponent();
             _artifactRepository = new ArtifactRepository(BSKConstants.Paths.Archives);
+            _configManager = ConfigManager.Instance;
+            UpdateGameDirectory();
+        }
+
+        private void UpdateGameDirectory()
+        {
+            string gameDirectory = _configManager.Config.GamePath;
+            
+            _selectGameExeDialog.FileName = gameDirectory;
+            GameDirectoryTextBox.Text = gameDirectory;
         }
 
         private void DownloadVanillaArchiveMenuItem_Click(object sender, EventArgs e)
@@ -357,5 +376,22 @@ namespace BeatKeeper.App
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
             => DoArtifactContextAction((ToolStripMenuItem)sender, UpdateArtifact);
+
+        private void SetGameDirectoryMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_selectGameExeDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            if (!File.Exists(_selectGameExeDialog.FileName))
+            {
+                return;
+            }
+
+            _configManager.Config.GamePath = Path.GetDirectoryName(Path.GetFullPath(_selectGameExeDialog.FileName));
+            _configManager.WriteConfig();
+            
+            UpdateGameDirectory();
+        }
     }
 }

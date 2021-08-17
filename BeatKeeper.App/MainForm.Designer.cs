@@ -47,6 +47,9 @@ namespace BeatKeeper.App
             this.ExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ArchiveMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.DownloadVanillaArchiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SettingsMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.SetGameDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.GameDirectoryTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.HelpMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.viewSourceCodeOnGitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutBeatSaberKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,6 +92,7 @@ namespace BeatKeeper.App
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileMenu,
             this.ArchiveMenu,
+            this.SettingsMenu,
             this.HelpMenu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -211,6 +215,29 @@ namespace BeatKeeper.App
             this.DownloadVanillaArchiveMenuItem.Size = new System.Drawing.Size(213, 22);
             this.DownloadVanillaArchiveMenuItem.Text = "Download Vanilla Archives";
             this.DownloadVanillaArchiveMenuItem.Click += new System.EventHandler(this.DownloadVanillaArchiveMenuItem_Click);
+            // 
+            // SettingsMenu
+            // 
+            this.SettingsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SetGameDirectoryMenuItem,
+            this.GameDirectoryTextBox});
+            this.SettingsMenu.Name = "SettingsMenu";
+            this.SettingsMenu.Size = new System.Drawing.Size(61, 20);
+            this.SettingsMenu.Text = "&Settings";
+            // 
+            // SetGameDirectoryMenuItem
+            // 
+            this.SetGameDirectoryMenuItem.Name = "SetGameDirectoryMenuItem";
+            this.SetGameDirectoryMenuItem.Size = new System.Drawing.Size(310, 22);
+            this.SetGameDirectoryMenuItem.Text = "Set Game Directory";
+            this.SetGameDirectoryMenuItem.Click += new System.EventHandler(this.SetGameDirectoryMenuItem_Click);
+            // 
+            // GameDirectoryTextBox
+            // 
+            this.GameDirectoryTextBox.AutoSize = false;
+            this.GameDirectoryTextBox.Name = "GameDirectoryTextBox";
+            this.GameDirectoryTextBox.ReadOnly = true;
+            this.GameDirectoryTextBox.Size = new System.Drawing.Size(250, 23);
             // 
             // HelpMenu
             // 
@@ -544,6 +571,9 @@ namespace BeatKeeper.App
         private System.Windows.Forms.ToolStripMenuItem ShowInSystemExplorerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem PropertiesMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem SettingsMenu;
+        private System.Windows.Forms.ToolStripMenuItem SetGameDirectoryMenuItem;
+        private System.Windows.Forms.ToolStripTextBox GameDirectoryTextBox;
     }
 }
 
