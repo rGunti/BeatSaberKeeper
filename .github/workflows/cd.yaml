@@ -10,8 +10,8 @@ jobs:
   build:
     strategy:
       matrix:
-        channel: [Dev, Release]
-        targetPlatform: [x86, x64]
+        channel: [Dev]
+        targetPlatform: [x64]
         include:
           - channel: Dev
             ChannelName: Dev
@@ -58,13 +58,13 @@ jobs:
       - name: Update manifest version
         run: |
           [xml]$manifest = get-content ".\$env:Wpf_Project_Path"
-          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_SimpleVersion.0"
+          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_SemVer2"
           $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
           $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
           $manifest.save(".\$env:Wap_Project_Directory\Package.appxmanifest")
 
       # Restore the application
-      - name:  Restore the Wpf application to populate the obj folder
+      - name:  Restore
         run: msbuild $env:Solution_Path /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RuntimeIdentifier
         env:
           Configuration: ${{ matrix.Configuration }}
@@ -82,7 +82,7 @@ jobs:
           TargetPlatform: ${{ matrix.targetplatform }}
 
       - name: Build Lite App for ${{ matrix.ChannelName }}
-        run: msbuild $env:Solution_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:PublishProfile="Publish BSK Lite"
+        run: msbuild $env:Wpf_Project_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:PublishProfile="Publish BSK Lite"
         env:
           AppxBundle: Never
           AppInstallerUri: ${{ matrix.DistributionUrl }}
