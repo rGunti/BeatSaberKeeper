@@ -1,7 +1,10 @@
+using BeatKeeper.App.Config;
+using BeatKeeper.App.Core;
 using BeatKeeper.App.Core.Logging;
 using BeatKeeper.App.Core.Steam;
 using Serilog;
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace BeatKeeper.App
@@ -15,6 +18,7 @@ namespace BeatKeeper.App
         static void Main()
         {
             LogInitializer.Init(enableFile: true);
+            ConfigManager.Initialize(Path.Combine(BSKConstants.Paths.DefaultWorkingPath, "config.json"));
 
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(HandleException);
 
@@ -27,6 +31,7 @@ namespace BeatKeeper.App
             });
 
             SteamSession.Instance?.Dispose();
+            ConfigManager.Instance.WriteConfig();
         }
 
         private static void HandleException(object sender, UnhandledExceptionEventArgs e)
