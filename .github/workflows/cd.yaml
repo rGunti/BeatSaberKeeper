@@ -17,10 +17,10 @@ jobs:
             ChannelName: Dev
             Configuration: Debug
             DistributionUrl: https://beatsaberkeeper.rgunti.ch
-          - channel: Release
-            Configuration: Release
-            ChannelName: Release
-            DistributionUrl: https://beatsaberkeeper.rgunti.ch
+          # - channel: Release
+          #   Configuration: Release
+          #   ChannelName: Release
+          #   DistributionUrl: https://beatsaberkeeper.rgunti.ch
 
     runs-on: windows-latest
 
@@ -38,7 +38,7 @@ jobs:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
       # Use Nerdbank.GitVersioning to set version variables: https://github.com/AArnott/nbgv
-      - name: Use Nerdbank.GitVersioning to set version variables
+      - name: Set Version
         uses: aarnott/nbgv@v0.3
         with:
           setAllVars: true
@@ -61,11 +61,11 @@ jobs:
           $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_SemVer2"
           $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
           $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
-          $manifest.save(".\$env:Wap_Project_Directory\Package.appxmanifest")
+          $manifest.save(".\$env:Wpf_Project_Path")
 
       # Restore the application
       - name:  Restore
-        run: msbuild $env:Solution_Path /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RuntimeIdentifier
+        run: msbuild $env:Wpf_Project_Path /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RuntimeIdentifier
         env:
           Configuration: ${{ matrix.Configuration }}
           RuntimeIdentifier: win-${{ matrix.targetplatform }}
