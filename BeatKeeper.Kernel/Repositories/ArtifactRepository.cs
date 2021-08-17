@@ -21,22 +21,24 @@ namespace BeatKeeper.Kernel.Repositories
         public IEnumerable<Artifact> GetAll()
         {
             return Directory.GetFiles(_artifactPath, "*.bskeep")
-                .Select(i =>
-                {
-                    var fi = new FileInfo(i);
-                    var artifact = BeatKeeperPackageProcessor.ReadArchiveMetaData(i);
-                    return new Artifact()
-                    {
-                        Name = Path.GetFileNameWithoutExtension(fi.Name),
-                        FullPath = i,
-                        Created = fi.CreationTime,
-                        LastUpdated = fi.LastWriteTime,
-                        Size = fi.Length,
-                        GameVersion = artifact?.GameVersion,
-                        Type = artifact?.Type ?? ArtifactType.Unknown,
-                        ArchiveVersion = artifact?.ArchiveVersion ?? BeatKeeperArchiveMetaData.UNKNOWN
-                    };
-                });
+                .Select(ConvertToArtifact);
+        }
+
+        private Artifact ConvertToArtifact(string path)
+        {
+            var fi = new FileInfo(path);
+            var artifact = BeatKeeperPackageProcessor.ReadArchiveMetaData(path);
+            return new Artifact()
+            {
+                Name = Path.GetFileNameWithoutExtension(fi.Name),
+                FullPath = path,
+                Created = fi.CreationTime,
+                LastUpdated = fi.LastWriteTime,
+                Size = fi.Length,
+                GameVersion = artifact?.GameVersion,
+                Type = artifact?.Type ?? ArtifactType.Unknown,
+                ArchiveVersion = artifact?.ArchiveVersion ?? BeatKeeperArchiveMetaData.UNKNOWN
+            };
         }
 
         public void Clone(Artifact entity, string newName)
@@ -48,7 +50,26 @@ namespace BeatKeeper.Kernel.Repositories
 
         public Artifact Get(string id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return ConvertToArtifact(Path.Combine(_artifactPath, $"{id}.bskeep"));
+            } catch (IOException)
+            {
+                return null;
+            }
+        }
+
+        public bool Exists(string id)
+        {
+            return File.Exists(Path.Combine(_artifactPath, $"{id}.bskeep"));
+        }
+
+        public void Rename(Artifact artifact, string newName)
+        {
+            Log.Debug($"Renaming artifact");
+            string newFileName = Path.Combine(Path.GetDirectoryName(artifact.FullPath) ??
+                                              throw new InvalidOperationException(), $"{newName}.bskeep");
+            File.Move(artifact.FullPath, newFileName);
         }
 
         public void Delete(Artifact artifact)

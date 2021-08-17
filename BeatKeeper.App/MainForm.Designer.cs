@@ -33,13 +33,24 @@ namespace BeatKeeper.App
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.FileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UnpackRunMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UnpackMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.CloneMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UpdateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RenameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.ShowInSystemExplorerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PropertiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.ExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ArchiveMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.DownloadVanillaArchiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.viewSourceCodeOnGitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutBeatSaberKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.TabContainer = new System.Windows.Forms.TabControl();
             this.BackupTabPage = new System.Windows.Forms.TabPage();
             this.BackupArchivesListView = new System.Windows.Forms.ListView();
             this.BackupNameColumn = new System.Windows.Forms.ColumnHeader();
@@ -55,6 +66,7 @@ namespace BeatKeeper.App
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.VanillaTabPage = new System.Windows.Forms.TabPage();
@@ -64,9 +76,8 @@ namespace BeatKeeper.App
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.TabContainer.SuspendLayout();
             this.BackupTabPage.SuspendLayout();
             this.ArchiveContextMenuStrip.SuspendLayout();
             this.VanillaTabPage.SuspendLayout();
@@ -75,32 +86,121 @@ namespace BeatKeeper.App
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.FileMenu, this.ArchiveMenu, this.HelpMenu});
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FileMenu,
+            this.ArchiveMenu,
+            this.HelpMenu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(531, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(620, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // FileMenu
             // 
-            this.FileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.exitToolStripMenuItem});
+            this.FileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UnpackRunMenuItem,
+            this.UnpackMenuItem,
+            this.toolStripSeparator1,
+            this.CloneMenuItem,
+            this.UpdateMenuItem,
+            this.RenameMenuItem,
+            this.DeleteMenuItem,
+            this.toolStripSeparator2,
+            this.ShowInSystemExplorerMenuItem,
+            this.PropertiesMenuItem,
+            this.toolStripSeparator3,
+            this.ExitMenuItem});
             this.FileMenu.Name = "FileMenu";
             this.FileMenu.Size = new System.Drawing.Size(37, 20);
             this.FileMenu.Text = "&File";
             // 
-            // exitToolStripMenuItem
+            // UnpackRunMenuItem
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys) ((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.UnpackRunMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.UnpackRunMenuItem.Name = "UnpackRunMenuItem";
+            this.UnpackRunMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.UnpackRunMenuItem.Text = "Unpack && Run";
+            this.UnpackRunMenuItem.Click += new System.EventHandler(this.UnpackRunMenuItem_Click);
+            // 
+            // UnpackMenuItem
+            // 
+            this.UnpackMenuItem.Name = "UnpackMenuItem";
+            this.UnpackMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.UnpackMenuItem.Text = "Unpack";
+            this.UnpackMenuItem.Click += new System.EventHandler(this.UnpackMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(159, 6);
+            // 
+            // CloneMenuItem
+            // 
+            this.CloneMenuItem.Name = "CloneMenuItem";
+            this.CloneMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.CloneMenuItem.Text = "Clone";
+            this.CloneMenuItem.Click += new System.EventHandler(this.CloneMenuItem_Click);
+            // 
+            // UpdateMenuItem
+            // 
+            this.UpdateMenuItem.Name = "UpdateMenuItem";
+            this.UpdateMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.UpdateMenuItem.Text = "Update";
+            this.UpdateMenuItem.Click += new System.EventHandler(this.UpdateMenuItem_Click);
+            // 
+            // RenameMenuItem
+            // 
+            this.RenameMenuItem.Name = "RenameMenuItem";
+            this.RenameMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.RenameMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.RenameMenuItem.Text = "Rename";
+            this.RenameMenuItem.Click += new System.EventHandler(this.RenameMenuItem_Click);
+            // 
+            // DeleteMenuItem
+            // 
+            this.DeleteMenuItem.Name = "DeleteMenuItem";
+            this.DeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.DeleteMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.DeleteMenuItem.Text = "Delete";
+            this.DeleteMenuItem.Click += new System.EventHandler(this.DeleteMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(159, 6);
+            // 
+            // ShowInSystemExplorerMenuItem
+            // 
+            this.ShowInSystemExplorerMenuItem.Name = "ShowInSystemExplorerMenuItem";
+            this.ShowInSystemExplorerMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.ShowInSystemExplorerMenuItem.Text = "Show in Explorer";
+            this.ShowInSystemExplorerMenuItem.Click += new System.EventHandler(this.ShowInSystemExplorerMenuItem_Click);
+            // 
+            // PropertiesMenuItem
+            // 
+            this.PropertiesMenuItem.Name = "PropertiesMenuItem";
+            this.PropertiesMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.PropertiesMenuItem.Text = "Properties";
+            this.PropertiesMenuItem.Click += new System.EventHandler(this.PropertiesMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(159, 6);
+            // 
+            // ExitMenuItem
+            // 
+            this.ExitMenuItem.Name = "ExitMenuItem";
+            this.ExitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
+            this.ExitMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.ExitMenuItem.Text = "E&xit";
+            this.ExitMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // ArchiveMenu
             // 
-            this.ArchiveMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.DownloadVanillaArchiveMenuItem});
+            this.ArchiveMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DownloadVanillaArchiveMenuItem});
             this.ArchiveMenu.Name = "ArchiveMenu";
             this.ArchiveMenu.Size = new System.Drawing.Size(64, 20);
             this.ArchiveMenu.Text = "&Archives";
@@ -114,7 +214,9 @@ namespace BeatKeeper.App
             // 
             // HelpMenu
             // 
-            this.HelpMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.viewSourceCodeOnGitHubToolStripMenuItem, this.aboutBeatSaberKeeperToolStripMenuItem});
+            this.HelpMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewSourceCodeOnGitHubToolStripMenuItem,
+            this.aboutBeatSaberKeeperToolStripMenuItem});
             this.HelpMenu.Name = "HelpMenu";
             this.HelpMenu.Size = new System.Drawing.Size(24, 20);
             this.HelpMenu.Text = "&?";
@@ -131,42 +233,51 @@ namespace BeatKeeper.App
             this.aboutBeatSaberKeeperToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.aboutBeatSaberKeeperToolStripMenuItem.Text = "About Beat Saber Keeper ...";
             // 
-            // tabControl1
+            // TabContainer
             // 
-            this.tabControl1.Controls.Add(this.BackupTabPage);
-            this.tabControl1.Controls.Add(this.VanillaTabPage);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 24);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(531, 320);
-            this.tabControl1.TabIndex = 1;
+            this.TabContainer.Controls.Add(this.BackupTabPage);
+            this.TabContainer.Controls.Add(this.VanillaTabPage);
+            this.TabContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TabContainer.Location = new System.Drawing.Point(0, 24);
+            this.TabContainer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TabContainer.Name = "TabContainer";
+            this.TabContainer.SelectedIndex = 0;
+            this.TabContainer.Size = new System.Drawing.Size(620, 374);
+            this.TabContainer.TabIndex = 1;
+            this.TabContainer.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // BackupTabPage
             // 
             this.BackupTabPage.Controls.Add(this.BackupArchivesListView);
-            this.BackupTabPage.Location = new System.Drawing.Point(4, 22);
+            this.BackupTabPage.Location = new System.Drawing.Point(4, 24);
+            this.BackupTabPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BackupTabPage.Name = "BackupTabPage";
-            this.BackupTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.BackupTabPage.Size = new System.Drawing.Size(523, 294);
+            this.BackupTabPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BackupTabPage.Size = new System.Drawing.Size(612, 346);
             this.BackupTabPage.TabIndex = 0;
             this.BackupTabPage.Text = "Backups";
             this.BackupTabPage.UseVisualStyleBackColor = true;
             // 
             // BackupArchivesListView
             // 
-            this.BackupArchivesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {this.BackupNameColumn, this.BackupGameVersionColumn, this.BackupAgeColumn, this.BackupSizeColumn});
+            this.BackupArchivesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.BackupNameColumn,
+            this.BackupGameVersionColumn,
+            this.BackupAgeColumn,
+            this.BackupSizeColumn});
             this.BackupArchivesListView.ContextMenuStrip = this.ArchiveContextMenuStrip;
             this.BackupArchivesListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BackupArchivesListView.FullRowSelect = true;
             this.BackupArchivesListView.HideSelection = false;
-            this.BackupArchivesListView.Location = new System.Drawing.Point(3, 3);
+            this.BackupArchivesListView.Location = new System.Drawing.Point(4, 3);
+            this.BackupArchivesListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BackupArchivesListView.Name = "BackupArchivesListView";
-            this.BackupArchivesListView.Size = new System.Drawing.Size(517, 288);
+            this.BackupArchivesListView.Size = new System.Drawing.Size(604, 340);
             this.BackupArchivesListView.SmallImageList = this.imageList1;
             this.BackupArchivesListView.TabIndex = 0;
             this.BackupArchivesListView.UseCompatibleStateImageBehavior = false;
             this.BackupArchivesListView.View = System.Windows.Forms.View.Details;
+            this.BackupArchivesListView.SelectedIndexChanged += new System.EventHandler(this.ListView_SelectedIndexChanged);
             // 
             // BackupNameColumn
             // 
@@ -195,23 +306,35 @@ namespace BeatKeeper.App
             // 
             // ArchiveContextMenuStrip
             // 
-            this.ArchiveContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.unpackRunToolStripMenuItem, this.unpackToolStripMenuItem, this.toolStripMenuItem1, this.cloneToolStripMenuItem, this.updateToolStripMenuItem, this.renameToolStripMenuItem, this.deleteToolStripMenuItem, this.toolStripMenuItem2, this.showInExplorerToolStripMenuItem, this.propertiesToolStripMenuItem});
+            this.ArchiveContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.unpackRunToolStripMenuItem,
+            this.unpackToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.cloneToolStripMenuItem,
+            this.updateToolStripMenuItem,
+            this.renameToolStripMenuItem,
+            this.deleteToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.showInExplorerToolStripMenuItem,
+            this.propertiesToolStripMenuItem});
             this.ArchiveContextMenuStrip.Name = "ArchiveContextMenuStrip";
-            this.ArchiveContextMenuStrip.Size = new System.Drawing.Size(163, 214);
+            this.ArchiveContextMenuStrip.Size = new System.Drawing.Size(163, 192);
             this.ArchiveContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.ArchiveContextMenuStrip_Opening);
             // 
             // unpackRunToolStripMenuItem
             // 
-            this.unpackRunToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.unpackRunToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.unpackRunToolStripMenuItem.Name = "unpackRunToolStripMenuItem";
             this.unpackRunToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.unpackRunToolStripMenuItem.Text = "Unpack && Run";
+            this.unpackRunToolStripMenuItem.Click += new System.EventHandler(this.unpackRunToolStripMenuItem_Click);
             // 
             // unpackToolStripMenuItem
             // 
             this.unpackToolStripMenuItem.Name = "unpackToolStripMenuItem";
             this.unpackToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.unpackToolStripMenuItem.Text = "Unpack";
+            this.unpackToolStripMenuItem.Click += new System.EventHandler(this.unpackToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -230,12 +353,14 @@ namespace BeatKeeper.App
             this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
             this.updateToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.updateToolStripMenuItem.Text = "Update";
+            this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateToolStripMenuItem_Click);
             // 
             // renameToolStripMenuItem
             // 
             this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
             this.renameToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.renameToolStripMenuItem.Text = "Rename";
+            this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
@@ -249,6 +374,13 @@ namespace BeatKeeper.App
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(159, 6);
             // 
+            // showInExplorerToolStripMenuItem
+            // 
+            this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
+            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.showInExplorerToolStripMenuItem.Text = "Show in Explorer";
+            this.showInExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInExplorerToolStripMenuItem_Click);
+            // 
             // propertiesToolStripMenuItem
             // 
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
@@ -258,7 +390,8 @@ namespace BeatKeeper.App
             // 
             // imageList1
             // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer) (resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "Saber");
             this.imageList1.Images.SetKeyName(1, "SaberPack");
@@ -266,28 +399,33 @@ namespace BeatKeeper.App
             // VanillaTabPage
             // 
             this.VanillaTabPage.Controls.Add(this.VanillaArchivesListView);
-            this.VanillaTabPage.Location = new System.Drawing.Point(4, 22);
+            this.VanillaTabPage.Location = new System.Drawing.Point(4, 24);
+            this.VanillaTabPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.VanillaTabPage.Name = "VanillaTabPage";
-            this.VanillaTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.VanillaTabPage.Size = new System.Drawing.Size(523, 294);
+            this.VanillaTabPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.VanillaTabPage.Size = new System.Drawing.Size(612, 346);
             this.VanillaTabPage.TabIndex = 1;
             this.VanillaTabPage.Text = "Vanilla Archives";
             this.VanillaTabPage.UseVisualStyleBackColor = true;
             // 
             // VanillaArchivesListView
             // 
-            this.VanillaArchivesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {this.VanillaGameVersionColumn, this.VanillaSizeColumn});
+            this.VanillaArchivesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.VanillaGameVersionColumn,
+            this.VanillaSizeColumn});
             this.VanillaArchivesListView.ContextMenuStrip = this.ArchiveContextMenuStrip;
             this.VanillaArchivesListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.VanillaArchivesListView.FullRowSelect = true;
             this.VanillaArchivesListView.HideSelection = false;
-            this.VanillaArchivesListView.Location = new System.Drawing.Point(3, 3);
+            this.VanillaArchivesListView.Location = new System.Drawing.Point(4, 3);
+            this.VanillaArchivesListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.VanillaArchivesListView.Name = "VanillaArchivesListView";
-            this.VanillaArchivesListView.Size = new System.Drawing.Size(517, 288);
+            this.VanillaArchivesListView.Size = new System.Drawing.Size(604, 340);
             this.VanillaArchivesListView.SmallImageList = this.imageList1;
             this.VanillaArchivesListView.TabIndex = 0;
             this.VanillaArchivesListView.UseCompatibleStateImageBehavior = false;
             this.VanillaArchivesListView.View = System.Windows.Forms.View.Details;
+            this.VanillaArchivesListView.SelectedIndexChanged += new System.EventHandler(this.ListView_SelectedIndexChanged);
             // 
             // VanillaGameVersionColumn
             // 
@@ -304,18 +442,19 @@ namespace BeatKeeper.App
             // 
             // StatusBar
             // 
-            this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.StatusLabel, this.StatusProgressBar});
-            this.StatusBar.Location = new System.Drawing.Point(0, 344);
+            this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.StatusLabel,
+            this.StatusProgressBar});
+            this.StatusBar.Location = new System.Drawing.Point(0, 398);
             this.StatusBar.Name = "StatusBar";
-            this.StatusBar.Padding = new System.Windows.Forms.Padding(1, 0, 12, 0);
-            this.StatusBar.Size = new System.Drawing.Size(531, 22);
+            this.StatusBar.Size = new System.Drawing.Size(620, 24);
             this.StatusBar.TabIndex = 2;
             this.StatusBar.Text = "StatusBar";
             // 
             // StatusLabel
             // 
             this.StatusLabel.Name = "StatusLabel";
-            this.StatusLabel.Size = new System.Drawing.Size(416, 17);
+            this.StatusLabel.Size = new System.Drawing.Size(486, 19);
             this.StatusLabel.Spring = true;
             this.StatusLabel.Text = "Ready";
             this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -323,30 +462,24 @@ namespace BeatKeeper.App
             // StatusProgressBar
             // 
             this.StatusProgressBar.Name = "StatusProgressBar";
-            this.StatusProgressBar.Size = new System.Drawing.Size(100, 16);
-            // 
-            // showInExplorerToolStripMenuItem
-            // 
-            this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
-            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.showInExplorerToolStripMenuItem.Text = "Show in Explorer";
-            this.showInExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInExplorerToolStripMenuItem_Click);
+            this.StatusProgressBar.Size = new System.Drawing.Size(117, 18);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(531, 366);
-            this.Controls.Add(this.tabControl1);
+            this.ClientSize = new System.Drawing.Size(620, 422);
+            this.Controls.Add(this.TabContainer);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "Beat Saber Keeper";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
+            this.TabContainer.ResumeLayout(false);
             this.BackupTabPage.ResumeLayout(false);
             this.ArchiveContextMenuStrip.ResumeLayout(false);
             this.VanillaTabPage.ResumeLayout(false);
@@ -354,6 +487,7 @@ namespace BeatKeeper.App
             this.StatusBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         private System.Windows.Forms.ToolStripMenuItem showInExplorerToolStripMenuItem;
@@ -374,7 +508,7 @@ namespace BeatKeeper.App
 
         private System.Windows.Forms.ToolStripProgressBar StatusProgressBar;
 
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ExitMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutBeatSaberKeeperToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewSourceCodeOnGitHubToolStripMenuItem;
 
@@ -383,7 +517,7 @@ namespace BeatKeeper.App
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl TabContainer;
         private System.Windows.Forms.TabPage BackupTabPage;
         private System.Windows.Forms.TabPage VanillaTabPage;
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
@@ -399,6 +533,17 @@ namespace BeatKeeper.App
         private System.Windows.Forms.ToolStripMenuItem ArchiveMenu;
         private System.Windows.Forms.ToolStripMenuItem DownloadVanillaArchiveMenuItem;
         private System.Windows.Forms.ToolStripMenuItem HelpMenu;
+        private System.Windows.Forms.ToolStripMenuItem DeleteMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RenameMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem CloneMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem UpdateMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem UnpackRunMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem UnpackMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem ShowInSystemExplorerMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem PropertiesMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

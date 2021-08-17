@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using BeatKeeper.App.Core;
 using BeatKeeper.App.Utils;
@@ -56,6 +53,7 @@ namespace BeatKeeper.App
         private void MainForm_Load(object sender, EventArgs e)
         {
             UpdateGrids();
+            UpdateMenuItems(null);
         }
 
         private void UpdateGrids()
@@ -72,8 +70,8 @@ namespace BeatKeeper.App
             });
         }
 
-        private static readonly Func<Artifact, bool> IsVanillaArchive = a => a.Type == ArtifactType.Vanilla;
-        private static readonly Func<Artifact, bool> IsBackupArchive = a => a.Type == ArtifactType.ModBackup;
+        private static readonly Func<Artifact, bool> IsVanillaArchive = a => a != null && a.Type == ArtifactType.Vanilla;
+        private static readonly Func<Artifact, bool> IsBackupArchive = a => a != null && a.Type == ArtifactType.ModBackup;
 
         private void RenderGrids()
         {
@@ -144,95 +142,220 @@ namespace BeatKeeper.App
             if (selectedArtifact != null)
             {
                 bool isModBackup = IsBackupArchive(selectedArtifact);
+
                 cloneToolStripMenuItem.Enabled = isModBackup;
                 updateToolStripMenuItem.Enabled = isModBackup;
                 renameToolStripMenuItem.Enabled = isModBackup;
             }
         }
 
-        private void ArchiveContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        private void UpdateMenuItems(
+            Artifact selectedArtifact)
         {
-            var contextMenuStrip = (ContextMenuStrip) sender;
-            if (!(contextMenuStrip.SourceControl is ListView ctxMenuSourceList))
+            bool isSelected = selectedArtifact != null;
+            bool isModBackup = IsBackupArchive(selectedArtifact);
+
+            UpdateMenuItem.Enabled = isModBackup;
+            CloneMenuItem.Enabled = isModBackup;
+            RenameMenuItem.Enabled = isModBackup;
+            DeleteMenuItem.Enabled = isSelected;
+        }
+
+        private Artifact GetSelectedArtifact(ListView listView)
+        {
+            if (listView == null)
             {
-                UpdateContextMenuControlState(null);
-                return;
+                return null;
             }
 
-            ListView.SelectedListViewItemCollection selectedItems = ctxMenuSourceList.SelectedItems;
+            ListView.SelectedListViewItemCollection selectedItems = listView.SelectedItems;
             if (selectedItems.Count != 1)
             {
-                UpdateContextMenuControlState(null);
-                return;
+                return null;
             }
 
             ListViewItem selectedListViewItem = selectedItems[0];
-            var selectedArchive = selectedListViewItem.Tag as Artifact;
-            UpdateContextMenuControlState(selectedArchive);
+            return selectedListViewItem.Tag as Artifact;
+        }
+
+        private Artifact GetSelectedArtifact()
+        {
+            var activeTab = TabContainer.SelectedIndex;
+            switch (activeTab)
+            {
+                case 0:
+                    return GetSelectedArtifact(BackupArchivesListView);
+                case 1:
+                    return GetSelectedArtifact(VanillaArchivesListView);
+            }
+            return null;
+        }
+
+        private void DeleteArtifact(Artifact artifact)
+        {
+            if (MessageBoxUtils.Ask($"Do you want to delete the archive {artifact.Name}?"))
+            {
+                SetStatus($"Deleting archive {artifact.Name} ...");
+                this.RunInBackgroundThread(() =>
+                {
+                    _artifactRepository.Delete(artifact);
+                }, UpdateGrids);
+            }
+        }
+
+        private void RenameArtifact(Artifact artifact)
+        {
+            var dialog = new RenameArchiveForm(artifact);
+            while (true)
+            {
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                // If name matches old name, do a placebo-reload
+                var newName = dialog.NewArchiveName;
+                if (newName.Trim().Equals(artifact.Name, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    break;
+                }
+
+                if (_artifactRepository.Exists(newName))
+                {
+                    MessageBoxUtils.Warn($"The name \"{newName}\" is already taken. Please select a different name.");
+                    continue;
+                }
+
+                _artifactRepository.Rename(artifact, newName);
+                break;
+            }
+            UpdateGrids();
+        }
+
+        private void UpdateArtifact(Artifact artifact)
+        {
+            MessageBoxUtils.NotImplemented("Updating artifact");
+        }
+
+        private void ShowArtifactProperties(Artifact artifact)
+        {
+            MessageBoxUtils.Show(
+                $"Size: {artifact.HumanReadableSize} ({artifact.Size} bytes)\n" +
+                $"Archive Type: {artifact.Type} [{artifact.ArchiveVersion}]\n" +
+                $"Game Version: {artifact.GameVersion}\n" +
+                $"Created: {artifact.Created}\n" +
+                $"Last updated: {artifact.LastUpdated}\n\n" +
+                $"Stored at: {artifact.FullPath}",
+                $"About Archive {artifact.Name}");
+        }
+
+        private void CloneArtifact(Artifact artifact)
+        {
+            if (MessageBoxUtils.Ask($"Do you want to clone the archive {artifact.Name}?"))
+            {
+                SetStatus($"Cloning archive {artifact.Name} ...");
+                this.RunInBackgroundThread(() =>
+                {
+                    var newName = $"{artifact.Name}_CLONE";
+                    _artifactRepository.Clone(artifact, newName);
+                }, UpdateGrids);
+            }
+        }
+
+        private void UnpackArtifact(Artifact artifact)
+        {
+            MessageBoxUtils.NotImplemented("Unpacking archive");
+        }
+
+        private void UnpackAndRunArtifact(Artifact artifact)
+        {
+            UnpackArtifact(artifact);
+            MessageBoxUtils.NotImplemented("Starting game");
+        }
+
+        private void ShowArtifactInSystemExplorer(Artifact artifact)
+        {
+            WindowsUtils.ShowFileInExplorer(artifact.FullPath);
+        }
+
+        private void DoArtifactContextAction(Func<Artifact> extractor, Action<Artifact> action)
+        {
+            var artifact = extractor();
+            if (artifact != null)
+            {
+                action(artifact);
+            }
+        }
+
+        private void DoArtifactContextAction(Action<Artifact> action)
+            => DoArtifactContextAction(GetSelectedArtifact, action);
+
+        private void DoArtifactContextAction(ToolStripMenuItem sourceItem, Action<Artifact> action)
+            => DoArtifactContextAction(() => sourceItem?.Tag as Artifact, action);
+
+        private void ArchiveContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            var contextMenuStrip = (ContextMenuStrip) sender;
+            var artifact = GetSelectedArtifact(contextMenuStrip.SourceControl as ListView);
+            UpdateContextMenuControlState(artifact);
         }
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var menuItem = (ToolStripMenuItem) sender;
-            if (menuItem.Tag is Artifact selectedArchive)
-            {
-                MessageBoxUtils.Show(
-                    $"Size: {selectedArchive.HumanReadableSize} ({selectedArchive.Size} bytes)\n" +
-                    $"Archive Type: {selectedArchive.Type} [{selectedArchive.ArchiveVersion}]\n" +
-                    $"Game Version: {selectedArchive.GameVersion}\n" +
-                    $"Created: {selectedArchive.Created}\n" +
-                    $"Last updated: {selectedArchive.LastUpdated}\n\n" +
-                    $"Stored at: {selectedArchive.FullPath}",
-                    $"About Archive {selectedArchive.Name}");
-            }
-        }
+            => DoArtifactContextAction((ToolStripMenuItem)sender, ShowArtifactProperties);
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var menuItem = (ToolStripMenuItem) sender;
-            if (menuItem.Tag is not Artifact selectedArchive)
-            {
-                return;
-            }
-
-            if (MessageBoxUtils.Ask($"Do you want to delete the archive {selectedArchive.Name}?"))
-            {
-                SetStatus($"Deleting archive {selectedArchive.Name} ...");
-                this.RunInBackgroundThread(() =>
-                {
-                    _artifactRepository.Delete(selectedArchive);
-                }, UpdateGrids);
-            }
-        }
+            => DoArtifactContextAction((ToolStripMenuItem)sender, DeleteArtifact);
 
         private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var menuItem = (ToolStripMenuItem) sender;
-            if (menuItem.Tag is not Artifact selectedArchive)
-            {
-                return;
-            }
-
-            if (MessageBoxUtils.Ask($"Do you want to clone the archive {selectedArchive.Name}?"))
-            {
-                SetStatus($"Cloning archive {selectedArchive.Name} ...");
-                this.RunInBackgroundThread(() =>
-                {
-                    var newName = $"{selectedArchive.Name}_CLONE";
-                    _artifactRepository.Clone(selectedArchive, newName);
-                }, UpdateGrids);
-            }
-        }
+            => DoArtifactContextAction((ToolStripMenuItem)sender, CloneArtifact);
 
         private void showInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction((ToolStripMenuItem)sender, ShowArtifactInSystemExplorer);
+
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction((ToolStripMenuItem)sender, RenameArtifact);
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var menuItem = (ToolStripMenuItem) sender;
-            if (menuItem.Tag is not Artifact selectedArchive)
-            {
-                return;
-            }
-            
-            WindowsUtils.ShowFileInExplorer(selectedArchive.FullPath);
+            UpdateMenuItems(GetSelectedArtifact());
         }
+
+        private void ListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateMenuItems(GetSelectedArtifact(sender as ListView));
+        }
+
+        private void DeleteMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(DeleteArtifact);
+
+        private void RenameMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(RenameArtifact);
+
+        private void CloneMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(CloneArtifact);
+
+        private void UpdateMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(UpdateArtifact);
+
+        private void ShowInSystemExplorerMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(ShowArtifactInSystemExplorer);
+
+        private void PropertiesMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(ShowArtifactProperties);
+
+        private void UnpackRunMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(UnpackAndRunArtifact);
+
+        private void UnpackMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(UnpackArtifact);
+
+        private void unpackRunToolStripMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction((ToolStripMenuItem)sender, UnpackAndRunArtifact);
+
+        private void unpackToolStripMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction((ToolStripMenuItem)sender, UnpackArtifact);
+
+        private void updateToolStripMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction((ToolStripMenuItem)sender, UpdateArtifact);
     }
 }
