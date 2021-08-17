@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using BeatKeeper.App.Core.Utils;
 
 namespace BeatKeeper.App.Core
 {
@@ -19,7 +20,13 @@ namespace BeatKeeper.App.Core
 
         public static class Paths
         {
-            public static readonly string BaseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            public static void EnsureDirectoryTreeExists()
+            {
+                DefaultWorkingPath.EnsureDirectory();
+                Archives.EnsureDirectory();
+            }
+            
+            public static readonly string BaseDirectory = AppContext.BaseDirectory;
 
             public const string DEFAULT_WORKING_DIRECTORY = ".bsk";
             public const string DEFAULT_TEMP_DIRECTORY = "temp";

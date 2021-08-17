@@ -18,9 +18,10 @@ namespace BeatKeeper.App
         static void Main()
         {
             LogInitializer.Init(enableFile: true);
+            BSKConstants.Paths.EnsureDirectoryTreeExists();
             ConfigManager.Initialize(Path.Combine(BSKConstants.Paths.DefaultWorkingPath, "config.json"));
 
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(HandleException);
+            AppDomain.CurrentDomain.UnhandledException += HandleException;
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
