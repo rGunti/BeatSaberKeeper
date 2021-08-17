@@ -76,8 +76,20 @@ namespace BeatKeeper.App.Utils
         public static void AboutApp()
         {
             MessageBox.Show(
-                $"BeatSaberKeeper Ver. {"???"}\n" +
-                "Copyright (C) 2020 Raphael \"rGunti\" Guntersweiler\n\n" +
+                $"{AppInfo.AppName}\n" +
+                $"Ver. {AppInfo.AppVersion}\n" +
+                $"Copyright (C) 2020-{DateTime.Now.Year} Raphael \"rGunti\" Guntersweiler" +
+                "\n\n" +
+                "This tool allows you to create archives of your Beat Saber installation, " +
+                "making it easy to backup and restore your current game state once Steam " +
+                "desides to automatically update the game. You can also download older " +
+                "versions of Beat Saber if you have a Steam account and a valid Beat Saber " +
+                "license in case you want to downgrade and don't have earlier versions of " +
+                "the game backed up." +
+                "\n\n" +
+                "This tool has been built using .NET 5!" +
+                "\n\n" +
+                "LICENSE INFORMATION\n" + 
                 "This program is free software: you can redistribute it and/or modify " +
                 "it under the terms of the GNU General Public License as published by " +
                 "the Free Software Foundation, either version 3 of the License, or " +
@@ -87,10 +99,9 @@ namespace BeatKeeper.App.Utils
                 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the " +
                 "GNU General Public License for more details.\n\n" +
                 "You should have received a copy of the GNU General Public License " +
-                "along with this program.If not, see <http://www.gnu.org/licenses/>.",
+                "along with this program. If not, see <http://www.gnu.org/licenses/>.",
                 APP_NAME,
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
+                MessageBoxButtons.OK
             );
         }
 

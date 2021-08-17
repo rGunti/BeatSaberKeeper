@@ -206,8 +206,8 @@ namespace BeatKeeper.App
             this.ArchiveMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.DownloadVanillaArchiveMenuItem});
             this.ArchiveMenu.Name = "ArchiveMenu";
-            this.ArchiveMenu.Size = new System.Drawing.Size(64, 20);
-            this.ArchiveMenu.Text = "&Archives";
+            this.ArchiveMenu.Size = new System.Drawing.Size(46, 20);
+            this.ArchiveMenu.Text = "&Tools";
             // 
             // DownloadVanillaArchiveMenuItem
             // 
@@ -259,6 +259,7 @@ namespace BeatKeeper.App
             this.aboutBeatSaberKeeperToolStripMenuItem.Name = "aboutBeatSaberKeeperToolStripMenuItem";
             this.aboutBeatSaberKeeperToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.aboutBeatSaberKeeperToolStripMenuItem.Text = "About Beat Saber Keeper ...";
+            this.aboutBeatSaberKeeperToolStripMenuItem.Click += new System.EventHandler(this.aboutBeatSaberKeeperToolStripMenuItem_Click);
             // 
             // TabContainer
             // 

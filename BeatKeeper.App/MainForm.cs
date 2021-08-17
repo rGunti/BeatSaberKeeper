@@ -393,5 +393,10 @@ namespace BeatKeeper.App
             
             UpdateGameDirectory();
         }
+
+        private void aboutBeatSaberKeeperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBoxUtils.AboutApp();
+        }
     }
 }
