@@ -72,7 +72,7 @@ jobs:
 
       # Build the Windows Application Packaging project for Dev and Prod_Sideload
       - name: Build App for ${{ matrix.ChannelName }}
-        run: msbuild $env:Solution_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:PublishProfile="Publish BSK"
+        run: msbuild $env:Wpf_Project_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:PublishProfile="Publish BSK"
         env:
           AppxBundle: Never
           AppInstallerUri: ${{ matrix.DistributionUrl }}
