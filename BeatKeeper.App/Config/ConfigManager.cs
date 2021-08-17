@@ -2,6 +2,7 @@
 using Serilog;
 using System.IO;
 using System.Text.Json;
+using BeatKeeper.App.Utils;
 
 namespace BeatKeeper.App.Config
 {
@@ -45,6 +46,10 @@ namespace BeatKeeper.App.Config
                 log.Debug("Reading config from file {FilePath}", _filepath);
                 var json = File.ReadAllText(_filepath);
                 Config = JsonSerializer.Deserialize<BSKAppConfig>(json, jsonSerializerOptions);
+                if (IsConfigLoaded)
+                {
+                    Config.AppVersion = AppInfo.AppVersion;
+                }
             }
         }
         public void WriteConfig()
