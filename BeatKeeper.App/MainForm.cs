@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -397,6 +396,14 @@ namespace BeatKeeper.App
         private void aboutBeatSaberKeeperToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBoxUtils.AboutApp();
+        }
+        
+        private void openUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem {Tag: string url})
+            {
+                WindowsUtils.OpenUrl(url);
+            }
         }
     }
 }

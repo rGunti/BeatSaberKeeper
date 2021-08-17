@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 
 namespace BeatKeeper.App.Utils
 {
@@ -9,6 +11,18 @@ namespace BeatKeeper.App.Utils
             System.Diagnostics.Process.Start(
                 "explorer.exe",
                 $"/select,\"{Path.GetFullPath(filePath)}\"");
+        }
+
+        public static void OpenUrl(string url)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            } catch (Exception) { /* ignore */ }
         }
     }
 }

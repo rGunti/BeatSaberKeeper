@@ -79,6 +79,7 @@ namespace BeatKeeper.App
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.checkTheWebsiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.TabContainer.SuspendLayout();
             this.BackupTabPage.SuspendLayout();
@@ -242,6 +243,7 @@ namespace BeatKeeper.App
             // HelpMenu
             // 
             this.HelpMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkTheWebsiteToolStripMenuItem,
             this.viewSourceCodeOnGitHubToolStripMenuItem,
             this.aboutBeatSaberKeeperToolStripMenuItem});
             this.HelpMenu.Name = "HelpMenu";
@@ -252,7 +254,9 @@ namespace BeatKeeper.App
             // 
             this.viewSourceCodeOnGitHubToolStripMenuItem.Name = "viewSourceCodeOnGitHubToolStripMenuItem";
             this.viewSourceCodeOnGitHubToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.viewSourceCodeOnGitHubToolStripMenuItem.Tag = "https://github.com/rGunti/BeatSaberKeeper";
             this.viewSourceCodeOnGitHubToolStripMenuItem.Text = "View Source Code on GitHub";
+            this.viewSourceCodeOnGitHubToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
             // 
             // aboutBeatSaberKeeperToolStripMenuItem
             // 
@@ -492,6 +496,14 @@ namespace BeatKeeper.App
             this.StatusProgressBar.Name = "StatusProgressBar";
             this.StatusProgressBar.Size = new System.Drawing.Size(117, 18);
             // 
+            // checkTheWebsiteToolStripMenuItem
+            // 
+            this.checkTheWebsiteToolStripMenuItem.Name = "checkTheWebsiteToolStripMenuItem";
+            this.checkTheWebsiteToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.checkTheWebsiteToolStripMenuItem.Tag = "https://beatsaberkeeper.rgunti.ch/";
+            this.checkTheWebsiteToolStripMenuItem.Text = "Beat Saber Keeper Website";
+            this.checkTheWebsiteToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -575,6 +587,7 @@ namespace BeatKeeper.App
         private System.Windows.Forms.ToolStripMenuItem SettingsMenu;
         private System.Windows.Forms.ToolStripMenuItem SetGameDirectoryMenuItem;
         private System.Windows.Forms.ToolStripTextBox GameDirectoryTextBox;
+        private System.Windows.Forms.ToolStripMenuItem checkTheWebsiteToolStripMenuItem;
     }
 }
 
