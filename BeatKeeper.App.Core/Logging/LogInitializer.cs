@@ -28,7 +28,8 @@ namespace BeatKeeper.App.Core.Logging
                     {
                         a.File(
                             LOG_FILE,
-                            rollingInterval: RollingInterval.Day
+                            rollingInterval: RollingInterval.Day,
+                            retainedFileCountLimit: 5
                         )
                         .MinimumLevel.Information();
                     });
