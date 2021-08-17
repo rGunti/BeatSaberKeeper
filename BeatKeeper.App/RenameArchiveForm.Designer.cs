@@ -33,7 +33,7 @@ namespace BeatKeeper.App
         {
             this.ArchiveNameTextBox = new System.Windows.Forms.TextBox();
             this.ConfirmButton = new System.Windows.Forms.Button();
-            this.CancelButton = new System.Windows.Forms.Button();
+            this.CancelRenameButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ArchiveNameTextBox
@@ -58,23 +58,23 @@ namespace BeatKeeper.App
             // 
             // CancelButton
             // 
-            this.CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CancelButton.Location = new System.Drawing.Point(160, 45);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelButton.TabIndex = 2;
-            this.CancelButton.Text = "Cancel";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.CancelRenameButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.CancelRenameButton.Location = new System.Drawing.Point(160, 45);
+            this.CancelRenameButton.Name = "CancelButton";
+            this.CancelRenameButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelRenameButton.TabIndex = 2;
+            this.CancelRenameButton.Text = "Cancel";
+            this.CancelRenameButton.UseVisualStyleBackColor = true;
+            this.CancelRenameButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // RenameArchiveForm
             // 
             this.AcceptButton = this.ConfirmButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.CancelButton;
+            this.CancelButton = this.CancelRenameButton;
             this.ClientSize = new System.Drawing.Size(328, 80);
-            this.Controls.Add(this.CancelButton);
+            this.Controls.Add(this.CancelRenameButton);
             this.Controls.Add(this.ConfirmButton);
             this.Controls.Add(this.ArchiveNameTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -93,6 +93,6 @@ namespace BeatKeeper.App
 
         private System.Windows.Forms.TextBox ArchiveNameTextBox;
         private System.Windows.Forms.Button ConfirmButton;
-        private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Button CancelRenameButton;
     }
 }
