@@ -6,8 +6,11 @@
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>BeatSaberKeeper_Reborn</AssemblyName>
     <IsPackable>false</IsPackable>
-    <Company />
+    <Company>rGunti</Company>
     <Product>BeatSaberKeeper Reborn</Product>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0-alpha1</FileVersion>
+    <InformationalVersion>1.0.0-alpha1</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
