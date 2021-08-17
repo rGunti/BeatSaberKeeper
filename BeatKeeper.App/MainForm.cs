@@ -173,10 +173,14 @@ namespace BeatKeeper.App
             bool isSelected = selectedArtifact != null;
             bool isModBackup = IsBackupArchive(selectedArtifact);
 
+            UnpackRunMenuItem.Enabled = isSelected;
+            UnpackMenuItem.Enabled = isSelected;
             UpdateMenuItem.Enabled = isModBackup;
             CloneMenuItem.Enabled = isModBackup;
             RenameMenuItem.Enabled = isModBackup;
             DeleteMenuItem.Enabled = isSelected;
+            ShowInSystemExplorerMenuItem.Enabled = isSelected;
+            PropertiesMenuItem.Enabled = isSelected;
         }
 
         private Artifact GetSelectedArtifact(ListView listView)
