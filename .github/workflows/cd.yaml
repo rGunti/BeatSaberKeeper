@@ -3,24 +3,16 @@ on:
   push:
     tags:
       - '*'
-    branches:
-      - 'feature/ddl'
 
 jobs:
   build:
     strategy:
       matrix:
-        channel: [Dev, Release]
+        channel: [Release]
         targetPlatform: [x64]
         include:
-          - channel: Dev
-            ChannelName: Dev
-            Configuration: Debug
-            DistributionUrl: https://beatsaberkeeper.rgunti.ch
           - channel: Release
             Configuration: Release
-            ChannelName: Release
-            DistributionUrl: https://beatsaberkeeper.rgunti.ch
 
     runs-on: windows-latest
 
@@ -95,10 +87,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ env.NBGV_SemVer2 }}_${{ env.Configuration }}
-          release_name:  ${{ env.NBGV_SemVer2 }}_${{ env.Configuration }}
+          tag_name: ${{ env.NBGV_SemVer2 }}
+          release_name:  ${{ env.NBGV_SemVer2 }}
           draft: true
-          prerelease: true
+          prerelease: false
 
       # Upload release asset:   https://github.com/actions/upload-release-asset
       - name: Update release asset
