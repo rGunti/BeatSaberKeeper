@@ -83,7 +83,10 @@ jobs:
 
       # Archive the package
       - name: Create ${{ matrix.ChannelName }} Archive
-        run: Compress-Archive -Path .\out\$env:Configuration\* -DestinationPath BeatSaberKeeper_$env:Configuration_$env:NBGV_SemVer2.zip
+        run: |
+          $zipName = "BeatSaberKeeper_$env:Configuration_$env:NBGV_SemVer2.zip"
+          echo "Archiving .\out\$env:Configuration\* to $zipName ..."
+          Compress-Archive -Path .\out\$env:Configuration\* -DestinationPath $zipName
         env:
           AppInstallerUri: ${{ matrix.DistributionUrl }}
           Configuration: ${{ matrix.Configuration }}
