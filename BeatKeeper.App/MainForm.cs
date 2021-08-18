@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using BeatKeeper.App.Config;
 using BeatKeeper.App.Controls;
@@ -294,13 +295,34 @@ namespace BeatKeeper.App
 
         private void UnpackArtifact(Artifact artifact)
         {
-            MessageBoxUtils.NotImplemented("Unpacking archive");
+            SetStatus("Unpacking archive ...");
+            new BackgroundProcessControl(
+                    $"Unpacking {artifact.Name} ...",
+                    d =>
+                    {
+                        BeatKeeperPackageProcessor.UnpackArchive(
+                            artifact.FullPath,
+                            _configManager.Config.GamePath,
+                            d.SetStatus);
+                    }, () =>
+                    {
+                        SetStatus("Archive unpacked", 0);
+                    })
+                .ShowDialog();
         }
 
         private void UnpackAndRunArtifact(Artifact artifact)
         {
             UnpackArtifact(artifact);
-            MessageBoxUtils.NotImplemented("Starting game");
+            SetStatus("Launching game ...");
+            this.RunInBackgroundThread(() =>
+            {
+                Thread.Sleep(1500);
+                BeatSaberLauncher.Launch(_configManager.Config.GamePath);
+            }, () =>
+            {
+                SetStatus("Game launched", 0);
+            });
         }
 
         private void ShowArtifactInSystemExplorer(Artifact artifact)
