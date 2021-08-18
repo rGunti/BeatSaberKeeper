@@ -75,7 +75,7 @@ jobs:
           Configuration: ${{ matrix.Configuration }}
           TargetPlatform: ${{ matrix.targetplatform }}
       - name: Publish App for ${{ matrix.ChannelName }}
-        run: dotnet publis -c $env:Configuration -r win-x64 -o .\out\$env:Configuration $env:Wpf_Project_Path
+        run: dotnet publish -c $env:Configuration -r win-x64 -o .\out\$env:Configuration $env:Wpf_Project_Path
         env:
           AppInstallerUri: ${{ matrix.DistributionUrl }}
           Configuration: ${{ matrix.Configuration }}
