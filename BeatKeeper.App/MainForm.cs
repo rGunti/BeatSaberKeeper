@@ -364,7 +364,7 @@ namespace BeatKeeper.App
                                 (s, v, m) =>
                                 {
                                     bgDialog.SetStatus(s, v, m);
-                                    SetStatus(s, v / m);
+                                    SetStatus(s.Split('\n').FirstOrDefault(), (int)Math.Floor((double)v / m * 100));
                                 });
                         }
                         catch (IOException ex)
