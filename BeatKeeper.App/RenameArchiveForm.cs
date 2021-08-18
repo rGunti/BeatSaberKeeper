@@ -20,6 +20,12 @@ namespace BeatKeeper.App
 
         public string NewArchiveName => ArchiveNameTextBox.Text;
 
+        public string ConfirmationButtonText
+        {
+            get => ConfirmButton.Text;
+            set => ConfirmButton.Text = value;
+        }
+
         private void RenameArchiveForm_Load(object sender, System.EventArgs e)
         {
             ArchiveNameTextBox.Focus();

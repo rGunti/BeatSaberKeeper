@@ -20,6 +20,8 @@ namespace BeatKeeper.Kernel.Entities
         public string ArchiveVersion { get; set; }
 
         public string HumanReadableSize => Size.ToHumanReadableFileSize();
+        
+        public bool IsDefect { get; set; }
 
         public override string ToString()
         {

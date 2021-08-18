@@ -27,18 +27,37 @@ namespace BeatKeeper.Kernel.Repositories
         private Artifact ConvertToArtifact(string path)
         {
             var fi = new FileInfo(path);
-            var artifact = BeatKeeperPackageProcessor.ReadArchiveMetaData(path);
-            return new Artifact()
+            try
             {
-                Name = Path.GetFileNameWithoutExtension(fi.Name),
-                FullPath = path,
-                Created = fi.CreationTime,
-                LastUpdated = fi.LastWriteTime,
-                Size = fi.Length,
-                GameVersion = artifact?.GameVersion,
-                Type = artifact?.Type ?? ArtifactType.Unknown,
-                ArchiveVersion = artifact?.ArchiveVersion ?? BeatKeeperArchiveMetaData.UNKNOWN
-            };
+                var artifact = BeatKeeperPackageProcessor.ReadArchiveMetaData(path);
+                return new Artifact()
+                {
+                    Name = Path.GetFileNameWithoutExtension(fi.Name),
+                    FullPath = path,
+                    Created = fi.CreationTime,
+                    LastUpdated = fi.LastWriteTime,
+                    Size = fi.Length,
+                    GameVersion = artifact?.GameVersion,
+                    Type = artifact?.Type ?? ArtifactType.Unknown,
+                    ArchiveVersion = artifact?.ArchiveVersion ?? BeatKeeperArchiveMetaData.UNKNOWN
+                };
+            }
+            catch (InvalidDataException ex)
+            {
+                Log.ForContext<ArtifactRepository>().Error(ex, "Failed to read archive data from {ArchivePath}", path);
+                return new Artifact
+                {
+                    Name = Path.GetFileNameWithoutExtension(fi.Name),
+                    FullPath = path,
+                    Created = fi.CreationTime,
+                    LastUpdated = fi.LastWriteTime,
+                    Size = fi.Length,
+                    GameVersion = "<broken>",
+                    Type = ArtifactType.ModBackup, // <- this is a ModBackup so we can display it
+                    ArchiveVersion = BeatKeeperArchiveMetaData.UNKNOWN,
+                    IsDefect = true
+                };
+            }
         }
 
         public void Clone(Artifact entity, string newName)
@@ -53,7 +72,8 @@ namespace BeatKeeper.Kernel.Repositories
             try
             {
                 return ConvertToArtifact(Path.Combine(_artifactPath, $"{id}.bskeep"));
-            } catch (IOException)
+            }
+            catch (IOException)
             {
                 return null;
             }

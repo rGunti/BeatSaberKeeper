@@ -5,10 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using BeatKeeper.App.Config;
+using BeatKeeper.App.Controls;
 using BeatKeeper.App.Core;
 using BeatKeeper.App.Utils;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Repositories;
+using BeatKeeper.Kernel.Services;
 
 namespace BeatKeeper.App
 {
@@ -90,6 +92,7 @@ namespace BeatKeeper.App
 
         private static readonly Func<Artifact, bool> IsVanillaArchive = a => a != null && a.Type == ArtifactType.Vanilla;
         private static readonly Func<Artifact, bool> IsBackupArchive = a => a != null && a.Type == ArtifactType.ModBackup;
+        private static readonly Func<Artifact, bool> IsDefect = a => a != null && a.IsDefect;
 
         private void RenderGrids()
         {
@@ -107,7 +110,7 @@ namespace BeatKeeper.App
                     {
                         Text = a.GameVersion,
                         Tag = a,
-                        ImageKey = "Saber"
+                        ImageKey = a.IsDefect ? "Defect" : "Saber"
                     };
                     item.SubItems.Add(a.HumanReadableSize);
                     return item;
@@ -121,7 +124,7 @@ namespace BeatKeeper.App
                     {
                         Text = a.Name,
                         Tag = a,
-                        ImageKey = "SaberPack"
+                        ImageKey = a.IsDefect ? "Defect" : "SaberPack"
                     };
                     item.SubItems.Add(a.GameVersion);
                     item.SubItems.Add($"{a.LastUpdated}");
@@ -159,8 +162,12 @@ namespace BeatKeeper.App
             // Then, change some controls specifically when an artifact is selected
             if (selectedArtifact != null)
             {
-                bool isModBackup = IsBackupArchive(selectedArtifact);
+                bool isDefect = IsDefect(selectedArtifact);
+                bool isModBackup = IsBackupArchive(selectedArtifact) && !isDefect;
 
+                unpackToolStripMenuItem.Enabled = !isDefect;
+                unpackRunToolStripMenuItem.Enabled = !isDefect;
+                updateToolStripMenuItem.Enabled = !isDefect;
                 cloneToolStripMenuItem.Enabled = isModBackup;
                 updateToolStripMenuItem.Enabled = isModBackup;
                 renameToolStripMenuItem.Enabled = isModBackup;
@@ -171,10 +178,11 @@ namespace BeatKeeper.App
             Artifact selectedArtifact)
         {
             bool isSelected = selectedArtifact != null;
-            bool isModBackup = IsBackupArchive(selectedArtifact);
+            bool isDefect = IsDefect(selectedArtifact);
+            bool isModBackup = IsBackupArchive(selectedArtifact) && !isDefect;
 
-            UnpackRunMenuItem.Enabled = isSelected;
-            UnpackMenuItem.Enabled = isSelected;
+            UnpackRunMenuItem.Enabled = isSelected && !isDefect;
+            UnpackMenuItem.Enabled = isSelected && !isDefect;
             UpdateMenuItem.Enabled = isModBackup;
             CloneMenuItem.Enabled = isModBackup;
             RenameMenuItem.Enabled = isModBackup;
@@ -263,7 +271,7 @@ namespace BeatKeeper.App
         {
             MessageBoxUtils.Show(
                 $"Size: {artifact.HumanReadableSize} ({artifact.Size} bytes)\n" +
-                $"Archive Type: {artifact.Type} [{artifact.ArchiveVersion}]\n" +
+                $"Archive Type: {artifact.Type} [{artifact.ArchiveVersion}]{(artifact.IsDefect ? " [BROKEN]" : "null")}\n" +
                 $"Game Version: {artifact.GameVersion}\n" +
                 $"Created: {artifact.Created}\n" +
                 $"Last updated: {artifact.LastUpdated}\n\n" +
@@ -298,6 +306,77 @@ namespace BeatKeeper.App
         private void ShowArtifactInSystemExplorer(Artifact artifact)
         {
             WindowsUtils.ShowFileInExplorer(artifact.FullPath);
+        }
+
+        private bool SetGameDirectory()
+        {
+            if (_selectGameExeDialog.ShowDialog() != DialogResult.OK)
+            {
+                return false;
+            }
+            if (!File.Exists(_selectGameExeDialog.FileName))
+            {
+                return false;
+            }
+
+            _configManager.Config.GamePath = Path.GetDirectoryName(Path.GetFullPath(_selectGameExeDialog.FileName));
+            _configManager.WriteConfig();
+            
+            UpdateGameDirectory();
+            return true;
+        }
+
+        private void PackArchive()
+        {
+            var dialog = new RenameArchiveForm
+            {
+                Text = "Enter an archive name",
+                ConfirmationButtonText = "Pack"
+            };
+            while (true)
+            {
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                var newName = dialog.NewArchiveName;
+                if (_artifactRepository.Exists(newName))
+                {
+                    MessageBoxUtils.Warn($"The name \"{newName}\" is already taken. Please select a different name.");
+                    continue;
+                }
+
+                string versionFile = Path.Combine(_configManager.Config.GamePath, "BeatSaberVersion.txt");
+                string gameVersion = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "<unknown>";
+                SetStatus("Creating new archive ...");
+                new BackgroundProcessControl(
+                    $"Packing {newName} ...",
+                    bgDialog =>
+                    {
+                        bgDialog.SetStatus("Packing archive ...");
+                        try
+                        {
+                            BeatKeeperPackageProcessor.PackBackupArtifactV1(
+                                _configManager.Config.GamePath,
+                                Path.Combine(BSKConstants.Paths.Archives, $"{newName}.bskeep"),
+                                gameVersion,
+                                (s, v, m) =>
+                                {
+                                    bgDialog.SetStatus(s, v, m);
+                                    SetStatus(s, v / m);
+                                });
+                        }
+                        catch (IOException ex)
+                        {
+                            SetStatus($"Failed to pack game state", 0);
+                            MessageBoxUtils.Error($"Could not create archive.\n{ex.Message}");
+                        }
+                    }, UpdateGrids,
+                    TimeSpan.FromMilliseconds(100))
+                    .ShowDialog();
+                break;
+            }
         }
 
         private void DoArtifactContextAction(Func<Artifact> extractor, Action<Artifact> action)
@@ -381,21 +460,7 @@ namespace BeatKeeper.App
             => DoArtifactContextAction((ToolStripMenuItem)sender, UpdateArtifact);
 
         private void SetGameDirectoryMenuItem_Click(object sender, EventArgs e)
-        {
-            if (_selectGameExeDialog.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-            if (!File.Exists(_selectGameExeDialog.FileName))
-            {
-                return;
-            }
-
-            _configManager.Config.GamePath = Path.GetDirectoryName(Path.GetFullPath(_selectGameExeDialog.FileName));
-            _configManager.WriteConfig();
-            
-            UpdateGameDirectory();
-        }
+            => SetGameDirectory();
 
         private void aboutBeatSaberKeeperToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -408,6 +473,21 @@ namespace BeatKeeper.App
             {
                 WindowsUtils.OpenUrl(url);
             }
+        }
+
+        private void NewMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_configManager.Config.GamePath))
+            {
+                MessageBoxUtils.Warn("You haven't set the game directory yet. " +
+                                     "Please select the folder where Beat Saber is installed.");
+                if (!SetGameDirectory())
+                {
+                    return;
+                }
+            }
+
+            PackArchive();
         }
     }
 }
