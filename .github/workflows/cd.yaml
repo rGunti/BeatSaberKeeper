@@ -61,36 +61,32 @@ jobs:
           $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
           $manifest.save(".\$env:Wpf_Project_Path")
 
-      # Restore the application
+      # Restore, build and publish the application
       - name:  Restore
         run: dotnet restore $env:Wpf_Project_Path
         env:
           Configuration: ${{ matrix.Configuration }}
-          RuntimeIdentifier: win-${{ matrix.targetplatform }}
-
       - name: Build App for ${{ matrix.ChannelName }}
         run: dotnet build -c $env:Configuration -r win-x64 $env:Wpf_Project_Path
         env:
-          AppInstallerUri: ${{ matrix.DistributionUrl }}
           Configuration: ${{ matrix.Configuration }}
-          TargetPlatform: ${{ matrix.targetplatform }}
       - name: Publish App for ${{ matrix.ChannelName }}
         run: dotnet publish -c $env:Configuration -r win-x64 -o .\out\$env:Configuration $env:Wpf_Project_Path
         env:
-          AppInstallerUri: ${{ matrix.DistributionUrl }}
           Configuration: ${{ matrix.Configuration }}
-          TargetPlatform: ${{ matrix.targetplatform }}
 
       # Archive the package
       - name: Create ${{ matrix.ChannelName }} Archive
         run: |
-          $zipName = "BeatSaberKeeper_$env:Configuration_$env:NBGV_SemVer2.zip"
-          echo "Archiving .\out\$env:Configuration\* to $zipName ..."
-          Compress-Archive -Path .\out\$env:Configuration\* -DestinationPath $zipName
+          $cfg = $env:Configuration
+          $ver = $env:NBGV_SemVer2
+          $cfg
+          $ver
+          $zipName = "BeatSaberKeeper_$cfg_$ver.zip"
+          echo "Archiving .\out\$cfg\* to $zipName ..."
+          Compress-Archive -Path .\out\$cfg\* -DestinationPath $zipName
         env:
-          AppInstallerUri: ${{ matrix.DistributionUrl }}
           Configuration: ${{ matrix.Configuration }}
-          TargetPlatform: ${{ matrix.targetplatform }}
 
       # Create the release:  https://github.com/actions/create-release
       - name: Create release
