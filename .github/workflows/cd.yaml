@@ -25,8 +25,6 @@ jobs:
     runs-on: windows-latest
 
     env:
-      App_Packages_Archive: AppPackages.zip
-      App_Packages_Directory: AppPackages
       Solution_Path: BeatKeeper.sln
       Wpf_Project_Path: BeatKeeper.App\BeatKeeper.App.csproj
       Actions_Allow_Unsecure_Commands: true # Allows AddPAth and SetEnv commands
@@ -65,35 +63,31 @@ jobs:
 
       # Restore the application
       - name:  Restore
-        run: msbuild $env:Wpf_Project_Path /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RuntimeIdentifier
+        run: dotnet restore $env:Wpf_Project_Path
         env:
           Configuration: ${{ matrix.Configuration }}
           RuntimeIdentifier: win-${{ matrix.targetplatform }}
 
-      # Build the Windows Application Packaging project for Dev and Prod_Sideload
       - name: Build App for ${{ matrix.ChannelName }}
-        run: msbuild $env:Wpf_Project_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:PublishProfile="Publish BSK" /p:PublishDir=./publish/full
+        run: dotnet build -c $env:Configuration -r win-x64 $env:Wpf_Project_Path
         env:
-          AppxBundle: Never
           AppInstallerUri: ${{ matrix.DistributionUrl }}
-          BuildMode: SideloadOnly
           Configuration: ${{ matrix.Configuration }}
-          GenerateAppInstallerFile: True
           TargetPlatform: ${{ matrix.targetplatform }}
-
-      - name: Build Lite App for ${{ matrix.ChannelName }}
-        run: msbuild $env:Wpf_Project_Path /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:PublishProfile="Publish BSK Lite" /p:PublishDir=./publish/lite
+      - name: Publish App for ${{ matrix.ChannelName }}
+        run: dotnet publis -c $env:Configuration -r win-x64 -o .\out\$env:Configuration $env:Wpf_Project_Path
         env:
-          AppxBundle: Never
           AppInstallerUri: ${{ matrix.DistributionUrl }}
-          BuildMode: SideloadOnly
           Configuration: ${{ matrix.Configuration }}
-          GenerateAppInstallerFile: True
           TargetPlatform: ${{ matrix.targetplatform }}
 
       # Archive the package
-      - name: Create archive
-        run: Compress-Archive -Path .\publish\* -DestinationPath BeatSaberKeeper_$env:NBGV_SemVer2.zip
+      - name: Create ${{ matrix.ChannelName }} Archive
+        run: Compress-Archive -Path .\out\$env:Configuration\* -DestinationPath BeatSaberKeeper_$env:Configuration_$env:NBGV_SemVer2.zip
+        env:
+          AppInstallerUri: ${{ matrix.DistributionUrl }}
+          Configuration: ${{ matrix.Configuration }}
+          TargetPlatform: ${{ matrix.targetplatform }}
 
       # Create the release:  https://github.com/actions/create-release
       - name: Create release
@@ -115,6 +109,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: BeatSaberKeeper_${{ env.NBGV_SemVer2 }}.zip
-          asset_name: BeatSaberKeeper_${{ env.NBGV_SemVer2 }}.zip
+          asset_path: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_SemVer2 }}.zip
+          asset_name: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_SemVer2 }}.zip
           asset_content_type: application/zip

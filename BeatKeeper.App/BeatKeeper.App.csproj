@@ -11,17 +11,13 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <InformationalVersion>1.0.0-alpha2</InformationalVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BeatKeeper.App.Core\BeatKeeper.App.Core.csproj" />
     <ProjectReference Include="..\BeatKeeper.Kernel\BeatKeeper.Kernel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
