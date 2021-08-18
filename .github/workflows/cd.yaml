@@ -82,7 +82,7 @@ jobs:
           $ver = $env:NBGV_SemVer2
           $cfg
           $ver
-          $zipName = "BeatSaberKeeper_$cfg_$ver.zip"
+          $zipName = "BeatSaberKeeper_${cfg}_${ver}.zip"
           echo "Archiving .\out\$cfg\* to $zipName ..."
           Compress-Archive -Path .\out\$cfg\* -DestinationPath $zipName
         env:
