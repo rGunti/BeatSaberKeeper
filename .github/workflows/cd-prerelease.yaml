@@ -1,4 +1,4 @@
-﻿name: BSK Prerelease Build
+﻿name: BSK Prerelease Publisher
 on:
   push:
     branches:
@@ -28,17 +28,17 @@ jobs:
           setAllVars: true
       - name: Update Version in Project Files
         run: |
-          [xml]$manifest = get-content ".\$env:ProjectPath"
+          [xml]$manifest = get-content ".\$env:ProjectFile"
           $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_SemVer2"
           $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
           $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
-          $manifest.save(".\$env:ProjectPath")
+          $manifest.save(".\$env:ProjectFile")
       - name: Restore dependencies
-        run: dotnet restore $env:ProjectPath
+        run: dotnet restore $env:ProjectFile
       - name: Build Project
-        run: dotnet build -c Release -r win-x64 $env:ProjectPath
+        run: dotnet build -c Release -r win-x64 $env:ProjectFile
       - name: Publish App
-        run: dotnet publish -c Release -r win-x64 -o .\out\ $env:ProjectPath
+        run: dotnet publish -c Release -r win-x64 -o .\out\ $env:ProjectFile
       - name: Package App
         run: Compress-Archive -Path .\out\* -DestinationPath BeatSaberKeeper.zip
       - name: Create release

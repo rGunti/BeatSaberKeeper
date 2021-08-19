@@ -1,4 +1,4 @@
-﻿name: BeatSaberKeeper Continuous Build
+﻿name: BSK PR Validation
 on: [pull_request]
 jobs:
   build:

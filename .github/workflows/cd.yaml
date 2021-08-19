@@ -1,4 +1,4 @@
-﻿name: BeatSaberKeeper Publish
+﻿name: BSK Release Publisher
 on:
   push:
     tags:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: Build & Publish Release
     strategy:
       matrix:
         channel: [Release]
