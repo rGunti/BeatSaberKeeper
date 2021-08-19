@@ -6,7 +6,7 @@
     "^refs/tags/\\d+\\.\\d+"
   ],
   "release": {
-    "branchName": "v{version}",
+    "branchName": "release/v{version}",
     "versionIncrement": "minor",
     "firstUnstableTag": "alpha"
   }
