@@ -49,10 +49,10 @@ jobs:
       - name: Update manifest version
         run: |
           [xml]$manifest = get-content ".\$env:Wpf_Project_Path"
-          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_SemVer2"
+          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_AssemblyInformationalVersion"
           $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
           $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
-          $manifest.save(".\$env:Wpf_Project_Path")
+          $manifest.Save(".\$env:Wpf_Project_Path")
 
       # Restore, build and publish the application
       - name:  Restore
@@ -72,7 +72,7 @@ jobs:
       - name: Create ${{ matrix.ChannelName }} Archive
         run: |
           $cfg = $env:Configuration
-          $ver = $env:NBGV_SemVer2
+          $ver = $env:NBGV_AssemblyInformationalVersion
           $cfg
           $ver
           $zipName = "BeatSaberKeeper_${cfg}_${ver}.zip"
@@ -88,8 +88,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ env.NBGV_SemVer2 }}
-          release_name:  ${{ env.NBGV_SemVer2 }}
+          tag_name: ${{ env.NBGV_AssemblyInformationalVersion }}
+          release_name:  ${{ env.NBGV_AssemblyInformationalVersion }}
           draft: true
           prerelease: false
 
@@ -102,6 +102,6 @@ jobs:
           Configuration: ${{ matrix.Configuration }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_SemVer2 }}.zip
-          asset_name: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_SemVer2 }}.zip
+          asset_path: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_AssemblyInformationalVersion }}.zip
+          asset_name: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_AssemblyInformationalVersion }}.zip
           asset_content_type: application/zip
