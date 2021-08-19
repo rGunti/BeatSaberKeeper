@@ -13,6 +13,7 @@
     <InformationalVersion></InformationalVersion>
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>saber.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
