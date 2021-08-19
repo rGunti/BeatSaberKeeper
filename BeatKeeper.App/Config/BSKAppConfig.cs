@@ -6,5 +6,7 @@ namespace BeatKeeper.App.Config
     {
         public string AppVersion { get; set; } = AppInfo.AppVersion;
         public string GamePath { get; set; }
+        public bool PrereleaseOptIn { get; set; }
+        public bool CheckForUpdatesOnStartup { get; set; } = true;
     }
 }

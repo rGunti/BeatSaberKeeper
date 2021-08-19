@@ -19,6 +19,7 @@ namespace BeatKeeper.App
     {
         private readonly ArtifactRepository _artifactRepository;
         private readonly ConfigManager _configManager;
+        private readonly IReleaseChecker _releaseChecker = new BskReleaseChecker();
 
         private List<Artifact> _artifacts = new();
         
@@ -33,15 +34,18 @@ namespace BeatKeeper.App
             InitializeComponent();
             _artifactRepository = new ArtifactRepository(BSKConstants.Paths.Archives);
             _configManager = ConfigManager.Instance;
-            UpdateGameDirectory();
+            UpdateConfigDisplay();
         }
 
-        private void UpdateGameDirectory()
+        private void UpdateConfigDisplay()
         {
             string gameDirectory = _configManager.Config.GamePath;
             
             _selectGameExeDialog.FileName = gameDirectory;
             GameDirectoryTextBox.Text = gameDirectory;
+
+            CheckForUpdatesOnStartupMenuItem.Checked = _configManager.Config.CheckForUpdatesOnStartup;
+            PreReleaseMenuItem.Checked = _configManager.Config.PrereleaseOptIn;
         }
 
         private void DownloadVanillaArchiveMenuItem_Click(object sender, EventArgs e)
@@ -75,6 +79,10 @@ namespace BeatKeeper.App
         {
             UpdateGrids();
             UpdateMenuItems(null);
+            if (_configManager.Config.CheckForUpdatesOnStartup)
+            {
+                CheckForUpdates();
+            }
         }
 
         private void UpdateGrids()
@@ -142,6 +150,36 @@ namespace BeatKeeper.App
         {
             BackupTabPage.Text = $"Backups ({_artifacts.Where(IsBackupArchive).Count()})";
             VanillaTabPage.Text = $"Vanilla Archives ({_artifacts.Where(IsVanillaArchive).Count()})";
+        }
+
+        private void CheckForUpdates()
+        {
+            SetStatus("Checking for updates ...");
+            string latestVersion = null;
+            this.RunInBackgroundThread(() =>
+            {
+                latestVersion = _releaseChecker.CheckForNewVersion(_configManager.Config.PrereleaseOptIn);
+            }, () =>
+            {
+                if (_releaseChecker.HasNewVersion(latestVersion))
+                {
+                    SetStatus($"New version available: {latestVersion}", 0);
+                    if (MessageBoxUtils.Ask(
+                        $"A new version of BeatSaberKeeper is available.\n" +
+                        $"\n" +
+                        $"You are currently running {AppInfo.AppVersion}, the latest available " +
+                        $"version is {latestVersion}.\n" +
+                        $"Do you want to download it?",
+                        "Update available"))
+                    {
+                        _releaseChecker.DownloadLatestVersion(_configManager.Config.PrereleaseOptIn);
+                    }
+                }
+                else
+                {
+                    SetStatus("Checked for updates, no updates available", 0);
+                }
+            });
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -347,7 +385,7 @@ namespace BeatKeeper.App
             _configManager.Config.GamePath = Path.GetDirectoryName(Path.GetFullPath(_selectGameExeDialog.FileName));
             _configManager.WriteConfig();
             
-            UpdateGameDirectory();
+            UpdateConfigDisplay();
             return true;
         }
 
@@ -518,6 +556,25 @@ namespace BeatKeeper.App
             }
 
             PackArchive();
+        }
+
+        private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CheckForUpdates();
+        }
+
+        private void PreReleaseMenuItem_Click(object sender, EventArgs e)
+        {
+            _configManager.Config.PrereleaseOptIn = !_configManager.Config.PrereleaseOptIn;
+            _configManager.WriteConfig();
+            UpdateConfigDisplay();
+        }
+
+        private void CheckForUpdatesOnStartupMenuItem_Click(object sender, EventArgs e)
+        {
+            _configManager.Config.CheckForUpdatesOnStartup = !_configManager.Config.CheckForUpdatesOnStartup;
+            _configManager.WriteConfig();
+            UpdateConfigDisplay();
         }
     }
 }

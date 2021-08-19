@@ -52,9 +52,15 @@ namespace BeatKeeper.App
             this.SettingsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.SetGameDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameDirectoryTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.PreReleaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.whereAreMyArchivesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.checkTheWebsiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewSourceCodeOnGitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutBeatSaberKeeperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TabContainer = new System.Windows.Forms.TabControl();
             this.BackupTabPage = new System.Windows.Forms.TabPage();
@@ -82,8 +88,7 @@ namespace BeatKeeper.App
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
-            this.whereAreMyArchivesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CheckForUpdatesOnStartupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.TabContainer.SuspendLayout();
             this.BackupTabPage.SuspendLayout();
@@ -240,7 +245,10 @@ namespace BeatKeeper.App
             // 
             this.SettingsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SetGameDirectoryMenuItem,
-            this.GameDirectoryTextBox});
+            this.GameDirectoryTextBox,
+            this.toolStripSeparator6,
+            this.CheckForUpdatesOnStartupMenuItem,
+            this.PreReleaseMenuItem});
             this.SettingsMenu.Name = "SettingsMenu";
             this.SettingsMenu.Size = new System.Drawing.Size(61, 20);
             this.SettingsMenu.Text = "&Settings";
@@ -259,6 +267,20 @@ namespace BeatKeeper.App
             this.GameDirectoryTextBox.ReadOnly = true;
             this.GameDirectoryTextBox.Size = new System.Drawing.Size(250, 23);
             // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(307, 6);
+            // 
+            // PreReleaseMenuItem
+            // 
+            this.PreReleaseMenuItem.Name = "PreReleaseMenuItem";
+            this.PreReleaseMenuItem.Size = new System.Drawing.Size(310, 22);
+            this.PreReleaseMenuItem.Text = "Opt in to Pre-Releases";
+            this.PreReleaseMenuItem.ToolTipText = "If enabled, you will get updates sooner but they might not be as stable as regula" +
+    "r releases or contain unfinished features.";
+            this.PreReleaseMenuItem.Click += new System.EventHandler(this.PreReleaseMenuItem_Click);
+            // 
             // HelpMenu
             // 
             this.HelpMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -266,10 +288,25 @@ namespace BeatKeeper.App
             this.toolStripMenuItem3,
             this.checkTheWebsiteToolStripMenuItem,
             this.viewSourceCodeOnGitHubToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.checkForUpdatesToolStripMenuItem,
             this.aboutBeatSaberKeeperToolStripMenuItem});
             this.HelpMenu.Name = "HelpMenu";
             this.HelpMenu.Size = new System.Drawing.Size(24, 20);
             this.HelpMenu.Text = "&?";
+            // 
+            // whereAreMyArchivesToolStripMenuItem
+            // 
+            this.whereAreMyArchivesToolStripMenuItem.Name = "whereAreMyArchivesToolStripMenuItem";
+            this.whereAreMyArchivesToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.whereAreMyArchivesToolStripMenuItem.Tag = "https://beatsaberkeeper.rgunti.ch/help/where-are-my-archives";
+            this.whereAreMyArchivesToolStripMenuItem.Text = "Where are my archives?";
+            this.whereAreMyArchivesToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(224, 6);
             // 
             // checkTheWebsiteToolStripMenuItem
             // 
@@ -286,6 +323,18 @@ namespace BeatKeeper.App
             this.viewSourceCodeOnGitHubToolStripMenuItem.Tag = "https://github.com/rGunti/BeatSaberKeeper";
             this.viewSourceCodeOnGitHubToolStripMenuItem.Text = "View Source Code on GitHub";
             this.viewSourceCodeOnGitHubToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(224, 6);
+            // 
+            // checkForUpdatesToolStripMenuItem
+            // 
+            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";
+            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
             // 
             // aboutBeatSaberKeeperToolStripMenuItem
             // 
@@ -465,7 +514,7 @@ namespace BeatKeeper.App
             this.VanillaTabPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.VanillaTabPage.Name = "VanillaTabPage";
             this.VanillaTabPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.VanillaTabPage.Size = new System.Drawing.Size(612, 341);
+            this.VanillaTabPage.Size = new System.Drawing.Size(612, 346);
             this.VanillaTabPage.TabIndex = 1;
             this.VanillaTabPage.Text = "Vanilla Archives";
             this.VanillaTabPage.UseVisualStyleBackColor = true;
@@ -482,7 +531,7 @@ namespace BeatKeeper.App
             this.VanillaArchivesListView.Location = new System.Drawing.Point(4, 3);
             this.VanillaArchivesListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.VanillaArchivesListView.Name = "VanillaArchivesListView";
-            this.VanillaArchivesListView.Size = new System.Drawing.Size(604, 335);
+            this.VanillaArchivesListView.Size = new System.Drawing.Size(604, 340);
             this.VanillaArchivesListView.SmallImageList = this.imageList1;
             this.VanillaArchivesListView.TabIndex = 0;
             this.VanillaArchivesListView.UseCompatibleStateImageBehavior = false;
@@ -526,17 +575,12 @@ namespace BeatKeeper.App
             this.StatusProgressBar.Name = "StatusProgressBar";
             this.StatusProgressBar.Size = new System.Drawing.Size(117, 18);
             // 
-            // toolStripMenuItem3
+            // CheckForUpdatesOnStartupMenuItem
             // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(224, 6);
-            // 
-            // whereAreMyArchivesToolStripMenuItem
-            // 
-            this.whereAreMyArchivesToolStripMenuItem.Name = "whereAreMyArchivesToolStripMenuItem";
-            this.whereAreMyArchivesToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
-            this.whereAreMyArchivesToolStripMenuItem.Text = "Where are my archives?";
-            this.whereAreMyArchivesToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
+            this.CheckForUpdatesOnStartupMenuItem.Name = "CheckForUpdatesOnStartupMenuItem";
+            this.CheckForUpdatesOnStartupMenuItem.Size = new System.Drawing.Size(310, 22);
+            this.CheckForUpdatesOnStartupMenuItem.Text = "Check for Updates on Startup";
+            this.CheckForUpdatesOnStartupMenuItem.Click += new System.EventHandler(this.CheckForUpdatesOnStartupMenuItem_Click);
             // 
             // MainForm
             // 
@@ -627,6 +671,11 @@ namespace BeatKeeper.App
         private System.Windows.Forms.ToolStripMenuItem checkTheWebsiteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem whereAreMyArchivesToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem PreReleaseMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CheckForUpdatesOnStartupMenuItem;
     }
 }
 
