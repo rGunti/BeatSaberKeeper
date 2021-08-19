@@ -1,7 +1,8 @@
-﻿name: BeatSaberKeeper Continuous Build
+﻿name: BSK PR Validation
 on: [pull_request]
 jobs:
   build:
+    name: 'Validate Pull Request Builds'
     runs-on: windows-latest
     env:
       ProjectPath: BeatKeeper.App/BeatKeeper.App.csproj
