@@ -1,0 +1,59 @@
+﻿name: BSK Prerelease Build
+on:
+  push:
+    branches:
+      - 'release/*'
+
+jobs:
+  build:
+    name: Build & Publish Prerelease Build
+    runs-on: windows-latest
+    env: 
+      ProjectFile: BeatKeeper.App/BeatKeeper.App.csproj
+    steps:
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0'
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set Version
+        uses: aarnott/nbgv@v0.3
+        with:
+          setAllVars: true
+      - name: Update Version in Project Files
+        run: |
+          [xml]$manifest = get-content ".\$env:ProjectPath"
+          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_SemVer2"
+          $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
+          $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
+          $manifest.save(".\$env:ProjectPath")
+      - name: Restore dependencies
+        run: dotnet restore $env:ProjectPath
+      - name: Build Project
+        run: dotnet build -c Release -r win-x64 $env:ProjectPath
+      - name: Publish App
+        run: dotnet publish -c Release -r win-x64 -o .\out\ $env:ProjectPath
+      - name: Package App
+        run: Compress-Archive -Path .\out\* -DestinationPath BeatSaberKeeper.zip
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.NBGV_SemVer2 }}
+          release_name:  ${{ env.NBGV_SemVer2 }}
+          draft: false
+          prerelease: true
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: BeatSaberKeeper.zip
+          asset_name: BeatSaberKeeper_${{ env.NBGV_SemVer2 }}.zip
+          asset_content_type: application/zip
