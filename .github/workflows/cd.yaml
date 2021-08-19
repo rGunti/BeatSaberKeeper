@@ -1,0 +1,106 @@
+﻿name: BeatSaberKeeper Publish
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        channel: [Release]
+        targetPlatform: [x64]
+        include:
+          - channel: Release
+            Configuration: Release
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Path: BeatKeeper.sln
+      Wpf_Project_Path: BeatKeeper.App\BeatKeeper.App.csproj
+      Actions_Allow_Unsecure_Commands: true # Allows AddPAth and SetEnv commands
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+      # Use Nerdbank.GitVersioning to set version variables: https://github.com/AArnott/nbgv
+      - name: Set Version
+        uses: aarnott/nbgv@v0.3
+        with:
+          setAllVars: true
+
+      # Install the .NET Core workload
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.303'
+
+      # Add  MsBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.1
+
+      # Update the appxmanifest before build by setting the per-channel values set in the matrix such as
+      # the Package.Identity.Version or the Package.Identity.Name, which allows multiple channels to be built.
+      - name: Update manifest version
+        run: |
+          [xml]$manifest = get-content ".\$env:Wpf_Project_Path"
+          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_SemVer2"
+          $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
+          $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
+          $manifest.save(".\$env:Wpf_Project_Path")
+
+      # Restore, build and publish the application
+      - name:  Restore
+        run: dotnet restore $env:Wpf_Project_Path
+        env:
+          Configuration: ${{ matrix.Configuration }}
+      - name: Build App for ${{ matrix.ChannelName }}
+        run: dotnet build -c $env:Configuration -r win-x64 $env:Wpf_Project_Path
+        env:
+          Configuration: ${{ matrix.Configuration }}
+      - name: Publish App for ${{ matrix.ChannelName }}
+        run: dotnet publish -c $env:Configuration -r win-x64 -o .\out\$env:Configuration $env:Wpf_Project_Path
+        env:
+          Configuration: ${{ matrix.Configuration }}
+
+      # Archive the package
+      - name: Create ${{ matrix.ChannelName }} Archive
+        run: |
+          $cfg = $env:Configuration
+          $ver = $env:NBGV_SemVer2
+          $cfg
+          $ver
+          $zipName = "BeatSaberKeeper_${cfg}_${ver}.zip"
+          echo "Archiving .\out\$cfg\* to $zipName ..."
+          Compress-Archive -Path .\out\$cfg\* -DestinationPath $zipName
+        env:
+          Configuration: ${{ matrix.Configuration }}
+
+      # Create the release:  https://github.com/actions/create-release
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ env.NBGV_SemVer2 }}
+          release_name:  ${{ env.NBGV_SemVer2 }}
+          draft: true
+          prerelease: false
+
+      # Upload release asset:   https://github.com/actions/upload-release-asset
+      - name: Update release asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          Configuration: ${{ matrix.Configuration }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_SemVer2 }}.zip
+          asset_name: BeatSaberKeeper_${{ env.Configuration }}_${{ env.NBGV_SemVer2 }}.zip
+          asset_content_type: application/zip

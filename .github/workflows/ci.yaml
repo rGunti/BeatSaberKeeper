@@ -1,0 +1,23 @@
+﻿name: BeatSaberKeeper Continuous Build
+on: [pull_request]
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      ProjectPath: BeatKeeper.App/BeatKeeper.App.csproj
+    steps:
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0'
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Restore dependencies
+        run: dotnet restore $env:ProjectPath
+      - name: Build Project
+        run: dotnet build -r win-x64 $env:ProjectPath
+      # TODO: Implement Unit Tests
+      #- name: Run Tests
+      #  run: dotnet test 
