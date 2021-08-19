@@ -265,7 +265,10 @@ namespace BeatKeeper.App
 
         private void UpdateArtifact(Artifact artifact)
         {
-            MessageBoxUtils.NotImplemented("Updating artifact");
+            if (MessageBoxUtils.Ask($"Do you want to update \"{artifact.Name}\"?"))
+            {
+                PackArchive(artifact.Name);
+            }
         }
 
         private void ShowArtifactProperties(Artifact artifact)
@@ -369,11 +372,18 @@ namespace BeatKeeper.App
                     continue;
                 }
 
-                string versionFile = Path.Combine(_configManager.Config.GamePath, "BeatSaberVersion.txt");
-                string gameVersion = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "<unknown>";
-                SetStatus("Creating new archive ...");
-                new BackgroundProcessControl(
-                    $"Packing {newName} ...",
+                PackArchive(newName);
+                break;
+            }
+        }
+
+        private void PackArchive(string archiveName)
+        {
+            string versionFile = Path.Combine(_configManager.Config.GamePath, "BeatSaberVersion.txt");
+            string gameVersion = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "<unknown>";
+            SetStatus("Creating new archive ...");
+            new BackgroundProcessControl(
+                    $"Packing {archiveName} ...",
                     bgDialog =>
                     {
                         bgDialog.SetStatus("Packing archive ...");
@@ -381,7 +391,7 @@ namespace BeatKeeper.App
                         {
                             BeatKeeperPackageProcessor.PackBackupArtifactV1(
                                 _configManager.Config.GamePath,
-                                Path.Combine(BSKConstants.Paths.Archives, $"{newName}.bskeep"),
+                                Path.Combine(BSKConstants.Paths.Archives, $"{archiveName}.bskeep"),
                                 gameVersion,
                                 (s, v, m) =>
                                 {
@@ -396,9 +406,7 @@ namespace BeatKeeper.App
                         }
                     }, UpdateGrids,
                     TimeSpan.FromMilliseconds(100))
-                    .ShowDialog();
-                break;
-            }
+                .ShowDialog();
         }
 
         private void DoArtifactContextAction(Func<Artifact> extractor, Action<Artifact> action)
