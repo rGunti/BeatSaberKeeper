@@ -29,13 +29,6 @@ jobs:
         uses: aarnott/nbgv@v0.3
         with:
           setAllVars: true
-      - name: Update Version in Project Files
-        run: |
-          [xml]$manifest = get-content ".\$env:ProjectFile"
-          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_AssemblyInformationalVersion"
-          $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
-          $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
-          $manifest.save(".\$env:ProjectFile")
       - name: Restore dependencies
         run: dotnet restore $env:ProjectFile
       - name: Build Project
