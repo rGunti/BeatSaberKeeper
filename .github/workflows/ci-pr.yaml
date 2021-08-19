@@ -2,6 +2,7 @@
 on: [pull_request]
 jobs:
   build:
+    name: 'Validate Pull Request Builds'
     runs-on: windows-latest
     env:
       ProjectPath: BeatKeeper.App/BeatKeeper.App.csproj
