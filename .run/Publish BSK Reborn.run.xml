@@ -1,0 +1,6 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish BSK Reborn" type="DotNetFolderPublish" factoryName="Publish to folder">
+    <riderPublish configuration="Release" delete_existing_files="true" platform="Any CPU" produce_single_file="true" ready_to_run="true" runtime="win-x64" target_folder="$PROJECT_DIR$/BeatKeeper.App/bin/Release/net5.0-windows/publish" target_framework="net5.0-windows" uuid_high="4656575989293007417" uuid_low="-4765667596835328635" />
+    <method v="2" />
+  </configuration>
+</component>

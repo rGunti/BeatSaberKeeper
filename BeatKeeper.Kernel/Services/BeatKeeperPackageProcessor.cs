@@ -21,7 +21,8 @@ namespace BeatKeeper.Kernel.Services
         public static void PackVanillaArtifactV1(
             string sourcePath,
             string targetPath,
-            string gameVersion)
+            string gameVersion,
+            Action<string, int, int> statusReport = null)
         {
             var fileIndex = CreateFileIndex(sourcePath)
                 .Select(f => new BeatKeeperArchiveFile(f, f.Replace(sourcePath, "").Substring(1)))
@@ -34,7 +35,8 @@ namespace BeatKeeper.Kernel.Services
                     GameVersion = gameVersion,
                     Type = ArtifactType.Vanilla
                 },
-                fileIndex);
+                fileIndex,
+                statusReport);
         }
 
         public static void PackBackupArtifactV1(
@@ -211,6 +213,7 @@ namespace BeatKeeper.Kernel.Services
 
     public class BeatKeeperArchiveMetaData
     {
+        public const string UNKNOWN = "unknown";
         public const string V1 = "v1";
 
         public string ArchiveVersion { get; set; } = V1;
