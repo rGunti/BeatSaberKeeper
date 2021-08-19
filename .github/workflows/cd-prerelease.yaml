@@ -10,6 +10,9 @@ jobs:
     runs-on: windows-latest
     env: 
       ProjectFile: BeatKeeper.App/BeatKeeper.App.csproj
+      # Required to set Env Vars in scripts:
+      Actions_Allow_Unsecure_Commands: true
+
     steps:
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v1
