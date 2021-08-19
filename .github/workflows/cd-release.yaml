@@ -1,8 +1,11 @@
 ﻿name: BSK Release Publisher
 on:
   push:
-    tags:
-      - '*'
+    branches: 
+      - 'master'
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
 
 jobs:
   build:
