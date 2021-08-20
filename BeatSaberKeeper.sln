@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatKeeper.App.Core", "BeatKeeper.App.Core\BeatKeeper.App.Core.csproj", "{C40BA396-FC21-49F4-9E50-3AA8AE400A6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.App.Core", "BeatSaberKeeper.App.Core\BeatSaberKeeper.App.Core.csproj", "{C40BA396-FC21-49F4-9E50-3AA8AE400A6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatKeeper.Kernel", "BeatKeeper.Kernel\BeatKeeper.Kernel.csproj", "{52EA5C55-2B4B-40C2-B056-DCDC9C0FF7C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.Kernel", "BeatSaberKeeper.Kernel\BeatSaberKeeper.Kernel.csproj", "{52EA5C55-2B4B-40C2-B056-DCDC9C0FF7C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatKeeper.App", "BeatKeeper.App\BeatKeeper.App.csproj", "{4F88DA5F-9D09-4094-821D-4FFE78507043}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.App", "BeatSaberKeeper.App\BeatSaberKeeper.App.csproj", "{4F88DA5F-9D09-4094-821D-4FFE78507043}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Configs", "_Configs", "{FD5C4FDD-6437-4815-8792-C5269B90D03B}"
 ProjectSection(SolutionItems) = preProject

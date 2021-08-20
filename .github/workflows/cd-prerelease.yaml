@@ -1,8 +1,8 @@
-﻿name: BSK Release Publisher
+﻿name: BSK Pre-Release Publisher
 on:
   push:
     branches:
-      - 'master'
+      - 'release/*'
     paths-ignore:
       - 'docs/**'
       - 'README.md'
@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: Build & Publish Release Build
+    name: Build & Publish Pre-Release Build
     runs-on: windows-latest
     env: 
       ProjectFile: BeatSaberKeeper.App/BeatSaberKeeper.App.csproj
@@ -48,7 +48,7 @@ jobs:
           tag_name: ${{ env.NBGV_AssemblyInformationalVersion }}
           release_name:  ${{ env.NBGV_SemVer2 }}
           draft: true
-          prerelease: false
+          prerelease: true
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:

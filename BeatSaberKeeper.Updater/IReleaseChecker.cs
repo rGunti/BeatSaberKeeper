@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using BeatSaberKeeper.Updater;
 
-namespace BeatKeeper.App.Utils.Updater
+namespace BeatSaberKeeper.Updater
 {
     public interface IReleaseChecker
     {

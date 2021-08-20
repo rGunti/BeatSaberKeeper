@@ -1,5 +1,4 @@
 using System;
-using BeatKeeper.App.Utils.Updater;
 using BeatSaberKeeper.Updater;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
