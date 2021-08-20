@@ -8,7 +8,7 @@ namespace BeatKeeper.App.Utils.Updater
         BskVersion GetLatestVersion(bool includePrerelease = false);
         Task<BskVersion> GetLatestVersionAsync(bool includePrerelease = false);
 
-        string GetDownloadUrlForVersion(BskVersion version);
-        Task<string> GetDownloadUrlForVersion(string version);
+        Task<string> GetDownloadUrlForVersionAsync(BskVersion version);
+        Task<string> GetDownloadUrlForVersionAsync(string version);
     }
 }

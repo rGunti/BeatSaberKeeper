@@ -1,75 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BeatKeeper.App.Utils.Updater;
 using Octokit;
 
-namespace BeatKeeper.App.Utils.Updater
-{/*
+namespace BeatSaberKeeper.Updater
+{
     public class BskReleaseChecker : IReleaseChecker
     {
         private const string REPO_AUTHOR = "rGunti";
         private const string REPO_NAME = "BeatSaberKeeper";
 
         private readonly GitHubClient _gitHubClient;
-        private Release _latestRelease;
 
         public BskReleaseChecker()
         {
-            _gitHubClient = new GitHubClient(new ProductHeaderValue("BeatSaberKeeper", InstalledVersion));
+            _gitHubClient = new GitHubClient(
+                new ProductHeaderValue(REPO_NAME));
         }
 
-        public string InstalledVersion => throw new NotImplementedException();
-
-        private async Task<Release> GetLatestRelease(bool includePrereleases)
+        private async Task<IEnumerable<Release>> GetReleases(bool includePrerelease)
         {
-            if (_latestRelease == null)
+            IEnumerable<Release> releases = (await _gitHubClient.Repository.Release.GetAll(REPO_AUTHOR, REPO_NAME))
+                .Where(r => !r.Draft);
+            if (!includePrerelease)
             {
-                IEnumerable<Release> releases = await _gitHubClient.Repository.Release.GetAll(REPO_AUTHOR, REPO_NAME);
-                releases = releases.Where(r => !r.Draft);
-                if (!includePrereleases)
-                {
-                    releases = releases.Where(r => !r.Prerelease);
-                }
-                _latestRelease = releases.FirstOrDefault();
+                releases = releases.Where(r => !r.Prerelease);
             }
-            return _latestRelease;
+            return releases;
         }
 
-        public string CheckForNewVersion(bool includePrerelease)
+        public BskVersion GetLatestVersion(bool includePrerelease = false)
         {
-            return CheckForNewVersionAsync(includePrerelease).GetAwaiter().GetResult();
+            return GetLatestVersionAsync(includePrerelease).GetAwaiter().GetResult();
         }
 
-        public async Task<string> CheckForNewVersionAsync(bool includePrerelease)
+        public async Task<BskVersion> GetLatestVersionAsync(bool includePrerelease = false)
         {
-            var latestRelease = await GetLatestRelease(includePrerelease);
-            return latestRelease?.TagName;
-        }
-
-        public bool HasNewVersion(bool includePrerelease)
-        {
-            return HasNewVersionAsync(includePrerelease).GetAwaiter().GetResult();
-        }
-
-        public bool HasNewVersion(string latestVersion)
-        {
-            return latestVersion != null && latestVersion != InstalledVersion;
-        }
-
-        public async Task<bool> HasNewVersionAsync(bool includePrerelease)
-        {
-            return HasNewVersion(await CheckForNewVersionAsync(includePrerelease));
-        }
-
-        public void DownloadLatestVersion(bool includePrerelease)
-        {
-            var release = GetLatestRelease(includePrerelease).GetAwaiter().GetResult();
-            var downloadUrl = release.Assets.FirstOrDefault()?.BrowserDownloadUrl;
-            if (!string.IsNullOrWhiteSpace(downloadUrl))
+            Release latestRelease = (await GetReleases(includePrerelease))
+                .OrderByDescending(r => r.CreatedAt)
+                .FirstOrDefault();
+            if (latestRelease == null)
             {
-                WindowsUtils.OpenUrl(downloadUrl);
+                return null;
             }
+
+            return BskVersion.TryParse(latestRelease.TagName, out BskVersion bskVersion) ?
+                    bskVersion :
+                    null;
+        }
+
+        public Task<string> GetDownloadUrlForVersionAsync(BskVersion version)
+            => GetDownloadUrlForVersionAsync(version.ToString());
+
+        public async Task<string> GetDownloadUrlForVersionAsync(string version)
+        {
+            Release release = await _gitHubClient.Repository.Release.Get(
+                REPO_AUTHOR, REPO_NAME, version);
+            return release?.AssetsUrl;
         }
     }
-*/}
+}
