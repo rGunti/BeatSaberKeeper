@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Octokit;
 
 namespace BeatKeeper.App.Utils.Updater
-{
+{/*
     public class BskReleaseChecker : IReleaseChecker
     {
         private const string REPO_AUTHOR = "rGunti";
@@ -18,7 +19,7 @@ namespace BeatKeeper.App.Utils.Updater
             _gitHubClient = new GitHubClient(new ProductHeaderValue("BeatSaberKeeper", InstalledVersion));
         }
 
-        public string InstalledVersion => $"{AppInfo.AppVersion}";
+        public string InstalledVersion => throw new NotImplementedException();
 
         private async Task<Release> GetLatestRelease(bool includePrereleases)
         {
@@ -71,4 +72,4 @@ namespace BeatKeeper.App.Utils.Updater
             }
         }
     }
-}
+*/}

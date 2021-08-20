@@ -18,6 +18,10 @@ ProjectSection(SolutionItems) = preProject
 	README.md = README.md
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.Updater", "BeatSaberKeeper.Updater\BeatSaberKeeper.Updater.csproj", "{CDEA8B1F-52AC-447C-ABBB-443C86566524}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.Tests", "BeatSaberKeeper.Tests\BeatSaberKeeper.Tests.csproj", "{531C89F9-A18E-485C-B8F5-BB79FE6AC225}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,13 @@ Global
 		{4F88DA5F-9D09-4094-821D-4FFE78507043}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F88DA5F-9D09-4094-821D-4FFE78507043}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F88DA5F-9D09-4094-821D-4FFE78507043}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDEA8B1F-52AC-447C-ABBB-443C86566524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDEA8B1F-52AC-447C-ABBB-443C86566524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDEA8B1F-52AC-447C-ABBB-443C86566524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDEA8B1F-52AC-447C-ABBB-443C86566524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{531C89F9-A18E-485C-B8F5-BB79FE6AC225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{531C89F9-A18E-485C-B8F5-BB79FE6AC225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{531C89F9-A18E-485C-B8F5-BB79FE6AC225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{531C89F9-A18E-485C-B8F5-BB79FE6AC225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
