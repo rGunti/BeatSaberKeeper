@@ -13,6 +13,7 @@ using BeatKeeper.App.Utils.Updater;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Repositories;
 using BeatKeeper.Kernel.Services;
+using BeatSaberKeeper.Updater;
 
 namespace BeatKeeper.App
 {
@@ -36,6 +37,13 @@ namespace BeatKeeper.App
             _artifactRepository = new ArtifactRepository(BSKConstants.Paths.Archives);
             _configManager = ConfigManager.Instance;
             UpdateConfigDisplay();
+
+            // ReSharper disable once VirtualMemberCallInConstructor
+#if DEBUG
+            Text = $@"{AppInfo.AppName} - v{AppInfo.AppVersion}";
+#else
+            Text = $@"{AppInfo.AppName} - v{AppInfo.AppVersion.ToShortString()}";
+#endif
         }
 
         private void UpdateConfigDisplay()
@@ -156,13 +164,13 @@ namespace BeatKeeper.App
         private void CheckForUpdates()
         {
             SetStatus("Checking for updates ...");
-            string latestVersion = null;
+            BskVersion latestVersion = null;
             this.RunInBackgroundThread(() =>
             {
-                latestVersion = _releaseChecker.CheckForNewVersion(_configManager.Config.PrereleaseOptIn);
+                latestVersion = _releaseChecker.GetLatestVersion(_configManager.Config.PrereleaseOptIn);
             }, () =>
             {
-                if (_releaseChecker.HasNewVersion(latestVersion))
+                if (latestVersion != null && latestVersion > AppInfo.AppVersion)
                 {
                     SetStatus($"New version available: {latestVersion}", 0);
                     if (MessageBoxUtils.Ask(
@@ -173,13 +181,33 @@ namespace BeatKeeper.App
                         $"Do you want to download it?",
                         "Update available"))
                     {
-                        _releaseChecker.DownloadLatestVersion(_configManager.Config.PrereleaseOptIn);
+                        DownloadUpdate(latestVersion);
                     }
+                }
+                else if (latestVersion != null)
+                {
+                    SetStatus("Checked for updates, you have the latest version available", 0);
                 }
                 else
                 {
-                    SetStatus("Checked for updates, no updates available", 0);
+                    SetStatus("Couldn't check for updates (Is your internet connection working?)", 0);
                 }
+            });
+        }
+
+        private void DownloadUpdate(BskVersion version)
+        {
+            SetStatus("Getting update ready to download ...");
+            this.RunInBackgroundThread(async () =>
+            {
+                string downloadUrl = await _releaseChecker.GetDownloadUrlForVersionAsync(version);
+                if (!string.IsNullOrWhiteSpace(downloadUrl))
+                {
+                    WindowsUtils.OpenUrl(downloadUrl);
+                }
+            }, () =>
+            {
+                SetStatus("Update requested", 0);
             });
         }
 

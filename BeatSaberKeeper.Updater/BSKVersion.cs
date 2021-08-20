@@ -118,18 +118,22 @@ namespace BeatSaberKeeper.Updater
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append($"{Major}.{Minor}.{Revision}");
-            if (!string.IsNullOrWhiteSpace(Suffix))
-            {
-                sb.Append($"-{Suffix}");
-            }
-
+            sb.Append(ToShortString());
             if (!string.IsNullOrWhiteSpace(Commit))
             {
                 sb.Append($"+{Commit}");
             }
-
             return sb.ToString();
+        }
+
+        public string ToShortString()
+        {
+            var s = $"{Major}.{Minor}.{Revision}";
+            if (!string.IsNullOrWhiteSpace(Suffix))
+            {
+                s += $"-{Suffix}";
+            }
+            return s;
         }
 
         public bool IsSameAs(BskVersion version, BskVersionEqualityLevel level = BskVersionEqualityLevel.Exact)

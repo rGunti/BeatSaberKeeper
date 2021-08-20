@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BeatKeeper.App.Core\BeatKeeper.App.Core.csproj" />
     <ProjectReference Include="..\BeatKeeper.Kernel\BeatKeeper.Kernel.csproj" />
+    <ProjectReference Include="..\BeatSaberKeeper.Updater\BeatSaberKeeper.Updater.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +32,10 @@
     <Compile Update="RenameArchiveForm.cs">
       <SubType>Form</SubType>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PandaDotNet.Utils" Version="0.2.0" />
   </ItemGroup>
 
 </Project>
