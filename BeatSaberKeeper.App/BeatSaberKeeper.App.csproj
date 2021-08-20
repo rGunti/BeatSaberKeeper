@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>BeatSaberKeeper_Reborn</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <Company>rGunti</Company>
+    <Product>BeatSaberKeeper - REBORN</Product>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <InformationalVersion></InformationalVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>saber.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BeatSaberKeeper.App.Core\BeatSaberKeeper.App.Core.csproj" />
+    <ProjectReference Include="..\BeatSaberKeeper.Kernel\BeatSaberKeeper.Kernel.csproj" />
+    <ProjectReference Include="..\BeatSaberKeeper.Updater\BeatSaberKeeper.Updater.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Controls\BackgroundProcessControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Controls\BackgroundProcessControl.Designer.cs">
+      <DependentUpon>BackgroundProcessControl.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RenameArchiveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PandaDotNet.Utils" Version="0.2.0" />
+  </ItemGroup>
+
+</Project>
