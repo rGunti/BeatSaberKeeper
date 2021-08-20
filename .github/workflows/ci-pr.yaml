@@ -26,7 +26,7 @@ jobs:
           dotnet restore $env:TestProjectPath
       - name: Build Project
         run: |
-          dotnet build -r win-x64 $env:ProjectPath
-          dotnet build $env:TestProjectPath
+          dotnet build --no-restore -r win-x64 $env:ProjectPath
+          dotnet build --no-restore $env:TestProjectPath
       - name: Run Tests
         run: dotnet test --no-restore --verbosity normal $env:TestProjectPath
