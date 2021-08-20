@@ -10,6 +10,7 @@ jobs:
     runs-on: windows-latest
     env:
       ProjectPath: BeatKeeper.App/BeatKeeper.App.csproj
+      TestProjectPath: BeatSaberKeeper.Tests/BeatSaberKeeper.Tests.csproj
     steps:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v1
@@ -20,9 +21,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Restore dependencies
-        run: dotnet restore $env:ProjectPath
+        run: |
+          dotnet restore $env:ProjectPath
+          dotnet restore $env:TestProjectPath
       - name: Build Project
-        run: dotnet build -r win-x64 $env:ProjectPath
-      # TODO: Implement Unit Tests
-      #- name: Run Tests
-      #  run: dotnet test 
+        run: |
+          dotnet build -r win-x64 $env:ProjectPath
+          dotnet build $env:TestProjectPath
+      - name: Run Tests
+        run: dotnet test --no-restore --verbosity normal $env:TestProjectPath
