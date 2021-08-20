@@ -13,7 +13,7 @@ build: restore
 	dotnet build --no-restore $(SLN)
 
 test: build
-	dotnet test --no-restore $(TEST_PROJECT)
+	dotnet test --no-restore --verbosity normal $(TEST_PROJECT)
 
 clean:
 	dotnet clean $(SLN)
