@@ -9,7 +9,7 @@ jobs:
     name: 'Validate Pull Request Builds'
     runs-on: windows-latest
     env:
-      ProjectPath: BeatKeeper.App/BeatKeeper.App.csproj
+      ProjectPath: BeatSaberKeeper.App/BeatSaberKeeper.App.csproj
       TestProjectPath: BeatSaberKeeper.Tests/BeatSaberKeeper.Tests.csproj
     steps:
       - name: Install .NET Core

@@ -2,17 +2,21 @@
 # BeatSaberKeeper Makefile #
 # ======================== #
 
-PROJECT = ./BeatKeeper.App/BeatKeeper.App.csproj
+SLN = ./BeatSaberKeeper.sln
+PROJECT = ./BeatSaberKeeper.App/BeatSaberKeeper.App.csproj
+TEST_PROJECT = ./BeatSaberKeeper.Tests/BeatSaberKeeper.Tests.csproj
 
 restore:
-	dotnet restore $(PROJECT)
+	dotnet restore $(SLN)
 
 build: restore
-	dotnet build $(PROJECT)
+	dotnet build --no-restore $(SLN)
+
+test: build
+	dotnet test --no-restore $(TEST_PROJECT)
 
 clean:
-	dotnet clean $(PROJECT)
-	dotnet clean BeatKeeper.sln
+	dotnet clean $(SLN)
 
 setup-env:
 	dotnet tool install -g nbgv
