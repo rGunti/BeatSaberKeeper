@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using BeatKeeper.App.Utils.Updater;
 using BeatSaberKeeper.App.Core;
 using BeatSaberKeeper.Kernel.Entities;
 using BeatSaberKeeper.Kernel.Repositories;
