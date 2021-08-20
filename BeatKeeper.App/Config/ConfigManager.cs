@@ -48,7 +48,7 @@ namespace BeatKeeper.App.Config
                 Config = JsonSerializer.Deserialize<BSKAppConfig>(json, jsonSerializerOptions);
                 if (IsConfigLoaded)
                 {
-                    Config.AppVersion = AppInfo.AppVersion;
+                    Config!.AppVersion = AppInfo.AppVersion.ToString();
                 }
             }
         }
