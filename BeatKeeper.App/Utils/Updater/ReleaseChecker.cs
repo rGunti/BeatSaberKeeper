@@ -1,25 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Octokit;
 
-namespace BeatKeeper.App.Utils
+namespace BeatKeeper.App.Utils.Updater
 {
-    public interface IReleaseChecker
-    {
-        string InstalledVersion { get; }
-        string CheckForNewVersion(bool includePrerelease);
-        Task<string> CheckForNewVersionAsync(bool includePrerelease);
-
-        bool HasNewVersion(bool includePrerelease);
-        bool HasNewVersion(string latestVersion);
-        Task<bool> HasNewVersionAsync(bool includePrerelease);
-
-        void DownloadLatestVersion(bool includePrerelease);
-    }
-
     public class BskReleaseChecker : IReleaseChecker
     {
         private const string REPO_AUTHOR = "rGunti";

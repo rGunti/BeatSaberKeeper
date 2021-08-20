@@ -9,6 +9,7 @@ using BeatKeeper.App.Config;
 using BeatKeeper.App.Controls;
 using BeatKeeper.App.Core;
 using BeatKeeper.App.Utils;
+using BeatKeeper.App.Utils.Updater;
 using BeatKeeper.Kernel.Entities;
 using BeatKeeper.Kernel.Repositories;
 using BeatKeeper.Kernel.Services;
