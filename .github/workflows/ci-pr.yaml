@@ -4,6 +4,8 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'README.md'
+      - 'Makefile'
+      - 'LICENSE'
 jobs:
   build:
     name: 'Validate Pull Request Builds'
