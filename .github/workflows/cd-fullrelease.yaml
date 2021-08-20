@@ -1,12 +1,15 @@
-﻿name: BSK Prerelease Publisher
+﻿name: BSK Release Publisher
 on:
   push:
     branches:
-      - 'release/*'
+      - 'master'
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
 
 jobs:
   build:
-    name: Build & Publish Prerelease Build
+    name: Build & Publish Release Build
     runs-on: windows-latest
     env: 
       ProjectFile: BeatKeeper.App/BeatKeeper.App.csproj
@@ -26,13 +29,6 @@ jobs:
         uses: aarnott/nbgv@v0.3
         with:
           setAllVars: true
-      - name: Update Version in Project Files
-        run: |
-          [xml]$manifest = get-content ".\$env:ProjectFile"
-          $manifest.Project.PropertyGroup.InformationalVersion = "$env:NBGV_AssemblyInformationalVersion"
-          $manifest.Project.PropertyGroup.FileVersion = "$env:NBGV_AssemblyFileVersion"
-          $manifest.Project.PropertyGroup.AssemblyVersion = "$env:NBGV_AssemblyVersion"
-          $manifest.save(".\$env:ProjectFile")
       - name: Restore dependencies
         run: dotnet restore $env:ProjectFile
       - name: Build Project
@@ -48,9 +44,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.NBGV_AssemblyInformationalVersion }}
-          release_name:  ${{ env.NBGV_AssemblyInformationalVersion }}
-          draft: false
-          prerelease: true
+          release_name:  ${{ env.NBGV_SemVer2 }}
+          draft: true
+          prerelease: false
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
@@ -58,5 +54,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: BeatSaberKeeper.zip
-          asset_name: BeatSaberKeeper_${{ env.NBGV_AssemblyInformationalVersion }}.zip
+          asset_name: BeatSaberKeeper_${{ env.NBGV_SemVer2 }}.zip
           asset_content_type: application/zip
