@@ -11,7 +11,7 @@ jobs:
     name: 'Validate Pull Request Builds'
     runs-on: windows-latest
     env:
-      ProjectPath: BeatSaberKeeper.App/BeatSaberKeeper.App.csproj
+      SolutionPath: BeatSaberKeeper.sln
       TestProjectPath: BeatSaberKeeper.Tests/BeatSaberKeeper.Tests.csproj
     steps:
       - name: Install .NET Core
@@ -23,12 +23,8 @@ jobs:
         with:
           fetch-depth: 0
       - name: Restore dependencies
-        run: |
-          dotnet restore $env:ProjectPath
-          dotnet restore $env:TestProjectPath
-      - name: Build Project
-        run: |
-          dotnet build --no-restore -r win-x64 $env:ProjectPath
-          dotnet build --no-restore $env:TestProjectPath
+        run: dotnet restore $env:SolutionPath
+      - name: Build Solution
+        run: dotnet build --no-restore $env:SolutionPath
       - name: Run Tests
         run: dotnet test --no-restore --verbosity normal $env:TestProjectPath
