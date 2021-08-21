@@ -5,6 +5,7 @@ using System.Linq;
 using System.Timers;
 using System.Windows.Forms;
 using BeatSaberKeeper.App.Config;
+using BeatSaberKeeper.App.Properties;
 using BeatSaberKeeper.App.Utils;
 using BeatSaberKeeper.Plugin.SongExplorer;
 using BeatSaberKeeper.Plugin.SongExplorer.MetaData;
@@ -20,6 +21,7 @@ namespace BeatSaberKeeper.App.Tools
         private readonly SongReader _songReader;
         
         private readonly WaveOut _waveOut = new();
+        private IWaveProvider _currentlyPlayingFile = null;
         private Level _currentlyPlayingSong = null;
 
         public SongExplorer()
@@ -28,7 +30,7 @@ namespace BeatSaberKeeper.App.Tools
             _songReader = new SongReader(_configManager.Config.GamePath);
         }
 
-        private void SetStatus(string statusString, int percentage = -1)
+        private void SetStatus(string statusString)
         {
             this.RunInUiThread(() =>
             {
@@ -38,13 +40,18 @@ namespace BeatSaberKeeper.App.Tools
 
         private void UpdateCurrentlyPlayingStatus()
         {
-            if (_currentlyPlayingSong == null || _waveOut.PlaybackState == PlaybackState.Stopped)
+            SEPlayerPauseButton.Image = _waveOut.PlaybackState == PlaybackState.Playing ? Resources.pause : Resources.play;
+            if (_currentlyPlayingSong == null)
             {
-                return;
+                SEPlayerTimeLabel.Text = @$"{TimeSpan.FromSeconds(0):h':'mm':'ss}";
+                SECurrentSongLabel.Text = "< Ready >";
+            } else
+            {
+                LevelInfo levelInfo = _currentlyPlayingSong.LevelInfo;
+                SetStatus($"Playing \"{levelInfo.SongName}\" by {levelInfo.SongAuthorName}");
+                SEPlayerTimeLabel.Text = @$"{_waveOut.GetPositionTimeSpan():h':'mm':'ss}";
+                SECurrentSongLabel.Text = $"\"{levelInfo.SongName}\" by {levelInfo.SongAuthorName}";
             }
-
-            LevelInfo levelInfo = _currentlyPlayingSong.LevelInfo;
-            SetStatus($"Playing \"{levelInfo.SongName}\" by {levelInfo.SongAuthorName} [{_waveOut.GetPositionTimeSpan():h':'mm':'ss}]");
         }
 
         private void CloseMenuItem_Click(object sender, EventArgs e)
@@ -82,6 +89,7 @@ namespace BeatSaberKeeper.App.Tools
             {
                 ListViewItem lvi = SEList.Items.Add(level.LevelInfo.SongName);
                 lvi.Tag = level;
+                lvi.ImageKey = "audio";
                 lvi.SubItems.AddRange(new []
                 {
                     level.LevelInfo.SongAuthorName,
@@ -163,8 +171,8 @@ namespace BeatSaberKeeper.App.Tools
             }
 
             _currentlyPlayingSong = level;
-            var vorbis = new VorbisWaveReader(level.AudioFilePath);
-            _waveOut.Init(vorbis);
+            _currentlyPlayingFile = new VorbisWaveReader(level.AudioFilePath);
+            _waveOut.Init(_currentlyPlayingFile);
             _waveOut.Play();
         }
 
@@ -176,6 +184,24 @@ namespace BeatSaberKeeper.App.Tools
             if (_waveOut.PlaybackState != PlaybackState.Stopped)
             {
                 UpdateCurrentlyPlayingStatus();
+            }
+        }
+
+        private void SEPlayerStopButton_Click(object sender, EventArgs e)
+        {
+            _waveOut.Stop();
+        }
+
+        private void SEPlayerPauseButton_Click(object sender, EventArgs e)
+        {
+            switch (_waveOut.PlaybackState)
+            {
+                case PlaybackState.Playing:
+                    _waveOut.Pause();
+                    break;
+                case PlaybackState.Paused:
+                    _waveOut.Play();
+                    break;
             }
         }
     }
