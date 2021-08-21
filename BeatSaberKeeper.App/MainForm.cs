@@ -341,7 +341,7 @@ namespace BeatSaberKeeper.App
         {
             MessageBoxUtils.Show(
                 $"Size: {artifact.HumanReadableSize} ({artifact.Size} bytes)\n" +
-                $"Archive Type: {artifact.Type} [{artifact.ArchiveVersion}]{(artifact.IsDefect ? " [BROKEN]" : "null")}\n" +
+                $"Archive Type: {artifact.Type} [{artifact.ArchiveVersion}]{(artifact.IsDefect ? " [BROKEN]" : "")}\n" +
                 $"Game Version: {artifact.GameVersion}\n" +
                 $"Created: {artifact.Created}\n" +
                 $"Last updated: {artifact.LastUpdated}\n\n" +
