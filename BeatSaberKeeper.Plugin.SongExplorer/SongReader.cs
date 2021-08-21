@@ -21,13 +21,13 @@ namespace BeatSaberKeeper.Plugin.SongExplorer
 
         public string CustomLevelPath => Path.GetFullPath(Path.Combine(_gameDirectory, InternalCustomLevelPath));
 
-        public IEnumerable<string> GetLevels()
+        public IEnumerable<string> GetLevelNames()
         {
             return Directory.GetDirectories(CustomLevelPath)
                 .Select(Path.GetFileName);
         }
         
-        public Level GetLevelInfo(string name)
+        public Level ReadLevel(string name)
         {
             string dir = Path.Combine(CustomLevelPath, name);
             var level = new Level

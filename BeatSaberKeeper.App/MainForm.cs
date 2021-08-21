@@ -11,6 +11,7 @@ using BeatSaberKeeper.Kernel.Repositories;
 using BeatSaberKeeper.Kernel.Services;
 using BeatSaberKeeper.App.Config;
 using BeatSaberKeeper.App.Controls;
+using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
 using BeatSaberKeeper.Updater;
 
@@ -603,6 +604,11 @@ namespace BeatSaberKeeper.App
             _configManager.Config.CheckForUpdatesOnStartup = !_configManager.Config.CheckForUpdatesOnStartup;
             _configManager.WriteConfig();
             UpdateConfigDisplay();
+        }
+        
+        private void SongExplorerMenuItem_Click(object sender, EventArgs e)
+        {
+            new SongExplorer().ShowDialog();
         }
     }
 }
