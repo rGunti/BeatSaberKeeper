@@ -32,10 +32,12 @@ namespace BeatSaberKeeper.App.Core
             public const string DEFAULT_TEMP_DIRECTORY = "temp";
             public const string DEFAULT_STAGING_DIRECTORY = "staging";
             public const string DEFAULT_ARCHIVES_DIRECTORY = "archives";
+            public const string DEFAULT_LOG_DIRECTORY = "logs";
 
             public static readonly string DefaultWorkingPath = Path.Combine(BaseDirectory, DEFAULT_WORKING_DIRECTORY);
             public static readonly string Temp = Path.Combine(DefaultWorkingPath, DEFAULT_TEMP_DIRECTORY);
             public static readonly string Staging = Path.Combine(DefaultWorkingPath, DEFAULT_STAGING_DIRECTORY);
+            public static readonly string Logs = Path.Combine(DefaultWorkingPath, DEFAULT_LOG_DIRECTORY);
 
             public static readonly string Archives = Path.Combine(DefaultWorkingPath, DEFAULT_ARCHIVES_DIRECTORY);
             //public static readonly string VanillaArchives = Path.Combine(Archives, "vanilla");
