@@ -49,7 +49,7 @@ namespace BeatSaberKeeper.App
             {
                 if (errors.Any(x => x is HelpRequestedError))
                 {
-                    MessageBoxUtils.Show(CommandLineHelpText);
+                    Application.Run(new MonoSpaceTextOutputForm(helpText.ToString()));
                 } else if (errors.Any(x => x is VersionRequestedError))
                 {
                     MessageBoxUtils.Show($"This is {AppInfo.AppName} {AppInfo.AppVersion}");
@@ -58,7 +58,7 @@ namespace BeatSaberKeeper.App
             }
             else
             {
-                MessageBoxUtils.Show(helpText.ToString());
+                Application.Run(new MonoSpaceTextOutputForm(helpText.ToString()));
             }
             Debug.WriteLine("Exit code {0}", result);
             return result;

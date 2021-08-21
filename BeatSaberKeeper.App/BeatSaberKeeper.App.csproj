@@ -36,6 +36,9 @@
     <Compile Update="Tools\SongExplorer.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Utils\MonoSpaceTextOutputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
