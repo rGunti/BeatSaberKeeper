@@ -42,6 +42,8 @@ namespace BeatSaberKeeper.App.Tools
             this.LevelAuthorColumn = new System.Windows.Forms.ColumnHeader();
             this.LevelBpmColumn = new System.Windows.Forms.ColumnHeader();
             this.LevelDifficultiesColumn = new System.Windows.Forms.ColumnHeader();
+            this.SEContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PlaySongContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SEMainMenu = new System.Windows.Forms.MenuStrip();
             this.FileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,12 +51,15 @@ namespace BeatSaberKeeper.App.Tools
             this.RefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SEToolBar = new System.Windows.Forms.ToolStrip();
             this.SEToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.SEStatusUpdateTimer = new System.Timers.Timer();
             this.SongExplorerFrame.BottomToolStripPanel.SuspendLayout();
             this.SongExplorerFrame.ContentPanel.SuspendLayout();
             this.SongExplorerFrame.TopToolStripPanel.SuspendLayout();
             this.SongExplorerFrame.SuspendLayout();
             this.SEStatusBar.SuspendLayout();
+            this.SEContextMenu.SuspendLayout();
             this.SEMainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize) (this.SEStatusUpdateTimer)).BeginInit();
             this.SuspendLayout();
             // 
             // SongExplorerFrame
@@ -98,6 +103,7 @@ namespace BeatSaberKeeper.App.Tools
             // SEList
             // 
             this.SEList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {this.SongNameColumn, this.SongAuthorColumn, this.LevelAuthorColumn, this.LevelBpmColumn, this.LevelDifficultiesColumn});
+            this.SEList.ContextMenuStrip = this.SEContextMenu;
             this.SEList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SEList.FullRowSelect = true;
             this.SEList.GridLines = true;
@@ -135,6 +141,20 @@ namespace BeatSaberKeeper.App.Tools
             // 
             this.LevelDifficultiesColumn.Text = "Difficulties";
             this.LevelDifficultiesColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // SEContextMenu
+            // 
+            this.SEContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.PlaySongContextMenuItem});
+            this.SEContextMenu.Name = "SEContextMenu";
+            this.SEContextMenu.Size = new System.Drawing.Size(127, 26);
+            this.SEContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.SEContextMenu_Opening);
+            // 
+            // PlaySongContextMenuItem
+            // 
+            this.PlaySongContextMenuItem.Name = "PlaySongContextMenuItem";
+            this.PlaySongContextMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.PlaySongContextMenuItem.Text = "Play Song";
+            this.PlaySongContextMenuItem.Click += new System.EventHandler(this.PlaySongContextMenuItem_Click);
             // 
             // SEMainMenu
             // 
@@ -183,6 +203,13 @@ namespace BeatSaberKeeper.App.Tools
             this.SEToolBar.Size = new System.Drawing.Size(111, 25);
             this.SEToolBar.TabIndex = 1;
             // 
+            // SEStatusUpdateTimer
+            // 
+            this.SEStatusUpdateTimer.Enabled = true;
+            this.SEStatusUpdateTimer.Interval = 499D;
+            this.SEStatusUpdateTimer.SynchronizingObject = this;
+            this.SEStatusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.SEStatusUpdateTimer_Elapsed);
+            // 
             // SongExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -204,10 +231,17 @@ namespace BeatSaberKeeper.App.Tools
             this.SongExplorerFrame.PerformLayout();
             this.SEStatusBar.ResumeLayout(false);
             this.SEStatusBar.PerformLayout();
+            this.SEContextMenu.ResumeLayout(false);
             this.SEMainMenu.ResumeLayout(false);
             this.SEMainMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize) (this.SEStatusUpdateTimer)).EndInit();
             this.ResumeLayout(false);
         }
+
+        private System.Timers.Timer SEStatusUpdateTimer;
+
+        private System.Windows.Forms.ContextMenuStrip SEContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem PlaySongContextMenuItem;
 
         private System.Windows.Forms.ToolTip SEToolTip;
 

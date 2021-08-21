@@ -11,6 +11,7 @@ namespace BeatSaberKeeper.Plugin.SongExplorer
         public LevelLoadError Error { get; set; }
 
         public string InfoDatPath => Path.Combine(FullPath, "info.dat");
+        public string AudioFilePath => Path.Combine(FullPath, LevelInfo.SongFilename);
 
         public override string ToString()
         {
