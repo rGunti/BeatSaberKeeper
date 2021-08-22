@@ -5,7 +5,7 @@ namespace BeatSaberKeeper.App.Utils
 {
     public static class MessageBoxUtils
     {
-        private const string APP_NAME = "Beat Saber Keeper";
+        private const string APP_NAME = "BeatSaberKeeper";
 
         public static void Info(
             string message,
