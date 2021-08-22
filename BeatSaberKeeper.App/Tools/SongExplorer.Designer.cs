@@ -41,7 +41,7 @@ namespace BeatSaberKeeper.App.Tools
             this.SongAuthorColumn = new System.Windows.Forms.ColumnHeader();
             this.LevelAuthorColumn = new System.Windows.Forms.ColumnHeader();
             this.LevelBpmColumn = new System.Windows.Forms.ColumnHeader();
-            this.LevelDifficultiesColumn = new System.Windows.Forms.ColumnHeader();
+            this.LevelTypesColumn = new System.Windows.Forms.ColumnHeader();
             this.SEContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlaySongContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SEImageList = new System.Windows.Forms.ImageList(this.components);
@@ -62,6 +62,7 @@ namespace BeatSaberKeeper.App.Tools
             this.SECurrentSongLabel = new System.Windows.Forms.ToolStripLabel();
             this.SEToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SEStatusUpdateTimer = new System.Timers.Timer();
+            this.LevelDifficultiesColumn = new System.Windows.Forms.ColumnHeader();
             this.SongExplorerFrame.BottomToolStripPanel.SuspendLayout();
             this.SongExplorerFrame.ContentPanel.SuspendLayout();
             this.SongExplorerFrame.TopToolStripPanel.SuspendLayout();
@@ -121,6 +122,7 @@ namespace BeatSaberKeeper.App.Tools
             this.SongAuthorColumn,
             this.LevelAuthorColumn,
             this.LevelBpmColumn,
+            this.LevelTypesColumn,
             this.LevelDifficultiesColumn});
             this.SEList.ContextMenuStrip = this.SEContextMenu;
             this.SEList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -161,10 +163,10 @@ namespace BeatSaberKeeper.App.Tools
             this.LevelBpmColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.LevelBpmColumn.Width = 45;
             // 
-            // LevelDifficultiesColumn
+            // LevelTypesColumn
             // 
-            this.LevelDifficultiesColumn.Text = "Difficulties";
-            this.LevelDifficultiesColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.LevelTypesColumn.Text = "Map Types";
+            this.LevelTypesColumn.Width = 140;
             // 
             // SEContextMenu
             // 
@@ -331,6 +333,11 @@ namespace BeatSaberKeeper.App.Tools
             this.SEStatusUpdateTimer.SynchronizingObject = this;
             this.SEStatusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.SEStatusUpdateTimer_Elapsed);
             // 
+            // LevelDifficultiesColumn
+            // 
+            this.LevelDifficultiesColumn.Text = "Map Difficulties";
+            this.LevelDifficultiesColumn.Width = 180;
+            // 
             // SongExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -381,7 +388,7 @@ namespace BeatSaberKeeper.App.Tools
         private System.Windows.Forms.ColumnHeader SongNameColumn;
         private System.Windows.Forms.ColumnHeader SongAuthorColumn;
         private System.Windows.Forms.ColumnHeader LevelAuthorColumn;
-        private System.Windows.Forms.ColumnHeader LevelDifficultiesColumn;
+        private System.Windows.Forms.ColumnHeader LevelTypesColumn;
         private System.Windows.Forms.ToolStripMenuItem ViewMenuItem;
         private System.Windows.Forms.ToolStripMenuItem RefreshMenuItem;
 
@@ -405,5 +412,6 @@ namespace BeatSaberKeeper.App.Tools
         private System.Windows.Forms.ToolStripButton SEPlayerVolumeUpButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripLabel SEPlayerVolumeDisplay;
+        private System.Windows.Forms.ColumnHeader LevelDifficultiesColumn;
     }
 }

@@ -97,13 +97,29 @@ namespace BeatSaberKeeper.App.Tools
                     level.LevelInfo.SongAuthorName,
                     level.LevelInfo.LevelAuthorName,
                     $"{Math.Round(level.LevelInfo.BeatsPerMinute)}",
-                    $"{level.LevelInfo.DifficultyBeatmapSets.Count}"
+                    BuildBeatMapTypesString(level.LevelInfo),
+                    BuildDifficultyString(level.LevelInfo),
                 });
                 lvi.ToolTipText = $"Level \"{level.Name}\"";
             }
 
             SEList.Enabled = true;
             SEList.EndUpdate();
+        }
+
+        private string BuildDifficultyString(LevelInfo levelInfo)
+        {
+            List<DifficultyBeatmap> beatMaps = levelInfo.DifficultyBeatmapSets
+                .Where(i => (i.DifficultyBeatmaps?.Count ?? 0) > 0)
+                .SelectMany(i => i.DifficultyBeatmaps)
+                .ToList();
+
+            return string.Join(", ", beatMaps.Select(b => b.Difficulty).Distinct());
+        }
+
+        private string BuildBeatMapTypesString(LevelInfo levelInfo)
+        {
+            return string.Join(", ", levelInfo.DifficultyBeatmapSets.Select(i => i.BeatmapCharacteristicName));
         }
 
         private void RefreshMenuItem_Click(object sender, EventArgs e)
