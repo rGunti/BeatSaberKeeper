@@ -67,6 +67,12 @@ namespace BeatSaberKeeper.App
         private static int DefaultMain(CommandLineOptions options)
         {
             LogInitializer.Init(!options.NoLogFile, BSKConstants.Paths.Logs);
+
+            if (!string.IsNullOrWhiteSpace(options.DataDirectory))
+            {
+                BSKConstants.Paths.SetBaseDirectory(options.DataDirectory);
+            }
+            
             BSKConstants.Paths.EnsureDirectoryTreeExists();
             ConfigManager.Initialize(Path.Combine(BSKConstants.Paths.DefaultWorkingPath, "config.json"));
 
