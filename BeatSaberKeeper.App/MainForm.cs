@@ -610,5 +610,11 @@ namespace BeatSaberKeeper.App
         {
             new SongExplorer().ShowDialog();
         }
+
+        private void RefreshMenuItem_Click(object sender, EventArgs e)
+        {
+            UpdateGrids();
+            UpdateMenuItems(null);
+        }
     }
 }
