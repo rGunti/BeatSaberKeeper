@@ -45,9 +45,14 @@ namespace BeatSaberKeeper.App.Tools
             this.LevelDifficultiesColumn = new System.Windows.Forms.ColumnHeader();
             this.SEContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlaySongContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.DeleteMapContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SEImageList = new System.Windows.Forms.ImageList(this.components);
             this.SEMainMenu = new System.Windows.Forms.MenuStrip();
             this.FileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.CloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,11 +68,6 @@ namespace BeatSaberKeeper.App.Tools
             this.SECurrentSongLabel = new System.Windows.Forms.ToolStripLabel();
             this.SEToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SEStatusUpdateTimer = new System.Timers.Timer();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.DeleteMapContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.DeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SongExplorerFrame.BottomToolStripPanel.SuspendLayout();
             this.SongExplorerFrame.ContentPanel.SuspendLayout();
             this.SongExplorerFrame.TopToolStripPanel.SuspendLayout();
@@ -137,6 +137,7 @@ namespace BeatSaberKeeper.App.Tools
             this.SEList.HideSelection = false;
             this.SEList.Location = new System.Drawing.Point(0, 0);
             this.SEList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.SEList.MultiSelect = false;
             this.SEList.Name = "SEList";
             this.SEList.ShowItemToolTips = true;
             this.SEList.Size = new System.Drawing.Size(791, 387);
@@ -197,6 +198,18 @@ namespace BeatSaberKeeper.App.Tools
             this.PlaySongContextMenuItem.Text = "Play Song";
             this.PlaySongContextMenuItem.Click += new System.EventHandler(this.PlaySongContextMenuItem_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(131, 6);
+            // 
+            // DeleteMapContextMenuItem
+            // 
+            this.DeleteMapContextMenuItem.Name = "DeleteMapContextMenuItem";
+            this.DeleteMapContextMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.DeleteMapContextMenuItem.Text = "Delete Map";
+            this.DeleteMapContextMenuItem.Click += new System.EventHandler(this.DeleteMapContextMenuItem_Click);
+            // 
             // SEImageList
             // 
             this.SEImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
@@ -230,10 +243,31 @@ namespace BeatSaberKeeper.App.Tools
             this.FileMenuItem.Size = new System.Drawing.Size(37, 20);
             this.FileMenuItem.Text = "&File";
             // 
+            // PlayMenuItem
+            // 
+            this.PlayMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.PlayMenuItem.Name = "PlayMenuItem";
+            this.PlayMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.PlayMenuItem.Text = "Play Song";
+            this.PlayMenuItem.Click += new System.EventHandler(this.PlayMenuItem_Click);
+            // 
+            // DeleteMenuItem
+            // 
+            this.DeleteMenuItem.Name = "DeleteMenuItem";
+            this.DeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.DeleteMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.DeleteMenuItem.Text = "Delete";
+            this.DeleteMenuItem.Click += new System.EventHandler(this.DeleteMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(128, 6);
+            // 
             // CloseMenuItem
             // 
             this.CloseMenuItem.Name = "CloseMenuItem";
-            this.CloseMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.CloseMenuItem.Size = new System.Drawing.Size(131, 22);
             this.CloseMenuItem.Text = "&Close";
             this.CloseMenuItem.Click += new System.EventHandler(this.CloseMenuItem_Click);
             // 
@@ -349,39 +383,6 @@ namespace BeatSaberKeeper.App.Tools
             this.SEStatusUpdateTimer.Interval = 499D;
             this.SEStatusUpdateTimer.SynchronizingObject = this;
             this.SEStatusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.SEStatusUpdateTimer_Elapsed);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(131, 6);
-            // 
-            // DeleteMapContextMenuItem
-            // 
-            this.DeleteMapContextMenuItem.Name = "DeleteMapContextMenuItem";
-            this.DeleteMapContextMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.DeleteMapContextMenuItem.Text = "Delete Map";
-            this.DeleteMapContextMenuItem.Click += new System.EventHandler(this.DeleteMapContextMenuItem_Click);
-            // 
-            // PlayMenuItem
-            // 
-            this.PlayMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.PlayMenuItem.Name = "PlayMenuItem";
-            this.PlayMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.PlayMenuItem.Text = "Play Song";
-            this.PlayMenuItem.Click += new System.EventHandler(this.PlayMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
-            // 
-            // DeleteMenuItem
-            // 
-            this.DeleteMenuItem.Name = "DeleteMenuItem";
-            this.DeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.DeleteMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.DeleteMenuItem.Text = "Delete";
-            this.DeleteMenuItem.Click += new System.EventHandler(this.DeleteMenuItem_Click);
             // 
             // SongExplorer
             // 
