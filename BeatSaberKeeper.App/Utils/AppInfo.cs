@@ -12,7 +12,7 @@ namespace BeatSaberKeeper.App.Utils
         /// <summary>
         /// Returns the name of the app
         /// </summary>
-        public static readonly string AppName = "Beat Saber Keeper - Reborn";
+        public static readonly string AppName = "BeatSaberKeeper - Reborn";
         
         /// <summary>
         /// Returns the currently running version of the app
