@@ -28,6 +28,7 @@ namespace BeatSaberKeeper.App.Tools
         {
             InitializeComponent();
             _songReader = new SongReader(_configManager.Config.GamePath);
+            UpdateCurrentlyPlayingStatus();
         }
 
         private void SetStatus(string statusString)
@@ -44,7 +45,7 @@ namespace BeatSaberKeeper.App.Tools
             if (_currentlyPlayingSong == null)
             {
                 SEPlayerTimeLabel.Text = @$"{TimeSpan.FromSeconds(0):h':'mm':'ss}";
-                SECurrentSongLabel.Text = "< Ready >";
+                SECurrentSongLabel.Text = "< Ready! Select a song to play. >";
             } else
             {
                 LevelInfo levelInfo = _currentlyPlayingSong.LevelInfo;
@@ -191,6 +192,9 @@ namespace BeatSaberKeeper.App.Tools
         private void SEPlayerStopButton_Click(object sender, EventArgs e)
         {
             _waveOut.Stop();
+            _currentlyPlayingFile = null;
+            _currentlyPlayingSong = null;
+            UpdateCurrentlyPlayingStatus();
         }
 
         private void SEPlayerPauseButton_Click(object sender, EventArgs e)
@@ -217,5 +221,8 @@ namespace BeatSaberKeeper.App.Tools
             _waveOut.Volume = Math.Min(1, _waveOut.Volume + 0.05f);
             UpdateCurrentlyPlayingStatus();
         }
+
+        private void SEList_MouseDoubleClick(object sender, MouseEventArgs e)
+            => DoLevelContextAction(PlaySong);
     }
 }

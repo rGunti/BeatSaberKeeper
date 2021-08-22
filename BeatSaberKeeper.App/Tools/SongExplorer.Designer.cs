@@ -138,6 +138,7 @@ namespace BeatSaberKeeper.App.Tools
             this.SEToolTip.SetToolTip(this.SEList, "A list of songs");
             this.SEList.UseCompatibleStateImageBehavior = false;
             this.SEList.View = System.Windows.Forms.View.Details;
+            this.SEList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.SEList_MouseDoubleClick);
             // 
             // SongNameColumn
             // 
