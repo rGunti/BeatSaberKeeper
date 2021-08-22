@@ -89,6 +89,7 @@ namespace BeatSaberKeeper.App
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.SongExplorerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.TabContainer.SuspendLayout();
             this.BackupTabPage.SuspendLayout();
@@ -211,7 +212,7 @@ namespace BeatSaberKeeper.App
             // 
             // ArchiveMenu
             // 
-            this.ArchiveMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.DownloadVanillaArchiveMenuItem});
+            this.ArchiveMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.DownloadVanillaArchiveMenuItem, this.SongExplorerMenuItem});
             this.ArchiveMenu.Name = "ArchiveMenu";
             this.ArchiveMenu.Size = new System.Drawing.Size(46, 20);
             this.ArchiveMenu.Text = "&Tools";
@@ -336,7 +337,7 @@ namespace BeatSaberKeeper.App
             this.BackupTabPage.Controls.Add(this.BackupArchivesListView);
             this.BackupTabPage.Location = new System.Drawing.Point(4, 22);
             this.BackupTabPage.Name = "BackupTabPage";
-            this.BackupTabPage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.BackupTabPage.Padding = new System.Windows.Forms.Padding(3);
             this.BackupTabPage.Size = new System.Drawing.Size(523, 294);
             this.BackupTabPage.TabIndex = 0;
             this.BackupTabPage.Text = "Backups";
@@ -470,8 +471,8 @@ namespace BeatSaberKeeper.App
             this.VanillaTabPage.Controls.Add(this.VanillaArchivesListView);
             this.VanillaTabPage.Location = new System.Drawing.Point(4, 22);
             this.VanillaTabPage.Name = "VanillaTabPage";
-            this.VanillaTabPage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.VanillaTabPage.Size = new System.Drawing.Size(523, 298);
+            this.VanillaTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.VanillaTabPage.Size = new System.Drawing.Size(523, 294);
             this.VanillaTabPage.TabIndex = 1;
             this.VanillaTabPage.Text = "Vanilla Archives";
             this.VanillaTabPage.UseVisualStyleBackColor = true;
@@ -485,7 +486,7 @@ namespace BeatSaberKeeper.App
             this.VanillaArchivesListView.HideSelection = false;
             this.VanillaArchivesListView.Location = new System.Drawing.Point(3, 3);
             this.VanillaArchivesListView.Name = "VanillaArchivesListView";
-            this.VanillaArchivesListView.Size = new System.Drawing.Size(517, 292);
+            this.VanillaArchivesListView.Size = new System.Drawing.Size(517, 288);
             this.VanillaArchivesListView.SmallImageList = this.imageList1;
             this.VanillaArchivesListView.TabIndex = 0;
             this.VanillaArchivesListView.UseCompatibleStateImageBehavior = false;
@@ -528,6 +529,13 @@ namespace BeatSaberKeeper.App
             this.StatusProgressBar.Name = "StatusProgressBar";
             this.StatusProgressBar.Size = new System.Drawing.Size(100, 16);
             // 
+            // SongExplorerMenuItem
+            // 
+            this.SongExplorerMenuItem.Name = "SongExplorerMenuItem";
+            this.SongExplorerMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.SongExplorerMenuItem.Text = "Song Explorer (Beta)";
+            this.SongExplorerMenuItem.Click += new System.EventHandler(this.SongExplorerMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -552,6 +560,8 @@ namespace BeatSaberKeeper.App
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.ToolStripMenuItem SongExplorerMenuItem;
 
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem NewMenuItem;
