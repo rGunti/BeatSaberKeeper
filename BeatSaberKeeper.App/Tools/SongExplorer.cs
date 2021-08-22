@@ -52,6 +52,7 @@ namespace BeatSaberKeeper.App.Tools
                 SEPlayerTimeLabel.Text = @$"{_waveOut.GetPositionTimeSpan():h':'mm':'ss}";
                 SECurrentSongLabel.Text = $"\"{levelInfo.SongName}\" by {levelInfo.SongAuthorName}";
             }
+            SEPlayerVolumeDisplay.Text = @$"Volume: {(_waveOut.Volume * 100):0} %";
         }
 
         private void CloseMenuItem_Click(object sender, EventArgs e)
@@ -203,6 +204,18 @@ namespace BeatSaberKeeper.App.Tools
                     _waveOut.Play();
                     break;
             }
+        }
+
+        private void SEPlayerVolumeDownButton_Click(object sender, EventArgs e)
+        {
+            _waveOut.Volume = Math.Max(0, _waveOut.Volume - 0.05f);
+            UpdateCurrentlyPlayingStatus();
+        }
+
+        private void SEPlayerVolumeUpButton_Click(object sender, EventArgs e)
+        {
+            _waveOut.Volume = Math.Min(1, _waveOut.Volume + 0.05f);
+            UpdateCurrentlyPlayingStatus();
         }
     }
 }

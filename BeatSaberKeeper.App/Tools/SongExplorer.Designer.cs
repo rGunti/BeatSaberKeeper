@@ -54,9 +54,14 @@ namespace BeatSaberKeeper.App.Tools
             this.SEPlayerStopButton = new System.Windows.Forms.ToolStripButton();
             this.SEPlayerPauseButton = new System.Windows.Forms.ToolStripButton();
             this.SEPlayerTimeLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.SEPlayerVolumeDownButton = new System.Windows.Forms.ToolStripButton();
+            this.SEPlayerVolumeDisplay = new System.Windows.Forms.ToolStripLabel();
+            this.SEPlayerVolumeUpButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.SECurrentSongLabel = new System.Windows.Forms.ToolStripLabel();
             this.SEToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SEStatusUpdateTimer = new System.Timers.Timer();
-            this.SECurrentSongLabel = new System.Windows.Forms.ToolStripLabel();
             this.SongExplorerFrame.BottomToolStripPanel.SuspendLayout();
             this.SongExplorerFrame.ContentPanel.SuspendLayout();
             this.SongExplorerFrame.TopToolStripPanel.SuspendLayout();
@@ -153,6 +158,7 @@ namespace BeatSaberKeeper.App.Tools
             // 
             this.LevelBpmColumn.Text = "BPM";
             this.LevelBpmColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.LevelBpmColumn.Width = 45;
             // 
             // LevelDifficultiesColumn
             // 
@@ -230,14 +236,21 @@ namespace BeatSaberKeeper.App.Tools
             // SEToolBar
             // 
             this.SEToolBar.Dock = System.Windows.Forms.DockStyle.None;
+            this.SEToolBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.SEToolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SEPlayerStopButton,
             this.SEPlayerPauseButton,
             this.SEPlayerTimeLabel,
+            this.toolStripSeparator1,
+            this.SEPlayerVolumeDownButton,
+            this.SEPlayerVolumeDisplay,
+            this.SEPlayerVolumeUpButton,
+            this.toolStripSeparator2,
             this.SECurrentSongLabel});
             this.SEToolBar.Location = new System.Drawing.Point(3, 24);
             this.SEToolBar.Name = "SEToolBar";
-            this.SEToolBar.Size = new System.Drawing.Size(193, 25);
+            this.SEToolBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.SEToolBar.Size = new System.Drawing.Size(310, 25);
             this.SEToolBar.TabIndex = 1;
             // 
             // SEPlayerStopButton
@@ -266,18 +279,56 @@ namespace BeatSaberKeeper.App.Tools
             this.SEPlayerTimeLabel.Size = new System.Drawing.Size(43, 22);
             this.SEPlayerTimeLabel.Text = "0:00:00";
             // 
-            // SEStatusUpdateTimer
+            // toolStripSeparator1
             // 
-            this.SEStatusUpdateTimer.Enabled = true;
-            this.SEStatusUpdateTimer.Interval = 499D;
-            this.SEStatusUpdateTimer.SynchronizingObject = this;
-            this.SEStatusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.SEStatusUpdateTimer_Elapsed);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // SEPlayerVolumeDownButton
+            // 
+            this.SEPlayerVolumeDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.SEPlayerVolumeDownButton.Image = ((System.Drawing.Image)(resources.GetObject("SEPlayerVolumeDownButton.Image")));
+            this.SEPlayerVolumeDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SEPlayerVolumeDownButton.Name = "SEPlayerVolumeDownButton";
+            this.SEPlayerVolumeDownButton.Size = new System.Drawing.Size(35, 22);
+            this.SEPlayerVolumeDownButton.Text = "Vol -";
+            this.SEPlayerVolumeDownButton.ToolTipText = "Decrease Volume";
+            this.SEPlayerVolumeDownButton.Click += new System.EventHandler(this.SEPlayerVolumeDownButton_Click);
+            // 
+            // SEPlayerVolumeDisplay
+            // 
+            this.SEPlayerVolumeDisplay.Name = "SEPlayerVolumeDisplay";
+            this.SEPlayerVolumeDisplay.Size = new System.Drawing.Size(72, 22);
+            this.SEPlayerVolumeDisplay.Text = "Volume: 0 %";
+            // 
+            // SEPlayerVolumeUpButton
+            // 
+            this.SEPlayerVolumeUpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.SEPlayerVolumeUpButton.Image = ((System.Drawing.Image)(resources.GetObject("SEPlayerVolumeUpButton.Image")));
+            this.SEPlayerVolumeUpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SEPlayerVolumeUpButton.Name = "SEPlayerVolumeUpButton";
+            this.SEPlayerVolumeUpButton.Size = new System.Drawing.Size(38, 22);
+            this.SEPlayerVolumeUpButton.Text = "Vol +";
+            this.SEPlayerVolumeUpButton.ToolTipText = "Increase Volume";
+            this.SEPlayerVolumeUpButton.Click += new System.EventHandler(this.SEPlayerVolumeUpButton_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // SECurrentSongLabel
             // 
             this.SECurrentSongLabel.Name = "SECurrentSongLabel";
             this.SECurrentSongLabel.Size = new System.Drawing.Size(61, 22);
             this.SECurrentSongLabel.Text = "< Ready >";
+            // 
+            // SEStatusUpdateTimer
+            // 
+            this.SEStatusUpdateTimer.Enabled = true;
+            this.SEStatusUpdateTimer.Interval = 499D;
+            this.SEStatusUpdateTimer.SynchronizingObject = this;
+            this.SEStatusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.SEStatusUpdateTimer_Elapsed);
             // 
             // SongExplorer
             // 
@@ -348,5 +399,10 @@ namespace BeatSaberKeeper.App.Tools
         #endregion
 
         private System.Windows.Forms.ToolStripLabel SECurrentSongLabel;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton SEPlayerVolumeDownButton;
+        private System.Windows.Forms.ToolStripButton SEPlayerVolumeUpButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripLabel SEPlayerVolumeDisplay;
     }
 }
