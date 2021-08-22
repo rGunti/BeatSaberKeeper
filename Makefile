@@ -21,5 +21,5 @@ clean:
 setup-env:
 	dotnet tool install -g nbgv
 
-start-release:
+new-release:
 	nbgv prepare-release
