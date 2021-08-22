@@ -10,6 +10,10 @@ namespace BeatSaberKeeper.App.Cmd
 
         [Option("nolog", Required = false, HelpText = "Disables the log file")]
         public bool NoLogFile { get; set; }
+        
+        [Option('d', "data-dir", Required = false,
+            HelpText = "If defined, changes the directory where data is stored")]
+        public string DataDirectory { get; set; }
     }
 
     public enum StartupWindowType
