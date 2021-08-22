@@ -42,6 +42,7 @@ namespace BeatSaberKeeper.App.Tools
             this.LevelAuthorColumn = new System.Windows.Forms.ColumnHeader();
             this.LevelBpmColumn = new System.Windows.Forms.ColumnHeader();
             this.LevelTypesColumn = new System.Windows.Forms.ColumnHeader();
+            this.LevelDifficultiesColumn = new System.Windows.Forms.ColumnHeader();
             this.SEContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlaySongContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SEImageList = new System.Windows.Forms.ImageList(this.components);
@@ -62,7 +63,11 @@ namespace BeatSaberKeeper.App.Tools
             this.SECurrentSongLabel = new System.Windows.Forms.ToolStripLabel();
             this.SEToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SEStatusUpdateTimer = new System.Timers.Timer();
-            this.LevelDifficultiesColumn = new System.Windows.Forms.ColumnHeader();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.DeleteMapContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.DeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SongExplorerFrame.BottomToolStripPanel.SuspendLayout();
             this.SongExplorerFrame.ContentPanel.SuspendLayout();
             this.SongExplorerFrame.TopToolStripPanel.SuspendLayout();
@@ -140,6 +145,7 @@ namespace BeatSaberKeeper.App.Tools
             this.SEToolTip.SetToolTip(this.SEList, "A list of songs");
             this.SEList.UseCompatibleStateImageBehavior = false;
             this.SEList.View = System.Windows.Forms.View.Details;
+            this.SEList.SelectedIndexChanged += new System.EventHandler(this.SEList_SelectedIndexChanged);
             this.SEList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.SEList_MouseDoubleClick);
             // 
             // SongNameColumn
@@ -168,18 +174,26 @@ namespace BeatSaberKeeper.App.Tools
             this.LevelTypesColumn.Text = "Map Types";
             this.LevelTypesColumn.Width = 140;
             // 
+            // LevelDifficultiesColumn
+            // 
+            this.LevelDifficultiesColumn.Text = "Map Difficulties";
+            this.LevelDifficultiesColumn.Width = 180;
+            // 
             // SEContextMenu
             // 
             this.SEContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlaySongContextMenuItem});
+            this.PlaySongContextMenuItem,
+            this.toolStripMenuItem1,
+            this.DeleteMapContextMenuItem});
             this.SEContextMenu.Name = "SEContextMenu";
-            this.SEContextMenu.Size = new System.Drawing.Size(127, 26);
+            this.SEContextMenu.Size = new System.Drawing.Size(135, 54);
             this.SEContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.SEContextMenu_Opening);
             // 
             // PlaySongContextMenuItem
             // 
+            this.PlaySongContextMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.PlaySongContextMenuItem.Name = "PlaySongContextMenuItem";
-            this.PlaySongContextMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.PlaySongContextMenuItem.Size = new System.Drawing.Size(134, 22);
             this.PlaySongContextMenuItem.Text = "Play Song";
             this.PlaySongContextMenuItem.Click += new System.EventHandler(this.PlaySongContextMenuItem_Click);
             // 
@@ -208,6 +222,9 @@ namespace BeatSaberKeeper.App.Tools
             // FileMenuItem
             // 
             this.FileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayMenuItem,
+            this.DeleteMenuItem,
+            this.toolStripSeparator3,
             this.CloseMenuItem});
             this.FileMenuItem.Name = "FileMenuItem";
             this.FileMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -216,7 +233,7 @@ namespace BeatSaberKeeper.App.Tools
             // CloseMenuItem
             // 
             this.CloseMenuItem.Name = "CloseMenuItem";
-            this.CloseMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.CloseMenuItem.Size = new System.Drawing.Size(180, 22);
             this.CloseMenuItem.Text = "&Close";
             this.CloseMenuItem.Click += new System.EventHandler(this.CloseMenuItem_Click);
             // 
@@ -333,10 +350,38 @@ namespace BeatSaberKeeper.App.Tools
             this.SEStatusUpdateTimer.SynchronizingObject = this;
             this.SEStatusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.SEStatusUpdateTimer_Elapsed);
             // 
-            // LevelDifficultiesColumn
+            // toolStripMenuItem1
             // 
-            this.LevelDifficultiesColumn.Text = "Map Difficulties";
-            this.LevelDifficultiesColumn.Width = 180;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(131, 6);
+            // 
+            // DeleteMapContextMenuItem
+            // 
+            this.DeleteMapContextMenuItem.Name = "DeleteMapContextMenuItem";
+            this.DeleteMapContextMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.DeleteMapContextMenuItem.Text = "Delete Map";
+            this.DeleteMapContextMenuItem.Click += new System.EventHandler(this.DeleteMapContextMenuItem_Click);
+            // 
+            // PlayMenuItem
+            // 
+            this.PlayMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.PlayMenuItem.Name = "PlayMenuItem";
+            this.PlayMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.PlayMenuItem.Text = "Play Song";
+            this.PlayMenuItem.Click += new System.EventHandler(this.PlayMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            // 
+            // DeleteMenuItem
+            // 
+            this.DeleteMenuItem.Name = "DeleteMenuItem";
+            this.DeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.DeleteMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.DeleteMenuItem.Text = "Delete";
+            this.DeleteMenuItem.Click += new System.EventHandler(this.DeleteMenuItem_Click);
             // 
             // SongExplorer
             // 
@@ -413,5 +458,10 @@ namespace BeatSaberKeeper.App.Tools
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripLabel SEPlayerVolumeDisplay;
         private System.Windows.Forms.ColumnHeader LevelDifficultiesColumn;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem DeleteMapContextMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem PlayMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem DeleteMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }

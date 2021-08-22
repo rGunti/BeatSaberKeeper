@@ -30,6 +30,8 @@ namespace BeatSaberKeeper.App.Tools
             _songReader = new SongReader(_configManager.Config.GamePath);
             UpdateCurrentlyPlayingStatus();
         }
+        
+        public bool IsReadOnly { get; set; }
 
         private void SetStatus(string statusString)
         {
@@ -63,6 +65,7 @@ namespace BeatSaberKeeper.App.Tools
 
         private void SongExplorer_Load(object sender, EventArgs e)
         {
+            UpdateContextMenuControlState(GetSelectedLevel());
             LoadSongList();
         }
 
@@ -126,7 +129,7 @@ namespace BeatSaberKeeper.App.Tools
         {
             LoadSongList();
         }
-        
+
         private Level GetSelectedLevel(ListView listView)
         {
             if (listView == null)
@@ -167,6 +170,11 @@ namespace BeatSaberKeeper.App.Tools
                 item.Enabled = level != null;
                 item.Tag = level;
             }
+
+            DeleteMapContextMenuItem.Enabled = level != null && !IsReadOnly;
+
+            PlayMenuItem.Enabled = level != null;
+            DeleteMenuItem.Enabled = level != null && !IsReadOnly;
         }
 
         private void SEContextMenu_Opening(object sender, CancelEventArgs e)
@@ -192,6 +200,19 @@ namespace BeatSaberKeeper.App.Tools
             _currentlyPlayingFile = new VorbisWaveReader(level.AudioFilePath);
             _waveOut.Init(_currentlyPlayingFile);
             _waveOut.Play();
+        }
+
+        private void DeleteLevel(Level level)
+        {
+            if (level == null) return;
+            if (!MessageBoxUtils.Ask(
+                $"Do you really want to delete \"{level.Name}\"?"))
+            {
+                return;
+            }
+            
+            _songReader.DeleteLevel(level);
+            LoadSongList();
         }
 
         private async void PlaySongContextMenuItem_Click(object sender, EventArgs e)
@@ -238,7 +259,21 @@ namespace BeatSaberKeeper.App.Tools
             UpdateCurrentlyPlayingStatus();
         }
 
+        private void SEList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateContextMenuControlState(GetSelectedLevel(sender as ListView));
+        }
+
         private void SEList_MouseDoubleClick(object sender, MouseEventArgs e)
             => DoLevelContextAction(PlaySong);
+
+        private void DeleteMapContextMenuItem_Click(object sender, EventArgs e)
+            => DoLevelContextAction(sender as ToolStripMenuItem, DeleteLevel);
+
+        private void PlayMenuItem_Click(object sender, EventArgs e)
+            => DoLevelContextAction(PlaySong);
+
+        private void DeleteMenuItem_Click(object sender, EventArgs e)
+            => DoLevelContextAction(DeleteLevel);
     }
 }

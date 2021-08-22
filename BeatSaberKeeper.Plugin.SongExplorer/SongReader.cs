@@ -62,5 +62,10 @@ namespace BeatSaberKeeper.Plugin.SongExplorer
 
             return level;
         }
+
+        public void DeleteLevel(Level level)
+        {
+            Directory.Delete(level.FullPath, true);
+        }
     }
 }
