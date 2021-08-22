@@ -290,7 +290,7 @@ namespace BeatSaberKeeper.App
             this.checkTheWebsiteToolStripMenuItem.Name = "checkTheWebsiteToolStripMenuItem";
             this.checkTheWebsiteToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.checkTheWebsiteToolStripMenuItem.Tag = "https://beatsaberkeeper.rgunti.ch/";
-            this.checkTheWebsiteToolStripMenuItem.Text = "Beat Saber Keeper Website";
+            this.checkTheWebsiteToolStripMenuItem.Text = "BeatSaberKeeper Website";
             this.checkTheWebsiteToolStripMenuItem.Click += new System.EventHandler(this.openUrlToolStripMenuItem_Click);
             // 
             // viewSourceCodeOnGitHubToolStripMenuItem
@@ -317,7 +317,7 @@ namespace BeatSaberKeeper.App
             // 
             this.aboutBeatSaberKeeperToolStripMenuItem.Name = "aboutBeatSaberKeeperToolStripMenuItem";
             this.aboutBeatSaberKeeperToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
-            this.aboutBeatSaberKeeperToolStripMenuItem.Text = "About Beat Saber Keeper ...";
+            this.aboutBeatSaberKeeperToolStripMenuItem.Text = "About BeatSaberKeeper ...";
             this.aboutBeatSaberKeeperToolStripMenuItem.Click += new System.EventHandler(this.aboutBeatSaberKeeperToolStripMenuItem_Click);
             // 
             // TabContainer
@@ -547,7 +547,7 @@ namespace BeatSaberKeeper.App
             this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
-            this.Text = "Beat Saber Keeper";
+            this.Text = "BeatSaberKeeper";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
