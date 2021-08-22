@@ -25,8 +25,14 @@ namespace BeatSaberKeeper.App.Core
                 DefaultWorkingPath.EnsureDirectory();
                 Archives.EnsureDirectory();
             }
-            
-            public static readonly string BaseDirectory = AppContext.BaseDirectory;
+
+            private static string _baseDirectory = AppContext.BaseDirectory;
+            public static string BaseDirectory => _baseDirectory;
+
+            public static void SetBaseDirectory(string baseDirectory)
+            {
+                _baseDirectory = baseDirectory;
+            }
 
             public const string DEFAULT_WORKING_DIRECTORY = ".bsk";
             public const string DEFAULT_TEMP_DIRECTORY = "temp";
@@ -34,19 +40,19 @@ namespace BeatSaberKeeper.App.Core
             public const string DEFAULT_ARCHIVES_DIRECTORY = "archives";
             public const string DEFAULT_LOG_DIRECTORY = "logs";
 
-            public static readonly string DefaultWorkingPath = Path.Combine(BaseDirectory, DEFAULT_WORKING_DIRECTORY);
-            public static readonly string Temp = Path.Combine(DefaultWorkingPath, DEFAULT_TEMP_DIRECTORY);
-            public static readonly string Staging = Path.Combine(DefaultWorkingPath, DEFAULT_STAGING_DIRECTORY);
-            public static readonly string Logs = Path.Combine(DefaultWorkingPath, DEFAULT_LOG_DIRECTORY);
+            public static string DefaultWorkingPath => Path.Combine(BaseDirectory, DEFAULT_WORKING_DIRECTORY);
+            public static string Temp => Path.Combine(DefaultWorkingPath, DEFAULT_TEMP_DIRECTORY);
+            public static string Staging => Path.Combine(DefaultWorkingPath, DEFAULT_STAGING_DIRECTORY);
+            public static string Logs => Path.Combine(DefaultWorkingPath, DEFAULT_LOG_DIRECTORY);
 
-            public static readonly string Archives = Path.Combine(DefaultWorkingPath, DEFAULT_ARCHIVES_DIRECTORY);
+            public static string Archives => Path.Combine(DefaultWorkingPath, DEFAULT_ARCHIVES_DIRECTORY);
             //public static readonly string VanillaArchives = Path.Combine(Archives, "vanilla");
             //public static readonly string BackupArchives = Path.Combine(Archives, "backup");
         }
 
         public static class FileExtensions
         {
-            public const string ARCHIVE = ".bska";
+            public const string ARCHIVE = ".bskeep";
             public const string CHECKSUM = ".sha";
         }
     }
