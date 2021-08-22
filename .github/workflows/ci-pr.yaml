@@ -1,11 +1,18 @@
 ﻿name: BSK PR Validation
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'Makefile'
+      - 'LICENSE'
 jobs:
   build:
     name: 'Validate Pull Request Builds'
     runs-on: windows-latest
     env:
-      ProjectPath: BeatKeeper.App/BeatKeeper.App.csproj
+      SolutionPath: BeatSaberKeeper.sln
+      TestProjectPath: BeatSaberKeeper.Tests/BeatSaberKeeper.Tests.csproj
     steps:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v1
@@ -16,9 +23,8 @@ jobs:
         with:
           fetch-depth: 0
       - name: Restore dependencies
-        run: dotnet restore $env:ProjectPath
-      - name: Build Project
-        run: dotnet build -r win-x64 $env:ProjectPath
-      # TODO: Implement Unit Tests
-      #- name: Run Tests
-      #  run: dotnet test 
+        run: dotnet restore $env:SolutionPath
+      - name: Build Solution
+        run: dotnet build --no-restore $env:SolutionPath
+      - name: Run Tests
+        run: dotnet test --no-restore --verbosity normal $env:TestProjectPath
