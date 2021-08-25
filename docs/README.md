@@ -16,6 +16,14 @@ update the archive to reflect any changes that were made. This also allows
 multiple users to play the game on the same computer using their own private
 save state.
 
+![BSK Song Explorer](imgs/bsk_songexplorer.png)
+
+_BSK_ also includes a Song Explorer (which is currently in Beta) so you can manage
+your custom levels without starting the game. You can also play songs.
+
+The next release will also include the ability to open the Song Explorer inside an
+archive so you can also see what songs are inside an archive.
+
 ![Beat Saber Vanilla Archive Downloader](imgs/bsk_downloader.png)
 
 BSKs Downloader Utility allows anyone with a [Steam](https://store.steampowered.com/)
