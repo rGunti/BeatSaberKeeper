@@ -145,7 +145,7 @@ namespace BeatSaberKeeper.Kernel.V1
             ZipArchive zipArchive,
             ArchiveFileInfo file)
         {
-            var entry = zipArchive.CreateEntry($"files/{file.Destination}");
+            var entry = zipArchive.CreateEntry($"files/{file.Destination}", CompressionLevel.Optimal);
             using var zipFileStream = entry.Open();
             using var sourceFileStream = _fileSystem.FileStream.Create(file.SourceFile, FileMode.Open);
             sourceFileStream.CopyTo(zipFileStream);

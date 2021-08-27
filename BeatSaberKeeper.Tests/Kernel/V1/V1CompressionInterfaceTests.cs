@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using BeatSaberKeeper.Kernel.Abstraction;
 using BeatSaberKeeper.Kernel.V1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Octokit;
 
 namespace BeatSaberKeeper.Tests.Kernel.V1
 {
@@ -30,6 +29,15 @@ namespace BeatSaberKeeper.Tests.Kernel.V1
         private void Report(string status, int value, int max)
         {
             Debug.WriteLine($"Status Report: {status.Replace('\n', ' ')} ({value}, max={max})");
+        }
+
+        /// <summary>
+        /// Helper function you can call when debugging to write the archive to disk for analysis
+        /// </summary>
+        /// <param name="realPath"></param>
+        private void WriteArchiveToRealDisk(string realPath)
+        {
+            File.WriteAllBytes(realPath, _fileSystem.File.ReadAllBytes(@"C:\archive.zip"));
         }
 
         [TestMethod]
