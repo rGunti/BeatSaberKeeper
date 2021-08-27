@@ -78,7 +78,7 @@ namespace BeatSaberKeeper.Kernel.V1
 
         public void UpdateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException($"Updating archives is not supported by V1 Archives");
         }
 
         public ArchiveMetaData ReadMetaDataFromArchive(string archivePath)
