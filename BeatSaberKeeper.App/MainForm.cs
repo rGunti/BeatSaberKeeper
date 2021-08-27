@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -13,7 +14,10 @@ using BeatSaberKeeper.App.Config;
 using BeatSaberKeeper.App.Controls;
 using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
+using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.V1;
 using BeatSaberKeeper.Updater;
+using ArtifactType = BeatSaberKeeper.Kernel.Entities.ArtifactType;
 
 namespace BeatSaberKeeper.App
 {
@@ -22,6 +26,11 @@ namespace BeatSaberKeeper.App
         private readonly ArtifactRepository _artifactRepository;
         private readonly ConfigManager _configManager;
         private readonly IReleaseChecker _releaseChecker = new BskReleaseChecker();
+        private readonly ICompressionInterface _compressionInterface = new WrappedCompressionInterface(
+            new Dictionary<string, ICompressionInterface>
+            {
+                { "v1", new V1CompressionInterface(new FileSystem()) }
+            });
 
         private List<Artifact> _artifacts = new();
         
@@ -370,7 +379,7 @@ namespace BeatSaberKeeper.App
                     $"Unpacking {artifact.Name} ...",
                     d =>
                     {
-                        BeatKeeperPackageProcessor.UnpackArchive(
+                        _compressionInterface.UnpackArchiveToFolder(
                             artifact.FullPath,
                             _configManager.Config.GamePath,
                             d.SetStatus);
@@ -446,8 +455,6 @@ namespace BeatSaberKeeper.App
 
         private void PackArchive(string archiveName)
         {
-            string versionFile = Path.Combine(_configManager.Config.GamePath, "BeatSaberVersion.txt");
-            string gameVersion = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "<unknown>";
             SetStatus("Creating new archive ...");
             new BackgroundProcessControl(
                     $"Packing {archiveName} ...",
@@ -456,10 +463,9 @@ namespace BeatSaberKeeper.App
                         bgDialog.SetStatus("Packing archive ...");
                         try
                         {
-                            BeatKeeperPackageProcessor.PackBackupArtifactV1(
+                            _compressionInterface.CreateArchiveFromFolder(
                                 _configManager.Config.GamePath,
                                 Path.Combine(BSKConstants.Paths.Archives, $"{archiveName}.bskeep"),
-                                gameVersion,
                                 (s, v, m) =>
                                 {
                                     bgDialog.SetStatus(s, v, m);

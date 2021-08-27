@@ -8,6 +8,7 @@ using Serilog;
 
 namespace BeatSaberKeeper.Kernel.Repositories
 {
+    [Obsolete]
     public class ArtifactRepository : IRepository<Artifact>
     {
         private readonly string _artifactPath;

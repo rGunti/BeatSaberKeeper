@@ -32,10 +32,12 @@ namespace BeatSaberKeeper.Kernel.V1
 
         public void CreateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null)
         {
+            string versionFilePath = Path.Combine(sourcePath, "BeatSaberVersion.txt");
             var archiveMeta = new V1ArchiveMetaData
             {
-                GameVersion = _fileSystem.File.ReadAllText(Path.Combine(sourcePath, "BeatSaberVersion.txt"))
-                    .Trim(),
+                GameVersion = _fileSystem.File.Exists(versionFilePath) ?
+                    _fileSystem.File.ReadAllText(versionFilePath).Trim() :
+                    "<unknown>",
                 Type = ArtifactType.ModBackup
             };
             report.Submit("Scanning for files ...");

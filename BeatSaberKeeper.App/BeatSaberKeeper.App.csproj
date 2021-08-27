@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BeatSaberKeeper.App.Core\BeatSaberKeeper.App.Core.csproj" />
+    <ProjectReference Include="..\BeatSaberKeeper.Kernel.Abstraction\BeatSaberKeeper.Kernel.Abstraction.csproj" />
+    <ProjectReference Include="..\BeatSaberKeeper.Kernel.V1\BeatSaberKeeper.Kernel.V1.csproj" />
     <ProjectReference Include="..\BeatSaberKeeper.Kernel\BeatSaberKeeper.Kernel.csproj" />
     <ProjectReference Include="..\BeatSaberKeeper.Plugin.SongExplorer\BeatSaberKeeper.Plugin.SongExplorer.csproj" />
     <ProjectReference Include="..\BeatSaberKeeper.Updater\BeatSaberKeeper.Updater.csproj" />

@@ -9,6 +9,7 @@ using BeatSaberKeeper.Kernel.Utils;
 
 namespace BeatSaberKeeper.Kernel.Services
 {
+    [Obsolete]
     public static class BeatKeeperPackageProcessor
     {
         private const string METADATA_FILE = "meta.xml";
