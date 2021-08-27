@@ -18,7 +18,7 @@ namespace BeatSaberKeeper.Kernel.V1
             METADATA_FILE
         };
 
-        private IFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
 
         public V1CompressionInterface(IFileSystem fileSystem)
         {
@@ -83,7 +83,16 @@ namespace BeatSaberKeeper.Kernel.V1
 
         public ArchiveMetaData ReadMetaDataFromArchive(string archivePath)
         {
-            throw new NotImplementedException();
+            using var zipStream = _fileSystem.FileStream.Create(archivePath, FileMode.Open);
+            using var zip = new ZipArchive(zipStream, ZipArchiveMode.Read);
+            var metaEntry = zip.GetEntry(METADATA_FILE);
+            if (metaEntry == null)
+            {
+                return null;
+            }
+
+            var xml = new XmlSerializer(typeof(V1ArchiveMetaData));
+            return xml.Deserialize(metaEntry.Open()) as V1ArchiveMetaData;
         }
 
         private IEnumerable<ArchiveFileInfo> ScanForFiles(string sourcePath)

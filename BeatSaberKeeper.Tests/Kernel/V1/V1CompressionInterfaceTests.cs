@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
+using BeatSaberKeeper.Kernel.Abstraction;
 using BeatSaberKeeper.Kernel.V1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Octokit;
@@ -60,6 +61,20 @@ namespace BeatSaberKeeper.Tests.Kernel.V1
             var extractedFileContent = _fileSystem.File.ReadAllText(@"C:\dst\a-file.txt");
             
             Assert.AreEqual(sourceFileContent, extractedFileContent, "File Content doesn't match");
+        }
+
+        [TestMethod]
+        public void CanReadMetaData()
+        {
+            // Call the previous test to create the archive
+            CanPackArchiveWithoutError();
+
+            ArchiveMetaData metadata = _interface.ReadMetaDataFromArchive(@"C:\archive.zip");
+            Assert.IsNotNull(metadata);
+            
+            Assert.AreEqual(V1ArchiveMetaData.V1, metadata.ArchiveVersion);
+            Assert.AreEqual("1.2.3", metadata.GameVersion);
+            Assert.AreEqual(ArtifactType.ModBackup, metadata.Type);
         }
     }
 }
