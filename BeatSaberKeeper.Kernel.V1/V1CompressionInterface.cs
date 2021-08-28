@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Xml.Serialization;
 using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using BeatSaberKeeper.Kernel.Abstraction.Utils;
 using PandaDotNet.Utils;
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using BeatSaberKeeper.Kernel.V1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

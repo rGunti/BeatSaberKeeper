@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BeatSaberKeeper.Kernel.Repositories
 {
+    [Obsolete]
     public interface IRepository<T>
     {
         IEnumerable<T> GetAll();
