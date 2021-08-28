@@ -32,7 +32,7 @@ namespace BeatSaberKeeper.Kernel.Abstraction
             {
                 try
                 {
-                    @interface.CreateArchiveFromFolder(sourcePath, archivePath, report);
+                    @interface.CreateArchiveFromFolder(sourcePath, archivePath, report, artifactType);
                     return;
                 }
                 catch (Exception ex)

@@ -6,10 +6,9 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using BeatSaberKeeper.App.Core.Utils;
-using BeatSaberKeeper.Kernel.Entities;
-using BeatSaberKeeper.Kernel.Services;
-using BeatSaberKeeper.Kernel.Services.DepotDownloader;
 using BeatSaberKeeper.App.Utils;
+using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
 
 namespace BeatSaberKeeper.App
 {
@@ -18,9 +17,12 @@ namespace BeatSaberKeeper.App
         private DateTime _lastUpdated = DateTime.MinValue;
         private BeatSaberVersionDownloader _downloader = null;
         private CancellationTokenSource _cancellationTokenSource = new();
-        
-        public DownloadGameArchiveForm()
+
+        private readonly ICompressionInterface _compressionInterface;
+
+        public DownloadGameArchiveForm(ICompressionInterface compressionInterface)
         {
+            _compressionInterface = compressionInterface;
             InitializeComponent();
         }
 
@@ -61,10 +63,7 @@ namespace BeatSaberKeeper.App
             UpdateFormState();
             if (SteamSession.Instance.IsLoggedIn)
             {
-                this.RunInBackgroundThread(() =>
-                {
-                    UpdateLicenseInfo();
-                }, () => { });
+                this.RunInBackgroundThread(UpdateLicenseInfo, () => { });
             }
         }
 
@@ -98,15 +97,11 @@ namespace BeatSaberKeeper.App
                 Login();
             }
 
-            SteamManifestIdTextBox.Text = $"{BSKConstants.Steam.TEST_MANIFEST_ID}";
-            SteamAppIdTextBox.Text = $"{BSKConstants.Steam.BEAT_SABER_APP_ID}";
-            SteamDepotIdTextBox.Text = $"{BSKConstants.Steam.BEAT_SABER_DEPOT_ID}";
+            SteamAppIdTextBox.Text = @$"{BSKConstants.Steam.BEAT_SABER_APP_ID}";
+            SteamDepotIdTextBox.Text = @$"{BSKConstants.Steam.BEAT_SABER_DEPOT_ID}";
             SteamBranchTextBox.Text = BSKConstants.Steam.DEFAULT_BRANCH;
             
-            this.RunInBackgroundThread(() =>
-            {
-                InitializeDownloader();
-            }, () =>
+            this.RunInBackgroundThread(InitializeDownloader, () =>
             {
                 this.RunInUiThread(FillGameVersionDropdown);
             });
@@ -115,10 +110,7 @@ namespace BeatSaberKeeper.App
         private void InitializeDownloader()
         {
             //string filepath = BeatSaberVersionDownloader.DownloadRecentVersionFile();
-            _downloader = new BeatSaberVersionDownloader(
-                new PrebuiltSteamCmdServiceFactory(null),
-                new PrebuiltDepotDownloaderServiceFactory(null),
-                null);
+            _downloader = new BeatSaberVersionDownloader();
         }
 
         private void FillGameVersionDropdown()
@@ -140,7 +132,7 @@ namespace BeatSaberKeeper.App
                 if (session.IsLoggedIn)
                 {
                     UpdateStatus("Ready");
-                    LoginStatusLabel.Text = $"Logged in as {session.LoggedInUser}";
+                    LoginStatusLabel.Text = @$"Logged in as {session.LoggedInUser}";
                 }
                 else
                 {
@@ -214,15 +206,16 @@ namespace BeatSaberKeeper.App
 
                     string path = PathUtils.ConstructStagingFilePath(
                         appId, depotId, manifestId);
+                    File.WriteAllText(Path.Combine(path, "BeatSaberVersion.txt"), currentVersion.GameVersion);
                     BSKConstants.Paths.Archives.EnsureDirectory();
-                    BeatKeeperPackageProcessor.PackVanillaArtifactV1(
+                    _compressionInterface.CreateArchiveFromFolder(
                         path,
-                        BSKConstants.Paths.Archives,
-                        currentVersion.GameVersion,
-                        (status, val, maxVal) =>
+                        Path.Combine(BSKConstants.Paths.Archives, $"BeatSaber_{currentVersion.GameVersion}.bskeep"),
+                        (status, value, max) =>
                         {
-                            UpdateStatus(status, val, maxVal, false);
-                        });
+                            UpdateStatus(status.Replace('\n', ' '), value, max, true);
+                        },
+                        ArtifactType.Vanilla);
                     UpdateStatus("Archive created!", 100);
                 }
                 catch (OperationCanceledException)

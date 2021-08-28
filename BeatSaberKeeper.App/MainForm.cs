@@ -7,30 +7,23 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using BeatSaberKeeper.App.Core;
-using BeatSaberKeeper.Kernel.Entities;
-using BeatSaberKeeper.Kernel.Repositories;
-using BeatSaberKeeper.Kernel.Services;
 using BeatSaberKeeper.App.Config;
 using BeatSaberKeeper.App.Controls;
 using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
 using BeatSaberKeeper.Kernel.Abstraction;
-using BeatSaberKeeper.Kernel.V1;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
+using BeatSaberKeeper.Kernel.Abstraction.Repo;
 using BeatSaberKeeper.Updater;
-using ArtifactType = BeatSaberKeeper.Kernel.Entities.ArtifactType;
 
 namespace BeatSaberKeeper.App
 {
     public partial class MainForm : Form
     {
-        private readonly ArtifactRepository _artifactRepository;
+        private readonly IRepository<Artifact> _artifactRepository;
         private readonly ConfigManager _configManager;
         private readonly IReleaseChecker _releaseChecker = new BskReleaseChecker();
-        private readonly ICompressionInterface _compressionInterface = new WrappedCompressionInterface(
-            new Dictionary<string, ICompressionInterface>
-            {
-                { "v1", new V1CompressionInterface(new FileSystem()) }
-            });
+        private readonly ICompressionInterface _compressionInterface;
 
         private List<Artifact> _artifacts = new();
         
@@ -40,10 +33,14 @@ namespace BeatSaberKeeper.App
             Filter = @"Beat Saber Executable|Beat Saber.exe|Executables|*.exe|Any Files|*"
         };
 
-        public MainForm()
+        public MainForm(ICompressionInterface compressionInterface)
         {
             InitializeComponent();
-            _artifactRepository = new ArtifactRepository(BSKConstants.Paths.Archives);
+            _compressionInterface = compressionInterface;
+            _artifactRepository = new ArtifactRepository(
+                BSKConstants.Paths.Archives,
+                new FileSystem(),
+                _compressionInterface);
             _configManager = ConfigManager.Instance;
             UpdateConfigDisplay();
 
@@ -68,7 +65,7 @@ namespace BeatSaberKeeper.App
 
         private void DownloadVanillaArchiveMenuItem_Click(object sender, EventArgs e)
         {
-            new DownloadGameArchiveForm
+            new DownloadGameArchiveForm(_compressionInterface)
             {
                 StartPosition = FormStartPosition.CenterParent
             }.ShowDialog();
