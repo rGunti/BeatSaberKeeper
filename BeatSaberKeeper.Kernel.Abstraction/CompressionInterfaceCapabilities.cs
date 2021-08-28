@@ -8,18 +8,18 @@ namespace BeatSaberKeeper.Kernel.Abstraction
         /// <summary>
         /// This compression interface supports reading metadata
         /// </summary>
-        ReadMetaData = 0x00,
+        ReadMetaData = 0x01,
         /// <summary>
         /// This compression interface supports creating new archives
         /// </summary>
-        PackArchive = 0x01,
+        PackArchive = 0x02,
         /// <summary>
         /// This compression interface supports unpacking archives
         /// </summary>
-        UnpackArchive = 0x02,
+        UnpackArchive = 0x04,
         /// <summary>
         /// This compression interfaces supports updating existing archives
         /// </summary>
-        UpdateArchive = 0x04,
+        UpdateArchive = 0x08,
     }
 }

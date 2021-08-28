@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
+using Serilog;
 
 namespace BeatSaberKeeper.Kernel.Abstraction
 {
     public class WrappedCompressionInterface : ICompressionInterface
     {
+        private static readonly ILogger Logger = Log.ForContext<WrappedCompressionInterface>();
         private readonly IDictionary<string, ICompressionInterface> _interfaces;
 
         public WrappedCompressionInterface(IDictionary<string, ICompressionInterface> interfaces)
@@ -22,7 +25,8 @@ namespace BeatSaberKeeper.Kernel.Abstraction
 
         public CompressionInterfaceCapabilities Capabilities => CompressionInterfaceCapabilities.ReadMetaData;
 
-        public void CreateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null)
+        public void CreateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null,
+            ArtifactType artifactType = ArtifactType.ModBackup)
         {
             foreach (ICompressionInterface @interface in GetInterfacesWithCapability(CompressionInterfaceCapabilities.PackArchive))
             {
@@ -31,9 +35,10 @@ namespace BeatSaberKeeper.Kernel.Abstraction
                     @interface.CreateArchiveFromFolder(sourcePath, archivePath, report);
                     return;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // skip everything
+                    Logger.Warning(ex, "Failed to create archive {ArchivePath} from {SourcePath} using interface {Interface}",
+                        archivePath, sourcePath, @interface);
                 }
             }
 
@@ -49,9 +54,10 @@ namespace BeatSaberKeeper.Kernel.Abstraction
                     @interface.UnpackArchiveToFolder(archivePath, destinationPath, report);
                     return;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // skip everything
+                    Logger.Warning(ex, "Failed to unpack archive {ArchivePath} to {SourcePath} using interface {Interface}",
+                        archivePath, destinationPath, @interface);
                 }
             }
 
@@ -67,9 +73,10 @@ namespace BeatSaberKeeper.Kernel.Abstraction
                     @interface.UpdateArchiveFromFolder(sourcePath, archivePath, report);
                     return;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // skip everything
+                    Logger.Warning(ex, "Failed to update archive {ArchivePath} from {SourcePath} using interface {Interface}",
+                        archivePath, sourcePath, @interface);
                 }
             }
 
@@ -84,9 +91,10 @@ namespace BeatSaberKeeper.Kernel.Abstraction
                 {
                     return @interface.ReadMetaDataFromArchive(archivePath);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // skip everything
+                    Logger.Warning(ex, "Failed to read metadata from archive {ArchivePath} using interface {Interface}",
+                        archivePath, @interface);
                 }
             }
 

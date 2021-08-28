@@ -31,7 +31,8 @@ namespace BeatSaberKeeper.Kernel.V1
             CompressionInterfaceCapabilities.UnpackArchive |
             CompressionInterfaceCapabilities.ReadMetaData;
 
-        public void CreateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null)
+        public void CreateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null,
+            ArtifactType artifactType = ArtifactType.ModBackup)
         {
             string versionFilePath = Path.Combine(sourcePath, "BeatSaberVersion.txt");
             var archiveMeta = new V1ArchiveMetaData
@@ -39,7 +40,7 @@ namespace BeatSaberKeeper.Kernel.V1
                 GameVersion = _fileSystem.File.Exists(versionFilePath) ?
                     _fileSystem.File.ReadAllText(versionFilePath).Trim() :
                     "<unknown>",
-                Type = ArtifactType.ModBackup
+                Type = artifactType
             };
             report.Submit("Scanning for files ...");
             var fileList = ScanForFiles(sourcePath);

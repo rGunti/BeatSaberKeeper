@@ -1,4 +1,6 @@
-﻿namespace BeatSaberKeeper.Kernel.Abstraction
+﻿using BeatSaberKeeper.Kernel.Abstraction.Entities;
+
+namespace BeatSaberKeeper.Kernel.Abstraction
 {
     public interface ICompressionInterface
     {
@@ -7,7 +9,8 @@
         void CreateArchiveFromFolder(
             string sourcePath,
             string archivePath,
-            ReportProgressDelegate report = null);
+            ReportProgressDelegate report = null,
+            ArtifactType artifactType = ArtifactType.ModBackup);
 
         void UnpackArchiveToFolder(
             string archivePath,
