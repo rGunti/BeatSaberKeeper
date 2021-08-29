@@ -6,12 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Windows.Forms;
 using BeatSaberKeeper.App.Cmd;
 using BeatSaberKeeper.App.Config;
 using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
+using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.V1;
 using CommandLine;
 using CommandLine.Text;
 
@@ -77,19 +80,26 @@ namespace BeatSaberKeeper.App
             ConfigManager.Initialize(Path.Combine(BSKConstants.Paths.DefaultWorkingPath, "config.json"));
 
             AppDomain.CurrentDomain.UnhandledException += HandleException;
+            
+            // Construct some dependencies
+            ICompressionInterface compressionInterface = new WrappedCompressionInterface(
+                new Dictionary<string, ICompressionInterface>
+                {
+                    { "v1", new V1CompressionInterface(new FileSystem()) }
+                });
 
             Form mainForm;
             switch (options.StartupWindow)
             {
                 case StartupWindowType.Downloader:
-                    mainForm = new DownloadGameArchiveForm();
+                    mainForm = new DownloadGameArchiveForm(compressionInterface);
                     break;
                 case StartupWindowType.SongExplorer:
                     mainForm = new SongExplorer();
                     break;
                 case StartupWindowType.Default:
                 default:
-                    mainForm = new MainForm();
+                    mainForm = new MainForm(compressionInterface);
                     break;
             }
 

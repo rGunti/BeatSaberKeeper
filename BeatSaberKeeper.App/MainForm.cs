@@ -2,26 +2,28 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using BeatSaberKeeper.App.Core;
-using BeatSaberKeeper.Kernel.Entities;
-using BeatSaberKeeper.Kernel.Repositories;
-using BeatSaberKeeper.Kernel.Services;
 using BeatSaberKeeper.App.Config;
 using BeatSaberKeeper.App.Controls;
 using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
+using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
+using BeatSaberKeeper.Kernel.Abstraction.Repo;
 using BeatSaberKeeper.Updater;
 
 namespace BeatSaberKeeper.App
 {
     public partial class MainForm : Form
     {
-        private readonly ArtifactRepository _artifactRepository;
+        private readonly IRepository<Artifact> _artifactRepository;
         private readonly ConfigManager _configManager;
         private readonly IReleaseChecker _releaseChecker = new BskReleaseChecker();
+        private readonly ICompressionInterface _compressionInterface;
 
         private List<Artifact> _artifacts = new();
         
@@ -31,10 +33,14 @@ namespace BeatSaberKeeper.App
             Filter = @"Beat Saber Executable|Beat Saber.exe|Executables|*.exe|Any Files|*"
         };
 
-        public MainForm()
+        public MainForm(ICompressionInterface compressionInterface)
         {
             InitializeComponent();
-            _artifactRepository = new ArtifactRepository(BSKConstants.Paths.Archives);
+            _compressionInterface = compressionInterface;
+            _artifactRepository = new ArtifactRepository(
+                BSKConstants.Paths.Archives,
+                new FileSystem(),
+                _compressionInterface);
             _configManager = ConfigManager.Instance;
             UpdateConfigDisplay();
 
@@ -59,7 +65,7 @@ namespace BeatSaberKeeper.App
 
         private void DownloadVanillaArchiveMenuItem_Click(object sender, EventArgs e)
         {
-            new DownloadGameArchiveForm
+            new DownloadGameArchiveForm(_compressionInterface)
             {
                 StartPosition = FormStartPosition.CenterParent
             }.ShowDialog();
@@ -370,7 +376,7 @@ namespace BeatSaberKeeper.App
                     $"Unpacking {artifact.Name} ...",
                     d =>
                     {
-                        BeatKeeperPackageProcessor.UnpackArchive(
+                        _compressionInterface.UnpackArchiveToFolder(
                             artifact.FullPath,
                             _configManager.Config.GamePath,
                             d.SetStatus);
@@ -446,8 +452,6 @@ namespace BeatSaberKeeper.App
 
         private void PackArchive(string archiveName)
         {
-            string versionFile = Path.Combine(_configManager.Config.GamePath, "BeatSaberVersion.txt");
-            string gameVersion = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "<unknown>";
             SetStatus("Creating new archive ...");
             new BackgroundProcessControl(
                     $"Packing {archiveName} ...",
@@ -456,10 +460,9 @@ namespace BeatSaberKeeper.App
                         bgDialog.SetStatus("Packing archive ...");
                         try
                         {
-                            BeatKeeperPackageProcessor.PackBackupArtifactV1(
+                            _compressionInterface.CreateArchiveFromFolder(
                                 _configManager.Config.GamePath,
                                 Path.Combine(BSKConstants.Paths.Archives, $"{archiveName}.bskeep"),
-                                gameVersion,
                                 (s, v, m) =>
                                 {
                                     bgDialog.SetStatus(s, v, m);

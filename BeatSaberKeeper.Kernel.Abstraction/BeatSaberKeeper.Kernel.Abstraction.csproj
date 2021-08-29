@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="PandaDotNet.Utils" Version="0.2.1-alpha0019" />
+      <PackageReference Include="Serilog" Version="2.10.0" />
+      <PackageReference Include="System.IO.Abstractions" Version="13.2.47" />
+    </ItemGroup>
+
+</Project>

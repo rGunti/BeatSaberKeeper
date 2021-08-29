@@ -1,35 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
-using BeatSaberKeeper.Kernel.Entities;
-using BeatSaberKeeper.Kernel.Services;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using Serilog;
 
-namespace BeatSaberKeeper.Kernel.Repositories
+namespace BeatSaberKeeper.Kernel.Abstraction.Repo
 {
     public class ArtifactRepository : IRepository<Artifact>
     {
+        private static readonly ILogger Logger = Log.ForContext<ArtifactRepository>();
+        
         private readonly string _artifactPath;
+        private readonly IFileSystem _fileSystem;
+        private readonly ICompressionInterface _compressionInterface;
 
-        public ArtifactRepository(string artifactPath)
+        public ArtifactRepository(
+            string artifactPath,
+            IFileSystem fileSystem,
+            ICompressionInterface compressionInterface)
         {
-            Log.Verbose($"Constructing new Artifact Repository for {artifactPath}");
+            Logger.Verbose("Constructing new Artifact Repository for {ArtifactPath}", artifactPath);
             _artifactPath = artifactPath;
+            _fileSystem = fileSystem;
+            _compressionInterface = compressionInterface;
         }
 
         public IEnumerable<Artifact> GetAll()
         {
-            return Directory.GetFiles(_artifactPath, "*.bskeep")
+            return _fileSystem.Directory
+                .GetFiles(_artifactPath, "*.bskeep")
                 .Select(ConvertToArtifact);
         }
 
         private Artifact ConvertToArtifact(string path)
         {
-            var fi = new FileInfo(path);
+            IFileInfo fi = _fileSystem.FileInfo.FromFileName(path);
             try
             {
-                var artifact = BeatKeeperPackageProcessor.ReadArchiveMetaData(path);
+                ArchiveMetaData artifact = _compressionInterface.ReadMetaDataFromArchive(path);
                 return new Artifact()
                 {
                     Name = Path.GetFileNameWithoutExtension(fi.Name),
@@ -39,12 +49,12 @@ namespace BeatSaberKeeper.Kernel.Repositories
                     Size = fi.Length,
                     GameVersion = artifact?.GameVersion,
                     Type = artifact?.Type ?? ArtifactType.Unknown,
-                    ArchiveVersion = artifact?.ArchiveVersion ?? BeatKeeperArchiveMetaData.UNKNOWN
+                    ArchiveVersion = artifact?.ArchiveVersion ?? ArchiveMetaData.UNKNOWN_VERSION
                 };
             }
             catch (InvalidDataException ex)
             {
-                Log.ForContext<ArtifactRepository>().Error(ex, "Failed to read archive data from {ArchivePath}", path);
+                Logger.Error(ex, "Failed to read archive data from {ArchivePath}", path);
                 return new Artifact
                 {
                     Name = Path.GetFileNameWithoutExtension(fi.Name),
@@ -54,7 +64,7 @@ namespace BeatSaberKeeper.Kernel.Repositories
                     Size = fi.Length,
                     GameVersion = "<broken>",
                     Type = ArtifactType.ModBackup, // <- this is a ModBackup so we can display it
-                    ArchiveVersion = BeatKeeperArchiveMetaData.UNKNOWN,
+                    ArchiveVersion = ArchiveMetaData.UNKNOWN_VERSION,
                     IsDefect = true
                 };
             }
@@ -64,7 +74,7 @@ namespace BeatSaberKeeper.Kernel.Repositories
         {
             string newFileName = Path.Combine(Path.GetDirectoryName(entity.FullPath) ??
                                               throw new InvalidOperationException(), $"{newName}.bskeep");
-            File.Copy(entity.FullPath, newFileName);
+            _fileSystem.File.Copy(entity.FullPath, newFileName);
         }
 
         public Artifact Get(string id)
@@ -81,21 +91,22 @@ namespace BeatSaberKeeper.Kernel.Repositories
 
         public bool Exists(string id)
         {
-            return File.Exists(Path.Combine(_artifactPath, $"{id}.bskeep"));
+            return _fileSystem.File.Exists(Path.Combine(_artifactPath, $"{id}.bskeep"));
         }
 
         public void Rename(Artifact artifact, string newName)
         {
-            Log.Debug($"Renaming artifact");
+            Logger.Debug("Renaming artifact {Artifact} to {NewArtifactName}", artifact, newName);
             string newFileName = Path.Combine(Path.GetDirectoryName(artifact.FullPath) ??
                                               throw new InvalidOperationException(), $"{newName}.bskeep");
-            File.Move(artifact.FullPath, newFileName);
+            _fileSystem.File.Move(artifact.FullPath, newFileName);
         }
 
         public void Delete(Artifact artifact)
         {
-            Log.Debug($"Deleting artifact {artifact.Name} ({artifact.FullPath})");
-            File.Delete(artifact.FullPath);
+            Logger.Debug("Deleting artifact {ArtifactName} ({ArtifactFullPath})",
+                artifact.Name, artifact.FullPath);
+            _fileSystem.File.Delete(artifact.FullPath);
         }
     }
 }

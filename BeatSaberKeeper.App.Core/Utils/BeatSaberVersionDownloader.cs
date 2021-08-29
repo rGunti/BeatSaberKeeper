@@ -4,43 +4,21 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using BeatSaberKeeper.Kernel.Entities;
-using BeatSaberKeeper.Kernel.Services.DepotDownloader;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using Serilog;
 
-namespace BeatSaberKeeper.Kernel.Services
+namespace BeatSaberKeeper.App.Core.Utils
 {
     public class BeatSaberVersionDownloader
     {
         private const string VERSIONS_URL =
-            "https://raw.githubusercontent.com/rGunti/BeatSaberKeeper/master/BeatKeeper/versions.txt";
+            "https://raw.githubusercontent.com/rGunti/BeatSaberKeeper/master/BeatSaberKeeper.Kernel/versions.txt";
         
         private IReadOnlyDictionary<string, Artifact> _versionIds;
-        private readonly string _username;
         private readonly string _versionFilePath;
-        private readonly SteamCmdService _steamCmdService;
-        private readonly DepotDownloaderService _depotDownloaderService;
 
-        public BeatSaberVersionDownloader(
-            ISteamCmdServiceFactory steamCmdServiceFactory,
-            IDepotDownloaderServiceFactory depotDownloaderServiceFactory,
-            string username,
-            string versionFilePath = "versions.txt")
-            : this(steamCmdServiceFactory.Build(),
-                  depotDownloaderServiceFactory.Build(),
-                  username, versionFilePath)
+        public BeatSaberVersionDownloader(string versionFilePath = "versions.txt")
         {
-        }
-
-        public BeatSaberVersionDownloader(
-            SteamCmdService steamCmdService,
-            DepotDownloaderService depotDownloaderService,
-            string username,
-            string versionFilePath = "versions.txt")
-        {
-            _username = username;
-            _steamCmdService = steamCmdService;
-            _depotDownloaderService = depotDownloaderService;
             _versionFilePath = versionFilePath;
             ReadVersionFile();
         }
@@ -51,7 +29,7 @@ namespace BeatSaberKeeper.Kernel.Services
             const string VERSION_TXT = "versions.txt.online";
             using (var client = new WebClient())
             {
-                Log.Debug("Downloading ");
+                Log.Debug("Downloading online archive version ...");
                 client.DownloadFile(url, VERSION_TXT);
                 return VERSION_TXT;
             }
@@ -134,13 +112,5 @@ namespace BeatSaberKeeper.Kernel.Services
             .ToArray();
 
         public Artifact GetArtifact(string version) => _versionIds[version];
-
-        public void DownloadArtifact(Artifact version)
-        {
-            // _steamCmdService.DownloadArtifact(_username, version.ManifestId)
-            //     .WaitForExit();
-            _depotDownloaderService.DownloadArtifact("620980", "620981", version.ManifestId, _username)
-                .WaitForExit();
-        }
     }
 }

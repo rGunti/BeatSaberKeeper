@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 
-namespace BeatSaberKeeper.Kernel.Services
+namespace BeatSaberKeeper.App.Utils
 {
     public static class BeatSaberLauncher
     {

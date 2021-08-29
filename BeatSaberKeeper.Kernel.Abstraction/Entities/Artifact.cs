@@ -1,7 +1,7 @@
 ﻿using System;
-using BeatSaberKeeper.Kernel.Utils;
+using PandaDotNet.Utils;
 
-namespace BeatSaberKeeper.Kernel.Entities
+namespace BeatSaberKeeper.Kernel.Abstraction.Entities
 {
     public class Artifact
     {
