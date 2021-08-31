@@ -63,9 +63,18 @@ namespace BeatSaberKeeper.Plugin.SongExplorer
             return level;
         }
 
-        public void DeleteLevel(Level level)
+        public bool DeleteLevel(Level level)
         {
-            Directory.Delete(level.FullPath, true);
+            try
+            {
+                Directory.Delete(level.FullPath, true);
+                return true;
+            }
+            catch (IOException ex)
+            {
+                Logger.Error(ex, "Failed to delete level {Level} due to exception", level);
+                return false;
+            }
         }
     }
 }

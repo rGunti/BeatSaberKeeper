@@ -12,11 +12,14 @@ using BeatSaberKeeper.Plugin.SongExplorer.MetaData;
 using NAudio.Utils;
 using NAudio.Vorbis;
 using NAudio.Wave;
+using Serilog;
 
 namespace BeatSaberKeeper.App.Tools
 {
     public partial class SongExplorer : Form
     {
+        private static readonly ILogger Logger = Log.ForContext<SongExplorer>();
+        
         private readonly ConfigManager _configManager = ConfigManager.Instance;
         private readonly SongReader _songReader;
         
@@ -184,6 +187,15 @@ namespace BeatSaberKeeper.App.Tools
             UpdateContextMenuControlState(level);
         }
 
+        private void DisposePlayingSong()
+        {
+            if (_currentlyPlayingFile is IDisposable disposable)
+            {
+                Logger.Debug("Disposing currently playing file {File}", _currentlyPlayingFile);
+                disposable.Dispose();
+            }
+        }
+
         private void PlaySong(Level level)
         {
             if (level == null)
@@ -195,6 +207,8 @@ namespace BeatSaberKeeper.App.Tools
             {
                 _waveOut.Stop();
             }
+
+            DisposePlayingSong();
 
             _currentlyPlayingSong = level;
             _currentlyPlayingFile = new VorbisWaveReader(level.AudioFilePath);
@@ -210,9 +224,27 @@ namespace BeatSaberKeeper.App.Tools
             {
                 return;
             }
+
+            if (_currentlyPlayingSong == level)
+            {
+                StopSong();
+            }
             
-            _songReader.DeleteLevel(level);
+            if (!_songReader.DeleteLevel(level))
+            {
+                MessageBoxUtils.Error("Failed to delete your level. " +
+                                      "More information is available in the log files.");
+            }
             LoadSongList();
+        }
+
+        private void StopSong()
+        {
+            _waveOut.Stop();
+            DisposePlayingSong();
+            _currentlyPlayingFile = null;
+            _currentlyPlayingSong = null;
+            UpdateCurrentlyPlayingStatus();
         }
 
         private async void PlaySongContextMenuItem_Click(object sender, EventArgs e)
@@ -222,16 +254,16 @@ namespace BeatSaberKeeper.App.Tools
         {
             if (_waveOut.PlaybackState != PlaybackState.Stopped)
             {
-                UpdateCurrentlyPlayingStatus();
+                try
+                {
+                    UpdateCurrentlyPlayingStatus();
+                } catch (NullReferenceException) { /* ignore */ }
             }
         }
 
         private void SEPlayerStopButton_Click(object sender, EventArgs e)
         {
-            _waveOut.Stop();
-            _currentlyPlayingFile = null;
-            _currentlyPlayingSong = null;
-            UpdateCurrentlyPlayingStatus();
+            StopSong();
         }
 
         private void SEPlayerPauseButton_Click(object sender, EventArgs e)
