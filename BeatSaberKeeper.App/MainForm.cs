@@ -619,5 +619,10 @@ namespace BeatSaberKeeper.App
             UpdateGrids();
             UpdateMenuItems(null);
         }
+
+        private void OpenDataDirectoryMenuItem_Click(object sender, EventArgs e)
+        {
+            WindowsUtils.ShowFolderInExplorer(BSKConstants.Paths.DefaultWorkingPath);
+        }
     }
 }
