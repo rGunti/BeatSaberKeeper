@@ -624,5 +624,10 @@ namespace BeatSaberKeeper.App
         {
             WindowsUtils.ShowFolderInExplorer(BSKConstants.Paths.DefaultWorkingPath);
         }
+
+        private void OpenGameDirectoryMenuItem_Click(object sender, EventArgs e)
+        {
+            WindowsUtils.ShowFolderInExplorer(_configManager.Config.GamePath);
+        }
     }
 }
