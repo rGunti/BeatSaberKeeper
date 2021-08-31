@@ -15,11 +15,14 @@ using BeatSaberKeeper.Kernel.Abstraction;
 using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using BeatSaberKeeper.Kernel.Abstraction.Repo;
 using BeatSaberKeeper.Updater;
+using Serilog;
 
 namespace BeatSaberKeeper.App
 {
     public partial class MainForm : Form
     {
+        private static readonly ILogger Logger = Log.ForContext<MainForm>();
+        
         private readonly IRepository<Artifact> _artifactRepository;
         private readonly ConfigManager _configManager;
         private readonly IReleaseChecker _releaseChecker = new BskReleaseChecker();
@@ -173,7 +176,14 @@ namespace BeatSaberKeeper.App
             BskVersion latestVersion = null;
             this.RunInBackgroundThread(() =>
             {
-                latestVersion = _releaseChecker.GetLatestVersion(_configManager.Config.PrereleaseOptIn);
+                try
+                {
+                    latestVersion = _releaseChecker.GetLatestVersion(_configManager.Config.PrereleaseOptIn);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning(ex, "Failed to check for updates due to an exception");
+                }
             }, () =>
             {
                 if (latestVersion != null && latestVersion > AppInfo.AppVersion)
