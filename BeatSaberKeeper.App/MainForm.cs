@@ -558,6 +558,9 @@ namespace BeatSaberKeeper.App
             UpdateMenuItems(GetSelectedArtifact(sender as ListView));
         }
 
+        private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
+            => DoArtifactContextAction(UnpackAndRunArtifact);
+
         private void DeleteMenuItem_Click(object sender, EventArgs e)
             => DoArtifactContextAction(DeleteArtifact);
 
