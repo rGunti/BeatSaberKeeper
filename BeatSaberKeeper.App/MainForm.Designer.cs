@@ -52,6 +52,8 @@ namespace BeatSaberKeeper.App
             this.ArchiveMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.DownloadVanillaArchiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SongExplorerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.OpenDataDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.SetGameDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameDirectoryTextBox = new System.Windows.Forms.ToolStripTextBox();
@@ -92,6 +94,7 @@ namespace BeatSaberKeeper.App
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.OpenGameDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.TabContainer.SuspendLayout();
             this.BackupTabPage.SuspendLayout();
@@ -242,7 +245,7 @@ namespace BeatSaberKeeper.App
             // 
             this.RefreshMenuItem.Name = "RefreshMenuItem";
             this.RefreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.RefreshMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RefreshMenuItem.Size = new System.Drawing.Size(132, 22);
             this.RefreshMenuItem.Text = "Refresh";
             this.RefreshMenuItem.Click += new System.EventHandler(this.RefreshMenuItem_Click);
             // 
@@ -250,7 +253,10 @@ namespace BeatSaberKeeper.App
             // 
             this.ArchiveMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.DownloadVanillaArchiveMenuItem,
-            this.SongExplorerMenuItem});
+            this.SongExplorerMenuItem,
+            this.toolStripMenuItem4,
+            this.OpenDataDirectoryMenuItem,
+            this.OpenGameDirectoryMenuItem});
             this.ArchiveMenu.Name = "ArchiveMenu";
             this.ArchiveMenu.Size = new System.Drawing.Size(46, 20);
             this.ArchiveMenu.Text = "&Tools";
@@ -268,6 +274,18 @@ namespace BeatSaberKeeper.App
             this.SongExplorerMenuItem.Size = new System.Drawing.Size(213, 22);
             this.SongExplorerMenuItem.Text = "Song Explorer (Beta)";
             this.SongExplorerMenuItem.Click += new System.EventHandler(this.SongExplorerMenuItem_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(210, 6);
+            // 
+            // OpenDataDirectoryMenuItem
+            // 
+            this.OpenDataDirectoryMenuItem.Name = "OpenDataDirectoryMenuItem";
+            this.OpenDataDirectoryMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.OpenDataDirectoryMenuItem.Text = "Open Data Directory";
+            this.OpenDataDirectoryMenuItem.Click += new System.EventHandler(this.OpenDataDirectoryMenuItem_Click);
             // 
             // SettingsMenu
             // 
@@ -610,6 +628,13 @@ namespace BeatSaberKeeper.App
             this.StatusProgressBar.Name = "StatusProgressBar";
             this.StatusProgressBar.Size = new System.Drawing.Size(117, 18);
             // 
+            // OpenGameDirectoryMenuItem
+            // 
+            this.OpenGameDirectoryMenuItem.Name = "OpenGameDirectoryMenuItem";
+            this.OpenGameDirectoryMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.OpenGameDirectoryMenuItem.Text = "Open Game Directory";
+            this.OpenGameDirectoryMenuItem.Click += new System.EventHandler(this.OpenGameDirectoryMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -709,6 +734,9 @@ namespace BeatSaberKeeper.App
         private System.Windows.Forms.ToolStripMenuItem CheckForUpdatesOnStartupMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ViewMenu;
         private System.Windows.Forms.ToolStripMenuItem RefreshMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem OpenDataDirectoryMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem OpenGameDirectoryMenuItem;
     }
 }
 

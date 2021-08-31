@@ -74,6 +74,16 @@ namespace BeatSaberKeeper.App.Tools
 
         private void LoadSongList()
         {
+            if (!_configManager.IsGamePathValid())
+            {
+                SetStatus("No or invalid game path set");
+                MessageBoxUtils.Error("You have not specified where Beat Saber is installed on your machine. " +
+                                      "As a result, BeatSaberKeeper cannot list your installed songs. " +
+                                      "Please close the Song Explorer and set the game path in the Settings menu.");
+                Close();
+                return;
+            }
+
             SetStatus("Loading Songs ...");
             var levels = new List<Level>();
             this.RunInBackgroundThread(() =>

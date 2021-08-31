@@ -8,9 +8,16 @@ namespace BeatSaberKeeper.App.Utils
     {
         public static void ShowFileInExplorer(string filePath)
         {
-            System.Diagnostics.Process.Start(
+            Process.Start(
                 "explorer.exe",
                 $"/select,\"{Path.GetFullPath(filePath)}\"");
+        }
+
+        public static void ShowFolderInExplorer(string filePath)
+        {
+            Process.Start(
+                "explorer.exe",
+                $"\"{Path.GetFullPath(filePath)}\"");
         }
 
         public static void OpenUrl(string url)
