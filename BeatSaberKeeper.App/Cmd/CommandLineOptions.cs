@@ -11,6 +11,9 @@ namespace BeatSaberKeeper.App.Cmd
         [Option("nolog", Required = false, HelpText = "Disables the log file")]
         public bool NoLogFile { get; set; }
         
+        [Option("debug", Required = false, HelpText = "Enable more verbose logging options to help find root causes")]
+        public bool EnableDebugLogging { get; set; }
+        
         [Option('d', "data-dir", Required = false,
             HelpText = "If defined, changes the directory where data is stored")]
         public string DataDirectory { get; set; }

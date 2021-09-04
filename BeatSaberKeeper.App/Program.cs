@@ -69,7 +69,7 @@ namespace BeatSaberKeeper.App
 
         private static int DefaultMain(CommandLineOptions options)
         {
-            LogInitializer.Init(!options.NoLogFile, BSKConstants.Paths.Logs);
+            LogInitializer.Init(!options.NoLogFile, BSKConstants.Paths.Logs, options.EnableDebugLogging);
 
             if (!string.IsNullOrWhiteSpace(options.DataDirectory))
             {
