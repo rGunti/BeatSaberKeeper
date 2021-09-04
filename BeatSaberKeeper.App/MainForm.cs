@@ -14,6 +14,7 @@ using BeatSaberKeeper.App.Utils;
 using BeatSaberKeeper.Kernel.Abstraction;
 using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using BeatSaberKeeper.Kernel.Abstraction.Repo;
+using BeatSaberKeeper.Kernel.V1;
 using BeatSaberKeeper.Updater;
 using Serilog;
 
@@ -154,6 +155,7 @@ namespace BeatSaberKeeper.App
                         ImageKey = a.IsDefect ? "Defect" : "SaberPack"
                     };
                     item.SubItems.Add(a.GameVersion);
+                    item.SubItems.Add(a.ArchiveVersion);
                     item.SubItems.Add($"{a.LastUpdated}");
                     item.SubItems.Add(a.HumanReadableSize);
                     return item;
@@ -350,7 +352,14 @@ namespace BeatSaberKeeper.App
         {
             if (MessageBoxUtils.Ask($"Do you want to update \"{artifact.Name}\"?"))
             {
-                PackArchive(artifact.Name);
+                if (artifact.ArchiveVersion == V1ArchiveMetaData.VERSION)
+                {
+                    PackArchive(artifact.Name);
+                }
+                else
+                {
+                    UpdateArchive(artifact.Name);
+                }
             }
         }
 
@@ -496,6 +505,34 @@ namespace BeatSaberKeeper.App
                         }
                     }, UpdateGrids,
                     TimeSpan.FromMilliseconds(100))
+                .ShowDialog();
+        }
+
+        private void UpdateArchive(string archiveName)
+        {
+            SetStatus("Updating archive ...");
+            new BackgroundProcessControl(
+                $"Updating {archiveName}",
+                bgDialog =>
+                {
+                    try
+                    {
+                        _compressionInterface.UpdateArchiveFromFolder(
+                            _configManager.Config.GamePath,
+                            Path.Combine(BSKConstants.Paths.Archives, $"{archiveName}.bskeep"),
+                            (s, v, m) =>
+                            {
+                                bgDialog.SetStatus(s, v, m);
+                                SetStatus(s.Split('\n').FirstOrDefault(), (int)Math.Floor((double)v / m * 100));
+                            });
+                    }
+                    catch (IOException ex)
+                    {
+                        SetStatus($"Failed to pack game state", 0);
+                        MessageBoxUtils.Error($"Could not create archive.\n{ex.Message}");
+                    }
+                }, UpdateGrids,
+                TimeSpan.FromMilliseconds(100))
                 .ShowDialog();
         }
 

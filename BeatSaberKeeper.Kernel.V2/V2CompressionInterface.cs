@@ -223,6 +223,13 @@ namespace BeatSaberKeeper.Kernel.V2
             return ReadMetaDataFromArchive(zip);
         }
 
+        public bool ProbeVersion(string archivePath)
+        {
+            using var zipStream = _fileSystem.FileStream.Create(archivePath, FileMode.Open);
+            using var zip = new ZipArchive(zipStream, ZipArchiveMode.Read);
+            return zip.GetEntry(METADATA_FILE) != null;
+        }
+
         private IEnumerable<string> CreateFileIndex(string path)
         {
             var list = new List<string>();
