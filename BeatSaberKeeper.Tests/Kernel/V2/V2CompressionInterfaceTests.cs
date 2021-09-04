@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using BeatSaberKeeper.Kernel.Abstraction;
 using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using BeatSaberKeeper.Kernel.V2;
-using BeatSaberKeeper.Tests.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BeatSaberKeeper.Tests.Kernel.V2
@@ -120,6 +119,28 @@ namespace BeatSaberKeeper.Tests.Kernel.V2
             
             Assert.IsFalse(_fileSystem.File.Exists(@"C:\dst\b-file.txt"),
                 "Deleted file was produced from archive");
+        }
+
+        [TestMethod]
+        public void CanRestoreOlderVersion()
+        {
+            // Call the previous test to create the archive
+            DeletedFileIsRecordedCorrectly();
+            
+            // Clear extraction directory
+            _fileSystem.Directory.Delete(@"C:\dst", true);
+
+            // Get Date and Time when second commit was made
+            var metadata = (V2ArchiveMetaData)_interface.ReadMetaDataFromArchive(ARCHIVE);
+
+            CommitFile file = metadata.Files.First(f => f.Path == "b-file.txt");
+            DateTime commitDate = file.Commits.First(c => !c.FileDeleted).CommitDate;
+
+            // Extract as of time before b-file.txt was deleted
+            _interface.UnpackArchiveToFolder(ARCHIVE, @"C:\dst", commitDate, Report);
+
+            Assert.IsTrue(_fileSystem.File.Exists(@"C:\dst\b-file.txt"),
+                "Deleted file was restored");
         }
     }
 }

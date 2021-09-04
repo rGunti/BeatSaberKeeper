@@ -31,14 +31,18 @@ namespace BeatSaberKeeper.App.Tools
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.VersionListView = new System.Windows.Forms.ListView();
             this.ArchiveDateColumn = new System.Windows.Forms.ColumnHeader();
             this.NoFilesColumn = new System.Windows.Forms.ColumnHeader();
+            this.VersionContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.UnpackThisVersionContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FileListView = new System.Windows.Forms.ListView();
             this.FileNameColumn = new System.Windows.Forms.ColumnHeader();
             this.FileSizeColumn = new System.Windows.Forms.ColumnHeader();
             this.FileHashColumn = new System.Windows.Forms.ColumnHeader();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.VersionContextMenu.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,6 +51,7 @@ namespace BeatSaberKeeper.App.Tools
             this.VersionListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ArchiveDateColumn,
             this.NoFilesColumn});
+            this.VersionListView.ContextMenuStrip = this.VersionContextMenu;
             this.VersionListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.VersionListView.FullRowSelect = true;
             this.VersionListView.HideSelection = false;
@@ -66,6 +71,21 @@ namespace BeatSaberKeeper.App.Tools
             // NoFilesColumn
             // 
             this.NoFilesColumn.Text = "# Files";
+            // 
+            // VersionContextMenu
+            // 
+            this.VersionContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UnpackThisVersionContextMenuItem});
+            this.VersionContextMenu.Name = "VersionContextMenu";
+            this.VersionContextMenu.Size = new System.Drawing.Size(181, 48);
+            this.VersionContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.VersionContextMenu_Opening);
+            // 
+            // UnpackThisVersionContextMenuItem
+            // 
+            this.UnpackThisVersionContextMenuItem.Name = "UnpackThisVersionContextMenuItem";
+            this.UnpackThisVersionContextMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.UnpackThisVersionContextMenuItem.Text = "Unpack this version";
+            this.UnpackThisVersionContextMenuItem.Click += new System.EventHandler(this.UnpackThisVersionContextMenuItem_Click);
             // 
             // FileListView
             // 
@@ -124,6 +144,7 @@ namespace BeatSaberKeeper.App.Tools
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "History Explorer";
             this.Load += new System.EventHandler(this.HistoryExplorer_Load);
+            this.VersionContextMenu.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -138,5 +159,7 @@ namespace BeatSaberKeeper.App.Tools
         private System.Windows.Forms.ColumnHeader FileSizeColumn;
         private System.Windows.Forms.ColumnHeader FileHashColumn;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ContextMenuStrip VersionContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem UnpackThisVersionContextMenuItem;
     }
 }

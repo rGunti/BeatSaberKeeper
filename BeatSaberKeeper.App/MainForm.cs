@@ -554,7 +554,10 @@ namespace BeatSaberKeeper.App
 
         private void ShowHistory(Artifact artifact)
         {
-            new HistoryExplorer(artifact.FullPath, new Kernel.V2.V2CompressionInterface(new FileSystem()))
+            new HistoryExplorer(
+                artifact.FullPath,
+                new Kernel.V2.V2CompressionInterface(new FileSystem()),
+                _configManager)
                 .ShowDialog();
         }
 

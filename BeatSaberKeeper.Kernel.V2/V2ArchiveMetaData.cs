@@ -43,6 +43,10 @@ namespace BeatSaberKeeper.Kernel.V2
         public List<Commit> Commits { get; set; }
 
         public Commit GetNewestCommit() => Commits?.OrderByDescending(c => c.CommitDate).FirstOrDefault();
+
+        public Commit GetNewestCommitAsOf(DateTime latestCommitDateTime) => Commits?
+            .OrderByDescending(c => c.CommitDate)
+            .FirstOrDefault(c => c.CommitDate <= latestCommitDateTime);
     }
 
     public class Commit

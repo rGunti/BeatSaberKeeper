@@ -4,6 +4,8 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using BeatSaberKeeper.App.Config;
+using BeatSaberKeeper.App.Controls;
 using BeatSaberKeeper.App.Utils;
 using BeatSaberKeeper.Kernel.V2;
 using PandaDotNet.Utils;
@@ -16,12 +18,14 @@ namespace BeatSaberKeeper.App.Tools
         private readonly V2CompressionInterface _compressionInterface;
         private V2ArchiveMetaData _metaData;
         private IImmutableDictionary<DateTime, List<CommitFile>> _changeSet;
+        private readonly ConfigManager _configManager;
 
-        public HistoryExplorer(string archiveFilePath, V2CompressionInterface compressionInterface)
+        public HistoryExplorer(string archiveFilePath, V2CompressionInterface compressionInterface, ConfigManager configManager)
         {
             InitializeComponent();
             _archiveFilePath = archiveFilePath;
             _compressionInterface = compressionInterface;
+            _configManager = configManager;
         }
 
         private void HistoryExplorer_Load(object sender, System.EventArgs e)
@@ -118,6 +122,42 @@ namespace BeatSaberKeeper.App.Tools
             return selectedItems[0].Tag as DateTime? ?? default;
         }
 
+        private void UnpackVersion(DateTime version)
+        {
+            if (!_configManager.IsGamePathValid())
+            {
+                MessageBoxUtils.Error("Cannot unpack archive since you haven't set a game directory.\n" +
+                                      "Please return to the main window and set a game directory. You can do this " +
+                                      "under the \"Settings\" menu.");
+                return;
+            }
+            
+            if (!MessageBoxUtils.Ask($"Do you want to unpack this archive as it was packed at {version:G}?\n" +
+                                     $"All unpacked changes will be overwritten."))
+            {
+                return;
+            }
+
+            new BackgroundProcessControl($"Unpacking {Path.GetFileNameWithoutExtension(_archiveFilePath)}",
+                bgDialog =>
+                {
+                    _compressionInterface.UnpackArchiveToFolder(
+                        _archiveFilePath,
+                        _configManager.Config.GamePath,
+                        version,
+                        bgDialog.SetStatus);
+                }, () =>
+                {
+                    MessageBoxUtils.Info("Extraction completed.");
+                }, TimeSpan.FromMilliseconds(10))
+                .ShowDialog();
+        }
+
+        private void UpdateContextMenu(DateTime? version)
+        {
+            UnpackThisVersionContextMenuItem.Enabled = version.HasValue;
+        }
+
         private void DoVersionContextAction(Func<DateTime?> extractor, Action<DateTime> action)
         {
             DateTime? artifact = extractor();
@@ -127,12 +167,28 @@ namespace BeatSaberKeeper.App.Tools
             }
         }
 
+        private void DoVersionContextAction(Func<DateTime?> extractor, Action<DateTime?> action)
+        {
+            DateTime? artifact = extractor();
+            action(artifact);
+        }
+
         private void DoVersionContextAction(Action<DateTime> action)
+            => DoVersionContextAction(GetSelectedVersion, action);
+        private void DoVersionContextAction(Action<DateTime?> action)
             => DoVersionContextAction(GetSelectedVersion, action);
 
         private void VersionListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateFileList();
         }
+
+        private void VersionContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            UpdateContextMenu(GetSelectedVersion());
+        }
+
+        private void UnpackThisVersionContextMenuItem_Click(object sender, EventArgs e)
+            => DoVersionContextAction(UnpackVersion);
     }
 }

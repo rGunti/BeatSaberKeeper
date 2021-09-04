@@ -53,7 +53,11 @@ namespace BeatSaberKeeper.Kernel.V2
             CreateArchive(archivePath, fileList, archiveMetaData, report);
         }
 
-        public void UnpackArchiveToFolder(string archivePath, string destinationPath, ReportProgressDelegate report = null)
+        public void UnpackArchiveToFolder(string archivePath, string destinationPath,
+            ReportProgressDelegate report = null)
+            => UnpackArchiveToFolder(archivePath, destinationPath, DateTime.MaxValue, report);
+
+        public void UnpackArchiveToFolder(string archivePath, string destinationPath, DateTime newestVersion, ReportProgressDelegate report = null)
         {
             if (_fileSystem.Directory.Exists(destinationPath))
             {
@@ -77,7 +81,13 @@ namespace BeatSaberKeeper.Kernel.V2
             var missingFiles = new List<CommitFile>();
             foreach (CommitFile file in metaData.Files)
             {
-                Commit newestCommit = file.GetNewestCommit();
+                Commit newestCommit = file.GetNewestCommitAsOf(newestVersion);
+                if (newestCommit == null)
+                {
+                    // No commit exists for the given time parameter, so we treat it like a deleted file
+                    totalFileCount--;
+                    continue;
+                }
                 if (newestCommit.FileDeleted)
                 {
                     // File has been deleted so we don't have to unpack anything
@@ -105,8 +115,10 @@ namespace BeatSaberKeeper.Kernel.V2
                 ExtractFile(zipEntry, targetPath);
             }
             
-            List<Tuple<CommitFile, string>> reports = ValidateFileHash(destinationPath, metaData.Files, report)
+            List<Tuple<CommitFile, string>> reports = ValidateFileHash(destinationPath, metaData.Files, report, newestVersion)
                 .ToList();
+
+            report.Submit($"All files validated, {reports.Count} issues found", 100);
         }
 
         public void UpdateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null)
@@ -376,6 +388,7 @@ namespace BeatSaberKeeper.Kernel.V2
             string unpackPath,
             IEnumerable<CommitFile> files,
             ReportProgressDelegate report,
+            DateTime newestVersion,
             int expectedFileCount = -1)
         {
             report.Submit("Start validating files ...");
@@ -390,8 +403,8 @@ namespace BeatSaberKeeper.Kernel.V2
             foreach (CommitFile file in files)
             {
                 string targetPath = _fileSystem.Path.Combine(unpackPath, file.Path);
-                Commit newestCommit = file.GetNewestCommit();
-                if (newestCommit.FileDeleted)
+                Commit newestCommit = file.GetNewestCommitAsOf(newestVersion);
+                if (newestCommit == null || newestCommit.FileDeleted)
                 {
                     if (_fileSystem.File.Exists(targetPath))
                     {
@@ -402,7 +415,7 @@ namespace BeatSaberKeeper.Kernel.V2
 
                 fileIndex++;
                 report.Submit($"Validating file {fileIndex} / {expectedFileCount} ({encounteredErrors} issues found) ...\n" +
-                              $"{file.Path}");
+                              $"{file.Path}", fileIndex, expectedFileCount);
 
                 if (!_fileSystem.File.Exists(targetPath))
                 {
