@@ -250,12 +250,14 @@ namespace BeatSaberKeeper.App
             {
                 bool isDefect = IsDefect(selectedArtifact);
                 bool isModBackup = IsBackupArchive(selectedArtifact) && !isDefect;
+                bool isNotV1 = selectedArtifact?.ArchiveVersion != V1ArchiveMetaData.VERSION;
 
                 unpackToolStripMenuItem.Enabled = !isDefect;
                 unpackRunToolStripMenuItem.Enabled = !isDefect;
                 updateToolStripMenuItem.Enabled = !isDefect;
                 cloneToolStripMenuItem.Enabled = isModBackup;
                 updateToolStripMenuItem.Enabled = isModBackup;
+                showHistoryToolStripMenuItem.Enabled = isModBackup && isNotV1;
                 renameToolStripMenuItem.Enabled = isModBackup;
             }
         }
@@ -266,6 +268,7 @@ namespace BeatSaberKeeper.App
             bool isSelected = selectedArtifact != null;
             bool isDefect = IsDefect(selectedArtifact);
             bool isModBackup = IsBackupArchive(selectedArtifact) && !isDefect;
+            bool isNotV1 = selectedArtifact?.ArchiveVersion != V1ArchiveMetaData.VERSION;
 
             UnpackRunMenuItem.Enabled = isSelected && !isDefect;
             UnpackMenuItem.Enabled = isSelected && !isDefect;
@@ -274,6 +277,7 @@ namespace BeatSaberKeeper.App
             RenameMenuItem.Enabled = isModBackup;
             DeleteMenuItem.Enabled = isSelected;
             ShowInSystemExplorerMenuItem.Enabled = isSelected;
+            ShowHistoryMenuItem.Enabled = isModBackup && isNotV1;
             PropertiesMenuItem.Enabled = isSelected;
         }
 
@@ -548,6 +552,12 @@ namespace BeatSaberKeeper.App
             return true;
         }
 
+        private void ShowHistory(Artifact artifact)
+        {
+            new HistoryExplorer(artifact.FullPath, new Kernel.V2.V2CompressionInterface(new FileSystem()))
+                .ShowDialog();
+        }
+
         private void DoArtifactContextAction(Func<Artifact> extractor, Action<Artifact> action)
         {
             var artifact = extractor();
@@ -633,6 +643,12 @@ namespace BeatSaberKeeper.App
 
         private void SetGameDirectoryMenuItem_Click(object sender, EventArgs e)
             => SetGameDirectory();
+
+        private void showHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction((ToolStripMenuItem)sender, ShowHistory);
+
+        private void ShowHistoryMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(ShowHistory);
 
         private void aboutBeatSaberKeeperToolStripMenuItem_Click(object sender, EventArgs e)
         {

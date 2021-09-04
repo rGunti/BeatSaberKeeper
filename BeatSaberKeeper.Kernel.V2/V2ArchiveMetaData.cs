@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Xml.Serialization;
 using BeatSaberKeeper.Kernel.Abstraction;
@@ -13,6 +14,23 @@ namespace BeatSaberKeeper.Kernel.V2
         public override string ArchiveVersion { get; set; } = VERSION;
         [XmlElement("File")]
         public List<CommitFile> Files { get; set; } = new();
+
+        public IImmutableDictionary<DateTime, List<CommitFile>> GetChangeSets()
+        {
+            var dict = new Dictionary<DateTime, List<CommitFile>>();
+            foreach (CommitFile file in Files)
+            {
+                foreach (Commit commit in file.Commits)
+                {
+                    if (!dict.ContainsKey(commit.CommitDate))
+                    {
+                        dict.Add(commit.CommitDate, new List<CommitFile>());
+                    }
+                    dict[commit.CommitDate].Add(file);
+                }
+            }
+            return dict.ToImmutableDictionary();
+        }
     }
 
     public class CommitFile
