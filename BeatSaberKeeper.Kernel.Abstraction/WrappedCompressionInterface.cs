@@ -83,6 +83,13 @@ namespace BeatSaberKeeper.Kernel.Abstraction
 
         public void UpdateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null)
         {
+            ICompressionInterface probedInterface = GetInterfaceByProbing(archivePath);
+            if (probedInterface != null)
+            {
+                probedInterface.UpdateArchiveFromFolder(sourcePath, archivePath, report);
+                return;
+            }
+            
             foreach (ICompressionInterface @interface in GetInterfacesWithCapability(CompressionInterfaceCapabilities.UpdateArchive))
             {
                 try

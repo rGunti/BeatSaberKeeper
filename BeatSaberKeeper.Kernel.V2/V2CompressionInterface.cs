@@ -171,7 +171,7 @@ namespace BeatSaberKeeper.Kernel.V2
             ImmutableHashSet<string> sourceDict = fileList.Select(f => f.Destination).ToImmutableHashSet();
             foreach ((string filePath, CommitFile commitFile) in zipFileDict)
             {
-                if (!sourceDict.Contains(filePath))
+                if (!sourceDict.Contains(filePath) && !commitFile.GetNewestCommit().FileDeleted)
                 {
                     // File is missing on File System, mark it as deleted
                     commitFile.Commits.Add(new Commit
@@ -183,6 +183,13 @@ namespace BeatSaberKeeper.Kernel.V2
                     });
                     filesToBeDeleted.Add(commitFile);
                 }
+            }
+            
+            // Check if there are changes to be done
+            if (filesToBeAdded.Count == 0 && filesToBeUpdated.Count == 0 && filesToBeDeleted.Count == 0)
+            {
+                // Nothing has changed, we can skip the writing part
+                return;
             }
             
             // Opening zip archive in write mode

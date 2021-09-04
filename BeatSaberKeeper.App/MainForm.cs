@@ -532,7 +532,7 @@ namespace BeatSaberKeeper.App
                         MessageBoxUtils.Error($"Could not create archive.\n{ex.Message}");
                     }
                 }, UpdateGrids,
-                TimeSpan.FromMilliseconds(100))
+                TimeSpan.FromMilliseconds(10))
                 .ShowDialog();
         }
 
