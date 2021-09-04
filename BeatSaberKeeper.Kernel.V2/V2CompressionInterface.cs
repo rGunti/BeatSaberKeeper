@@ -220,6 +220,14 @@ namespace BeatSaberKeeper.Kernel.V2
             
             report.Submit("Writing Metadata ...");
             metadata.Files = zipFileDict.Values.ToList();
+
+            try
+            {
+                string versionFilePath = _fileSystem.Path.Combine(sourcePath, "BeatSaberVersion.txt");
+                metadata.GameVersion = _fileSystem.File.Exists(versionFilePath)
+                    ? _fileSystem.File.ReadAllText(versionFilePath).Trim()
+                    : "<unknown>";
+            } catch (Exception) { /* ignored */ }
             GenerateMetaData(zip, metadata);
         }
 
