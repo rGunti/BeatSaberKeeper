@@ -12,7 +12,7 @@ namespace BeatSaberKeeper.App.Core.Steam
 {
     public class CDNClientPool : IDisposable
     {
-        private const int ServerEndpointMinimumSize = 8;
+        private const int SERVER_ENDPOINT_MINIMUM_SIZE = 16;
 
         private readonly ILogger _logger;
         private readonly uint _appId;
@@ -103,7 +103,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                 _populatePoolEvent.WaitOne(TimeSpan.FromSeconds(1));
 
                 // We want the Steam session so we can take the CellID from the session and pass it through to the ContentServer Directory Service
-                if (_availableServerEndpoints.Count < ServerEndpointMinimumSize && _steamSession.Client.IsConnected)
+                if (_availableServerEndpoints.Count < SERVER_ENDPOINT_MINIMUM_SIZE && _steamSession.Client.IsConnected)
                 {
                     var servers = await FetchBootstrapServerListAsync().ConfigureAwait(false);
 
@@ -127,6 +127,8 @@ namespace BeatSaberKeeper.App.Core.Steam
                     {
                         for (var i = 0; i < server.NumEntries; i++)
                         {
+                            _logger.Verbose("Adding new available server endpoint {Endpoint} to pool ...",
+                                server);
                             _availableServerEndpoints.Add(server);
                         }
                     }
@@ -143,7 +145,8 @@ namespace BeatSaberKeeper.App.Core.Steam
 
         private CDNClient.Server BuildConnection(CancellationToken token)
         {
-            if (_availableServerEndpoints.Count < ServerEndpointMinimumSize)
+            _logger.Debug("Building new connection ...");
+            if (_availableServerEndpoints.Count < SERVER_ENDPOINT_MINIMUM_SIZE)
             {
                 _populatePoolEvent.Set();
             }
@@ -153,8 +156,12 @@ namespace BeatSaberKeeper.App.Core.Steam
 
         public CDNClient.Server GetConnection(CancellationToken token)
         {
+            _logger.Debug("Trying to get a connection from pool, {Count} connections left",
+                _activeConnectionPool.Count);
             if (!_activeConnectionPool.TryPop(out var connection))
             {
+                _logger.Information("Couldn't get a connection ({Count} connections left)",
+                    _activeConnectionPool.Count);
                 connection = BuildConnection(token);
             }
 
@@ -193,6 +200,8 @@ namespace BeatSaberKeeper.App.Core.Steam
             if (server == null) return;
 
             _activeConnectionPool.Push(server);
+            _logger.Debug("Connection returned to pool, now has {PoolSize} connections available",
+                _activeConnectionPool.Count);
         }
     }
 }
