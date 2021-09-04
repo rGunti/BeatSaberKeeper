@@ -64,6 +64,13 @@ namespace BeatSaberKeeper.Kernel.Abstraction
 
         public void UnpackArchiveToFolder(string archivePath, string destinationPath, ReportProgressDelegate report = null)
         {
+            ICompressionInterface probedInterface = GetInterfaceByProbing(archivePath);
+            if (probedInterface != null)
+            {
+                probedInterface.UnpackArchiveToFolder(archivePath, destinationPath, report);
+                return;
+            }
+
             foreach (ICompressionInterface @interface in GetInterfacesWithCapability(CompressionInterfaceCapabilities.UnpackArchive))
             {
                 try
