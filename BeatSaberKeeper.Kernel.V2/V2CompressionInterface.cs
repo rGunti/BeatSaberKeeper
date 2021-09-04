@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.IO.Abstractions;
 using System.IO.Compression;
@@ -110,7 +111,109 @@ namespace BeatSaberKeeper.Kernel.V2
 
         public void UpdateArchiveFromFolder(string sourcePath, string archivePath, ReportProgressDelegate report = null)
         {
-            throw new System.NotImplementedException();
+            report.Submit("Reading metadata ...");
+            V2ArchiveMetaData metadata = (V2ArchiveMetaData) ReadMetaDataFromArchive(archivePath);
+
+            report.Submit("Collecting files ...");
+            var fileList = ScanForFiles(sourcePath).ToList();
+
+            report.Submit("Comparing files on disk with archive ...");
+            var zipFileDict = metadata.Files.ToDictionary(f => f.Path, f => f);
+
+            DateTime commitDate = DateTime.UtcNow;
+            var filesToBeAdded = new List<CommitFile>();
+            var filesToBeUpdated = new List<CommitFile>();
+            var filesToBeDeleted = new List<CommitFile>();
+            foreach (ArchiveFileInfo fileInfo in fileList)
+            {
+                if (zipFileDict.ContainsKey(fileInfo.Destination))
+                {
+                    // File was already archived and needs to be updated
+                    var zipFile = zipFileDict[fileInfo.Destination];
+                    // Associate source path with zippped file
+                    zipFile.SourcePath = fileInfo.SourceFile;
+
+                    var latestCommit = zipFile.GetNewestCommit();
+                    string currentFileHash = CalculateFileHash(fileInfo.SourceFile);
+                    if (latestCommit.Hash != currentFileHash)
+                    {
+                        // File hash is different, let's update
+                        // create a new commit to reflect this
+                        zipFile.Commits.Add(new Commit
+                        {
+                            CommitDate = commitDate,
+                            Hash = currentFileHash,
+                            Size = fileInfo.FileSize ?? -1
+                        });
+                        filesToBeUpdated.Add(zipFile);
+                    }
+                }
+                else
+                {
+                    // File was not yet archived an needs to be added
+                    filesToBeAdded.Add(new CommitFile
+                    {
+                        SourcePath = fileInfo.SourceFile,
+                        Path = fileInfo.Destination,
+                        Commits = new List<Commit>
+                        {
+                            new()
+                            {
+                                CommitDate = commitDate,
+                                Hash = CalculateFileHash(fileInfo.SourceFile),
+                                Size = fileInfo.FileSize ?? -1
+                            }
+                        }
+                    });
+                }
+            }
+
+            ImmutableHashSet<string> sourceDict = fileList.Select(f => f.Destination).ToImmutableHashSet();
+            foreach ((string filePath, CommitFile commitFile) in zipFileDict)
+            {
+                if (!sourceDict.Contains(filePath))
+                {
+                    // File is missing on File System, mark it as deleted
+                    commitFile.Commits.Add(new Commit
+                    {
+                        CommitDate = commitDate,
+                        FileDeleted = true,
+                        Hash = null,
+                        Size = -1
+                    });
+                    filesToBeDeleted.Add(commitFile);
+                }
+            }
+            
+            // Opening zip archive in write mode
+            using var zipStream = _fileSystem.FileStream.Create(archivePath, FileMode.Open, FileAccess.ReadWrite);
+            using var zip = new ZipArchive(zipStream, ZipArchiveMode.Update);
+
+            // Add changes to archive
+            int noFilesToBeChanged = filesToBeAdded.Count + filesToBeUpdated.Count;
+            int currentFile = 0;
+            report.Submit($"Preparing to change {noFilesToBeChanged} files in archive ...");
+
+            foreach (CommitFile commitFile in filesToBeAdded)
+            {
+                currentFile++;
+                report.Submit($"Packing file {currentFile} / {noFilesToBeChanged}\n" +
+                              $"{commitFile.Path}");
+                AddFileToZipArchive(zip, commitFile);
+                zipFileDict.Add(commitFile.Path, commitFile);
+            }
+
+            foreach (CommitFile commitFile in filesToBeUpdated)
+            {
+                currentFile++;
+                report.Submit($"Packing file {currentFile} / {noFilesToBeChanged}\n" +
+                              $"{commitFile.Path}");
+                AddFileToZipArchive(zip, commitFile);
+            }
+            
+            report.Submit("Writing Metadata ...");
+            metadata.Files = zipFileDict.Values.ToList();
+            GenerateMetaData(zip, metadata);
         }
 
         public ArchiveMetaData ReadMetaDataFromArchive(string archivePath)
@@ -223,7 +326,7 @@ namespace BeatSaberKeeper.Kernel.V2
         }
 
         private string ConstructZipFilePathFromCommit(CommitFile file, Commit commit) =>
-            $"{commit!.CommitDate:yyyyMMdd'-'HHmmss}/{file.Path}";
+            $"{commit!.CommitDate:yyyyMMdd'-'HHmmssffff}/{file.Path}";
 
         private string CalculateFileHash(string filePath)
         {
@@ -235,6 +338,12 @@ namespace BeatSaberKeeper.Kernel.V2
             ZipArchive zipArchive,
             V2ArchiveMetaData metaData)
         {
+            if (zipArchive.Mode == ZipArchiveMode.Update)
+            {
+                // If a metadata file already exists, delete it so we can replace it
+                zipArchive.GetEntry(METADATA_FILE)?.Delete();
+            }
+
             var xml = new XmlSerializer(metaData.GetType());
             ZipArchiveEntry entry = zipArchive.CreateEntry(METADATA_FILE);
             using Stream stream = entry.Open();
