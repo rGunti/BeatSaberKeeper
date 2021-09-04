@@ -13,6 +13,7 @@ namespace BeatSaberKeeper.Kernel.Abstraction.Utils
 
         public string SourceFile { get; set; }
         public string Destination { get; set; }
+        public long? FileSize { get; set; }
 
         public static ArchiveFileInfo ConstructFromPath(
             string filepath,
