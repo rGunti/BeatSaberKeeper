@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.Kernel.Abst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.Kernel.V1", "BeatSaberKeeper.Kernel.V1\BeatSaberKeeper.Kernel.V1.csproj", "{9990DDF0-5D42-4ACB-85A7-54D7ECE77B6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeatSaberKeeper.Kernel.V2", "BeatSaberKeeper.Kernel.V2\BeatSaberKeeper.Kernel.V2.csproj", "{7FBE0A48-D040-4510-BA10-DF2BBDF94620}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{9990DDF0-5D42-4ACB-85A7-54D7ECE77B6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9990DDF0-5D42-4ACB-85A7-54D7ECE77B6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9990DDF0-5D42-4ACB-85A7-54D7ECE77B6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FBE0A48-D040-4510-BA10-DF2BBDF94620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FBE0A48-D040-4510-BA10-DF2BBDF94620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FBE0A48-D040-4510-BA10-DF2BBDF94620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FBE0A48-D040-4510-BA10-DF2BBDF94620}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

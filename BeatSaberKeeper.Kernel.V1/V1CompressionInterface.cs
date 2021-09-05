@@ -99,6 +99,19 @@ namespace BeatSaberKeeper.Kernel.V1
             return xml.Deserialize(metaEntry.Open()) as V1ArchiveMetaData;
         }
 
+        public bool ProbeVersion(string archivePath)
+        {
+            using var zipStream = _fileSystem.FileStream.Create(archivePath, FileMode.Open);
+            using var zip = new ZipArchive(zipStream, ZipArchiveMode.Read);
+            bool probeResult = zip.GetEntry(METADATA_FILE) != null;
+            
+            zip.Dispose();
+            zipStream.Close();
+            zipStream.Dispose();
+
+            return probeResult;
+        }
+
         private IEnumerable<ArchiveFileInfo> ScanForFiles(string sourcePath)
         {
             return CreateFileIndex(sourcePath)

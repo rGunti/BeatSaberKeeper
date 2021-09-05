@@ -24,5 +24,12 @@ namespace BeatSaberKeeper.Kernel.Abstraction
 
         ArchiveMetaData ReadMetaDataFromArchive(
             string archivePath);
+
+        /// <summary>
+        /// Returns true if the provided archive is using this archive version
+        /// </summary>
+        /// <param name="archivePath"></param>
+        /// <returns></returns>
+        bool ProbeVersion(string archivePath);
     }
 }
