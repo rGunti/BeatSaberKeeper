@@ -15,6 +15,7 @@ using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
 using BeatSaberKeeper.Kernel.Abstraction;
 using BeatSaberKeeper.Kernel.V1;
+using BeatSaberKeeper.Kernel.V2;
 using CommandLine;
 using CommandLine.Text;
 
@@ -85,8 +86,9 @@ namespace BeatSaberKeeper.App
             ICompressionInterface compressionInterface = new WrappedCompressionInterface(
                 new Dictionary<string, ICompressionInterface>
                 {
-                    { "v1", new V1CompressionInterface(new FileSystem()) }
-                });
+                    { V2ArchiveMetaData.VERSION, new V2CompressionInterface(new FileSystem()) },
+                    { V1ArchiveMetaData.VERSION, new V1CompressionInterface(new FileSystem()) }
+                }, V2ArchiveMetaData.VERSION);
 
             Form mainForm;
             switch (options.StartupWindow)

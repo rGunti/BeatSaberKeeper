@@ -81,7 +81,7 @@ namespace BeatSaberKeeper.Tests.Kernel.V1
             ArchiveMetaData metadata = _interface.ReadMetaDataFromArchive(@"C:\archive.zip");
             Assert.IsNotNull(metadata);
             
-            Assert.AreEqual(V1ArchiveMetaData.V1, metadata.ArchiveVersion);
+            Assert.AreEqual(V1ArchiveMetaData.VERSION, metadata.ArchiveVersion);
             Assert.AreEqual("1.2.3", metadata.GameVersion);
             Assert.AreEqual(ArtifactType.ModBackup, metadata.Type);
         }
