@@ -5,7 +5,8 @@ download and run multiple and older versions of BeatSaber. This is especially
 useful for people who mod their games to add custom songs, adjust the UI or enjoy
 custom game modes.
 
-[Download BeatSaberKeeper here](https://github.com/rGunti/BeatSaberKeeper/releases/latest)
+[Download BeatSaberKeeper here](https://github.com/rGunti/BeatSaberKeeper/releases/latest) -
+[Release Notes](/release)
 
 ![BeatSaberKeeper Main Window](imgs/bsk_mainwindow.png)
 
