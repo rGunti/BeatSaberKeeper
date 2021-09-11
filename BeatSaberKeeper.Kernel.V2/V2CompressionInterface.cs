@@ -24,6 +24,8 @@ namespace BeatSaberKeeper.Kernel.V2
 
         private static readonly SHA256 Sha256 = SHA256.Create();
 
+        public static V2CompressionInterfaceFlags Flags { get; } = new();
+
         private readonly IFileSystem _fileSystem;
 
         public V2CompressionInterface(IFileSystem fileSystem)
@@ -103,16 +105,28 @@ namespace BeatSaberKeeper.Kernel.V2
 
                 string zipFilePath = ConstructZipFilePathFromCommit(file, newestCommit);
                 string targetPath = Path.Combine(destinationPath, zipFilePath.Substring(zipFilePath.IndexOf('/') + 1));
-
                 targetPath.EnsureDirectoryExistsForFile(_fileSystem);
-                ZipArchiveEntry zipEntry = zip.GetEntry(zipFilePath);
-                if (zipEntry == null)
+
+                if (newestCommit.HasMultiPart)
                 {
-                    // TODO: Log a warning or something
-                    missingFiles.Add(file);
-                    continue;
+                    ExtractMultiPartFile(file, newestCommit, zip, targetPath,
+                        (_, value, max) =>
+                            report.Submit($"Unpacking file {fileIndex} / ~{totalFileCount}{missingFileStatusSuffix} [Part {value + 1} / {max}]\n" +
+                                          $"{file.Path}",
+                                fileIndex, totalFileCount));
                 }
-                ExtractFile(zipEntry, targetPath);
+                else
+                {
+                    ZipArchiveEntry zipEntry = zip.GetEntry(zipFilePath);
+                    if (zipEntry == null)
+                    {
+                        // TODO: Log a warning or something
+                        missingFiles.Add(file);
+                        continue;
+                    }
+
+                    ExtractFile(zipEntry, targetPath);
+                }
             }
             
             List<Tuple<CommitFile, string>> reports = ValidateFileHash(destinationPath, metaData.Files, report, newestVersion)
@@ -155,7 +169,8 @@ namespace BeatSaberKeeper.Kernel.V2
                         {
                             CommitDate = commitDate,
                             Hash = currentFileHash,
-                            Size = fileInfo.FileSize ?? -1
+                            Size = fileInfo.FileSize ?? -1,
+                            FilePart = CalculateFileParts(fileInfo.FileSize).ToList()
                         });
                         filesToBeUpdated.Add(zipFile);
                     }
@@ -173,7 +188,8 @@ namespace BeatSaberKeeper.Kernel.V2
                             {
                                 CommitDate = commitDate,
                                 Hash = CalculateFileHash(fileInfo.SourceFile),
-                                Size = fileInfo.FileSize ?? -1
+                                Size = fileInfo.FileSize ?? -1,
+                                FilePart = CalculateFileParts(fileInfo.FileSize).ToList()
                             }
                         }
                     });
@@ -220,6 +236,7 @@ namespace BeatSaberKeeper.Kernel.V2
                               $"{commitFile.Path}");
                 AddFileToZipArchive(zip, commitFile);
                 zipFileDict.Add(commitFile.Path, commitFile);
+                zipStream.Flush();
             }
 
             foreach (CommitFile commitFile in filesToBeUpdated)
@@ -228,9 +245,10 @@ namespace BeatSaberKeeper.Kernel.V2
                 report.Submit($"Packing file {currentFile} / {noFilesToBeChanged}\n" +
                               $"{commitFile.Path}");
                 AddFileToZipArchive(zip, commitFile);
+                zipStream.Flush();
             }
             
-            report.Submit("Writing Metadata ...");
+            report.Submit("Generating Metadata ...");
             metadata.Files = zipFileDict.Values.ToList();
 
             try
@@ -241,6 +259,8 @@ namespace BeatSaberKeeper.Kernel.V2
                     : "<unknown>";
             } catch (Exception) { /* ignored */ }
             GenerateMetaData(zip, metadata);
+            
+            report.Submit("Writing archive data to disk ...");
         }
 
         public ArchiveMetaData ReadMetaDataFromArchive(string archivePath)
@@ -292,6 +312,32 @@ namespace BeatSaberKeeper.Kernel.V2
             return xml.Deserialize(metaEntry.Open()) as V2ArchiveMetaData;
         }
 
+        private IEnumerable<CommitFilePart> CalculateFileParts(long? fileSize)
+        {
+            long size = fileSize ?? -1;
+            if (size < 0 || size <= Flags.MinMultiPartFileSize)
+            {
+                yield break;
+            }
+
+            long requiredParts = size / Flags.MinMultiPartFileSize;
+            long lastPartRemainder = size % Flags.MinMultiPartFileSize;
+
+            for (var i = 0; i < requiredParts; i++)
+                yield return new CommitFilePart
+                {
+                    Index = i,
+                    Size = Flags.MinMultiPartFileSize
+                };
+
+            if (lastPartRemainder > 0)
+                yield return new CommitFilePart
+                {
+                    Index = (int)requiredParts,
+                    Size = lastPartRemainder
+                };
+        }
+
         private void CreateArchive(
             string archivePath,
             IEnumerable<ArchiveFileInfo> files,
@@ -314,7 +360,8 @@ namespace BeatSaberKeeper.Kernel.V2
                             {
                                 CommitDate = commitDate,
                                 Hash = hash,
-                                Size = f.FileSize ?? -1
+                                Size = f.FileSize ?? -1,
+                                FilePart = CalculateFileParts(f.FileSize).ToList()
                             }
                         }
                     };
@@ -333,7 +380,11 @@ namespace BeatSaberKeeper.Kernel.V2
                     $"Packing file {currentFile} / {fileCount}\n" +
                     $"{fileCommit.Path}",
                     currentFile, fileCount);
-                AddFileToZipArchive(zip, fileCommit);
+                AddFileToZipArchive(zip, fileCommit, report: (_, part, totalParts) =>
+                    report.Submit(
+                        $"Packing file {currentFile} / {fileCount} [Part {part + 1} / {totalParts}]\n" +
+                        $"{fileCommit.Path}",
+                        currentFile, fileCount));
             }
             
             report.Submit("Writing Metadata ...");
@@ -343,13 +394,30 @@ namespace BeatSaberKeeper.Kernel.V2
         private void AddFileToZipArchive(
             ZipArchive zipArchive,
             CommitFile file,
-            Commit commit = null)
+            Commit commit = null,
+            ReportProgressDelegate report = null)
         {
             commit = commit.Or(file.Commits.LastOrDefault);
-            ZipArchiveEntry entry = zipArchive.CreateEntry(ConstructZipFilePathFromCommit(file, commit));
-            using Stream zipFs = entry.Open();
             using Stream sourceFs = _fileSystem.FileStream.Create(file.SourcePath, FileMode.Open);
-            sourceFs.CopyTo(zipFs);
+            if (commit?.HasMultiPart == true)
+            {
+                int totalParts = commit.FilePart.Count;
+                foreach (CommitFilePart filePart in commit.FilePart.OrderBy(i => i.Index))
+                {
+                    report.Submit(null, filePart.Index, totalParts);
+                    ZipArchiveEntry entry = zipArchive.CreateEntry(ConstructZipFilePathFromCommit(file, commit, filePart.Index));
+                    using (Stream zipFs = entry.Open())
+                    {
+                        sourceFs.CopyPartTo(zipFs, (int)filePart.Size);
+                    }
+                }
+            }
+            else
+            {
+                ZipArchiveEntry entry = zipArchive.CreateEntry(ConstructZipFilePathFromCommit(file, commit));
+                using Stream zipFs = entry.Open();
+                sourceFs.CopyTo(zipFs);
+            }
         }
 
         private void ExtractFile(ZipArchiveEntry entry, string path)
@@ -359,13 +427,41 @@ namespace BeatSaberKeeper.Kernel.V2
             zipFileStream.CopyTo(destinationFileStream);
         }
 
-        private string ConstructZipFilePathFromCommit(CommitFile file, Commit commit) =>
-            $"{commit!.CommitDate:yyyyMMdd'-'HHmmssffff}/{file.Path}";
+        private void ExtractMultiPartFile(CommitFile file, Commit newestCommit, ZipArchive zip, string targetPath,
+            ReportProgressDelegate report = null)
+        {
+            using Stream destinationFileStream = _fileSystem.FileStream.Create(targetPath, FileMode.Create);
+            int fileParts = newestCommit.FilePart.Count;
+            foreach (CommitFilePart part in newestCommit.FilePart.OrderBy(p => p.Index))
+            {
+                report.Submit(null, part.Index, fileParts);
+                string partZipPath = ConstructZipFilePathFromCommit(file, newestCommit, part.Index);
+                ZipArchiveEntry zipEntry = zip.GetEntry(partZipPath);
+                if (zipEntry == null)
+                {
+                    // TODO: Log an error or something
+                    continue;
+                }
+
+                using Stream zipFileStream = zipEntry.Open();
+                zipFileStream.CopyTo(destinationFileStream);
+            }
+        }
+
+        private string ConstructZipFilePathFromCommit(CommitFile file, Commit commit, int multiPartIndex = -1)
+        {
+            var filePath = $"{commit!.CommitDate:yyyyMMdd'-'HHmmssffff}/{file.Path}";
+            if (commit.HasMultiPart && multiPartIndex >= 0) // Allow a sane file name without suffix if desired
+            {
+                filePath += $".bskmulti.{multiPartIndex:x4}";
+            }
+            return filePath;
+        }
 
         private string CalculateFileHash(string filePath)
         {
             using Stream fs = _fileSystem.File.OpenRead(filePath);
-            return string.Join("", Sha256.ComputeHash(fs).Select(b => b.ToString("x2")));
+            return Sha256.ComputeHash(fs).ToHexString();
         }
         
         private void GenerateMetaData(
