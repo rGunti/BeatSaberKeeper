@@ -119,7 +119,7 @@ namespace BeatSaberKeeper.App
         }
 
         private static readonly Func<Artifact, bool> IsVanillaArchive = a => a != null && a.Type == ArtifactType.Vanilla;
-        private static readonly Func<Artifact, bool> IsBackupArchive = a => a != null && a.Type == ArtifactType.ModBackup;
+        private static readonly Func<Artifact, bool> IsBackupArchive = a => a != null && a.Type != ArtifactType.Vanilla;
         private static readonly Func<Artifact, bool> IsDefect = a => a != null && a.IsDefect;
 
         private void RenderGrids()
