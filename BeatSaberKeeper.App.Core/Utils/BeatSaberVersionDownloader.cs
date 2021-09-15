@@ -71,7 +71,7 @@ namespace BeatSaberKeeper.App.Core.Utils
                         {
                             a.Created = DateTime.ParseExact(
                                 line.Trim(),
-                                "dd MMMM yyyy – HH:mm:ss 'UTC'",
+                                "d MMMM yyyy – HH:mm:ss 'UTC'",
                                 new CultureInfo("en-US"));
                         } catch (FormatException)
                         {
