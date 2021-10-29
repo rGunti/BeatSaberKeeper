@@ -1,5 +1,6 @@
 ﻿using BeatSaberKeeper.App.Utils;
 using System;
+using System.Data;
 using System.Windows.Forms;
 
 namespace BeatSaberKeeper.App.Controls
@@ -13,6 +14,12 @@ namespace BeatSaberKeeper.App.Controls
 
         private DateTime _lastExecution = DateTime.MinValue;
 
+        private string _currentStatus;
+        private int _currentValue;
+        private int _maxValue;
+
+        private Timer _timer = new();
+
         public BackgroundProcessControl(
             string title,
             Action<IStatusDialog> action,
@@ -24,10 +31,39 @@ namespace BeatSaberKeeper.App.Controls
             _action = action;
             _completion = completion;
             _throttle = uiThrottle ?? TimeSpan.Zero;
+            if (_throttle.Milliseconds > 0)
+                _timer.Interval = _throttle.Milliseconds;
+            _timer.Tick += (_, _) => UpdateDisplay();
+        }
+
+        private void UpdateDisplay()
+        {
+            StatusLabel.Text = _currentStatus;
+            if (_currentValue < 0)
+            {
+                ProgressBar.Style = ProgressBarStyle.Marquee;
+
+                PercentageLabel.Visible = false;
+            }
+            else
+            {
+                ProgressBar.Style = ProgressBarStyle.Continuous;
+                ProgressBar.Maximum = Math.Max(_maxValue, 0);
+                ProgressBar.Value = Math.Min(_currentValue, _maxValue);
+
+                double pctValue = Math.Floor((double)_currentValue / _maxValue * 100);
+                PercentageLabel.Text = @$"{pctValue:0} %";
+                PercentageLabel.Visible = true;
+            }
         }
 
         private void BackgroundProcessControl_Load(object sender, EventArgs e)
         {
+            if (_throttle.Milliseconds > 0)
+            {
+                _timer.Start();
+            }
+
             this.RunInBackgroundThread(() =>
             {
                 _action(this);
@@ -45,36 +81,14 @@ namespace BeatSaberKeeper.App.Controls
 
         public void SetStatus(string status, int value, int maxValue = 100)
         {
-            if (_throttle > TimeSpan.Zero
-                && _lastExecution + _throttle > DateTime.Now
-                && ProgressBar.Maximum == maxValue)
-            {
-                return;
-            }
-
             this.RunInUiThread(() =>
             {
-                StatusLabel.Text = status;
-                if (value < 0)
-                {
-                    ProgressBar.Style = ProgressBarStyle.Marquee;
+                _currentStatus = status;
+                _currentValue = value;
+                _maxValue = maxValue;
 
-                    PercentageLabel.Visible = false;
-                }
-                else
-                {
-                    ProgressBar.Style = ProgressBarStyle.Continuous;
-                    ProgressBar.Maximum = Math.Max(maxValue, 0);
-                    ProgressBar.Value = Math.Min(value, maxValue);
-
-                    PercentageLabel.Text = $"{((double)value / maxValue) * 100:0} %";
-                    PercentageLabel.Visible = true;
-                }
-
-                if (_throttle > TimeSpan.Zero)
-                {
-                    _lastExecution = DateTime.Now;
-                }
+                if (_throttle.Milliseconds == 0)
+                    UpdateDisplay();
             });
         }
     }

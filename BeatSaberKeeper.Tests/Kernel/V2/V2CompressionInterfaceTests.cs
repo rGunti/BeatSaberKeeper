@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
+using System.Security.Cryptography;
 using BeatSaberKeeper.Kernel.Abstraction;
 using BeatSaberKeeper.Kernel.Abstraction.Entities;
 using BeatSaberKeeper.Kernel.V2;
@@ -141,6 +143,77 @@ namespace BeatSaberKeeper.Tests.Kernel.V2
 
             Assert.IsTrue(_fileSystem.File.Exists(@"C:\dst\b-file.txt"),
                 "Deleted file was restored");
+        }
+
+        private void GenerateFile(string fileName, long fileSize)
+        {
+            var rng = new Random();
+            var bytes = new byte[fileSize];
+            rng.NextBytes(bytes);
+
+            _fileSystem.File.WriteAllBytes(fileName, bytes);
+        }
+
+        private MD5 md5 = MD5.Create();
+        private void CompareFiles(string expectedFile, string actualFile, string message = null)
+        {
+            using var expected = _fileSystem.FileStream.Create(expectedFile, FileMode.Open);
+            using var actual = _fileSystem.FileStream.Create(actualFile, FileMode.Open);
+
+            Assert.AreEqual(
+                md5.ComputeHash(expected).ToHexString(),
+                md5.ComputeHash(actual).ToHexString(), message);
+        }
+
+        [TestMethod]
+        public void SplitFilesWhenTooLarge()
+        {
+            // To make things easier to test, the multipart file size is reduced
+            V2CompressionInterface.Flags.MinMultiPartFileSize = 1024;
+            
+            // Generate some random files
+            GenerateFile(@"C:\src\rng.1k", 1024); // <- this file should not be split
+            GenerateFile(@"C:\src\rng.5k", 1024 * 5); // <-- this file should be split
+            
+            // Generate archive and unpack it again
+            CanUnpackArchive();
+
+            // Getting metadata
+            var metadata = (V2ArchiveMetaData)_interface.ReadMetaDataFromArchive(ARCHIVE);
+
+            CommitFile file1k = metadata.Files.First(f => f.Path == "rng.1k");
+            CommitFile file5k = metadata.Files.First(f => f.Path == "rng.5k");
+
+            // Validate if multipart records are present in metadata
+            Assert.IsFalse(file1k.Commits.First().HasMultiPart, "1k file should not have been split");
+            Assert.IsTrue(file5k.Commits.First().HasMultiPart, "5k file should have been split");
+
+            // Check unpacked file
+            Assert.IsTrue(_fileSystem.File.Exists(@"C:\dst\rng.5k"), "5k file was not unpacked");
+            CompareFiles(@"C:\src\rng.5k", @"C:\dst\rng.5k", "Unpacked file is different from source file");
+        }
+
+        [TestMethod]
+        public void SplitFilesOnUpdateWhenTooLarge()
+        {
+            // Run the regular split test
+            SplitFilesWhenTooLarge();
+            
+            // Update the 5k file
+            GenerateFile(@"C:\src\rng.5k", 1024 * 5);
+
+            // Update the archive
+            _interface.UpdateArchiveFromFolder(@"C:\src", ARCHIVE, Report);
+
+            
+            // Getting metadata
+            var metadata = (V2ArchiveMetaData)_interface.ReadMetaDataFromArchive(ARCHIVE);
+            
+            // Validating if newest commit is multipart
+            CommitFile file5k = metadata.Files.First(f => f.Path == "rng.5k");
+            Assert.IsTrue(file5k.Commits.Count > 1, "No new commit has been made");
+            Assert.IsTrue(file5k.Commits.OrderByDescending(c => c.CommitDate).First().HasMultiPart,
+                "Newest commit is not multipart");
         }
     }
 }

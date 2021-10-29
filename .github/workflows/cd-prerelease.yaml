@@ -2,7 +2,7 @@
 on:
   push:
     branches:
-      - 'release/*'
+      - 'release/v*'
     paths-ignore:
       - 'docs/**'
       - 'README.md'

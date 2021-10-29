@@ -60,6 +60,12 @@ namespace BeatSaberKeeper.Kernel.V2
         public long Size { get; set; } = -1;
         [XmlAttribute("deleted")]
         public bool FileDeleted { get; set; }
+        
+        [XmlElement("MultiPart")]
+        public List<CommitFilePart> FilePart { get; set; } = new();
+        
+        [XmlIgnore]
+        public bool HasMultiPart => (FilePart?.Count ?? 0) > 0;
 
         public bool ShouldSerializeSize()
         {
@@ -69,5 +75,13 @@ namespace BeatSaberKeeper.Kernel.V2
         {
             return FileDeleted;
         }
+    }
+
+    public class CommitFilePart
+    {
+        [XmlAttribute("index")]
+        public int Index { get; set; }
+        [XmlAttribute("size")]
+        public long Size { get; set; }
     }
 }
