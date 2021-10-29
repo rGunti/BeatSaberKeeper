@@ -1,11 +1,12 @@
 # BeatSaberKeeper
 BeatSaberKeeper (or "BSK" for short) is a little utility program
-for the VR rhythm game [BeatSaber](https://beatsaber.com/). It allows the user to
+for the VR rhythm game [Beat Saber](https://beatsaber.com/). It allows the user to
 download and run multiple and older versions of BeatSaber. This is especially
 useful for people who mod their games to add custom songs, adjust the UI or enjoy
 custom game modes.
 
-[Download BeatSaberKeeper here](https://github.com/rGunti/BeatSaberKeeper/releases/latest)
+[**Download BeatSaberKeeper here**](https://github.com/rGunti/BeatSaberKeeper/releases/latest) -
+[Check the **Release Notes**](/release)
 
 ![BeatSaberKeeper Main Window](imgs/bsk_mainwindow.png)
 

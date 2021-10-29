@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using BeatSaberKeeper.Kernel.Entities;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
 
 namespace BeatSaberKeeper.App
 {

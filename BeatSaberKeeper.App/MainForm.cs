@@ -2,26 +2,32 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using BeatSaberKeeper.App.Core;
-using BeatSaberKeeper.Kernel.Entities;
-using BeatSaberKeeper.Kernel.Repositories;
-using BeatSaberKeeper.Kernel.Services;
 using BeatSaberKeeper.App.Config;
 using BeatSaberKeeper.App.Controls;
 using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
+using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.Abstraction.Entities;
+using BeatSaberKeeper.Kernel.Abstraction.Repo;
+using BeatSaberKeeper.Kernel.V1;
 using BeatSaberKeeper.Updater;
+using Serilog;
 
 namespace BeatSaberKeeper.App
 {
     public partial class MainForm : Form
     {
-        private readonly ArtifactRepository _artifactRepository;
+        private static readonly ILogger Logger = Log.ForContext<MainForm>();
+        
+        private readonly IRepository<Artifact> _artifactRepository;
         private readonly ConfigManager _configManager;
         private readonly IReleaseChecker _releaseChecker = new BskReleaseChecker();
+        private readonly ICompressionInterface _compressionInterface;
 
         private List<Artifact> _artifacts = new();
         
@@ -31,10 +37,14 @@ namespace BeatSaberKeeper.App
             Filter = @"Beat Saber Executable|Beat Saber.exe|Executables|*.exe|Any Files|*"
         };
 
-        public MainForm()
+        public MainForm(ICompressionInterface compressionInterface)
         {
             InitializeComponent();
-            _artifactRepository = new ArtifactRepository(BSKConstants.Paths.Archives);
+            _compressionInterface = compressionInterface;
+            _artifactRepository = new ArtifactRepository(
+                BSKConstants.Paths.Archives,
+                new FileSystem(),
+                _compressionInterface);
             _configManager = ConfigManager.Instance;
             UpdateConfigDisplay();
 
@@ -59,7 +69,7 @@ namespace BeatSaberKeeper.App
 
         private void DownloadVanillaArchiveMenuItem_Click(object sender, EventArgs e)
         {
-            new DownloadGameArchiveForm
+            new DownloadGameArchiveForm(_compressionInterface)
             {
                 StartPosition = FormStartPosition.CenterParent
             }.ShowDialog();
@@ -109,7 +119,7 @@ namespace BeatSaberKeeper.App
         }
 
         private static readonly Func<Artifact, bool> IsVanillaArchive = a => a != null && a.Type == ArtifactType.Vanilla;
-        private static readonly Func<Artifact, bool> IsBackupArchive = a => a != null && a.Type == ArtifactType.ModBackup;
+        private static readonly Func<Artifact, bool> IsBackupArchive = a => a != null && a.Type != ArtifactType.Vanilla;
         private static readonly Func<Artifact, bool> IsDefect = a => a != null && a.IsDefect;
 
         private void RenderGrids()
@@ -145,6 +155,7 @@ namespace BeatSaberKeeper.App
                         ImageKey = a.IsDefect ? "Defect" : "SaberPack"
                     };
                     item.SubItems.Add(a.GameVersion);
+                    item.SubItems.Add(a.ArchiveVersion);
                     item.SubItems.Add($"{a.LastUpdated}");
                     item.SubItems.Add(a.HumanReadableSize);
                     return item;
@@ -167,7 +178,14 @@ namespace BeatSaberKeeper.App
             BskVersion latestVersion = null;
             this.RunInBackgroundThread(() =>
             {
-                latestVersion = _releaseChecker.GetLatestVersion(_configManager.Config.PrereleaseOptIn);
+                try
+                {
+                    latestVersion = _releaseChecker.GetLatestVersion(_configManager.Config.PrereleaseOptIn);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning(ex, "Failed to check for updates due to an exception");
+                }
             }, () =>
             {
                 if (latestVersion != null && latestVersion > AppInfo.AppVersion)
@@ -232,12 +250,14 @@ namespace BeatSaberKeeper.App
             {
                 bool isDefect = IsDefect(selectedArtifact);
                 bool isModBackup = IsBackupArchive(selectedArtifact) && !isDefect;
+                bool isNotV1 = selectedArtifact?.ArchiveVersion != V1ArchiveMetaData.VERSION;
 
                 unpackToolStripMenuItem.Enabled = !isDefect;
                 unpackRunToolStripMenuItem.Enabled = !isDefect;
                 updateToolStripMenuItem.Enabled = !isDefect;
                 cloneToolStripMenuItem.Enabled = isModBackup;
                 updateToolStripMenuItem.Enabled = isModBackup;
+                showHistoryToolStripMenuItem.Enabled = isModBackup && isNotV1;
                 renameToolStripMenuItem.Enabled = isModBackup;
             }
         }
@@ -248,6 +268,7 @@ namespace BeatSaberKeeper.App
             bool isSelected = selectedArtifact != null;
             bool isDefect = IsDefect(selectedArtifact);
             bool isModBackup = IsBackupArchive(selectedArtifact) && !isDefect;
+            bool isNotV1 = selectedArtifact?.ArchiveVersion != V1ArchiveMetaData.VERSION;
 
             UnpackRunMenuItem.Enabled = isSelected && !isDefect;
             UnpackMenuItem.Enabled = isSelected && !isDefect;
@@ -256,6 +277,7 @@ namespace BeatSaberKeeper.App
             RenameMenuItem.Enabled = isModBackup;
             DeleteMenuItem.Enabled = isSelected;
             ShowInSystemExplorerMenuItem.Enabled = isSelected;
+            ShowHistoryMenuItem.Enabled = isModBackup && isNotV1;
             PropertiesMenuItem.Enabled = isSelected;
         }
 
@@ -334,7 +356,14 @@ namespace BeatSaberKeeper.App
         {
             if (MessageBoxUtils.Ask($"Do you want to update \"{artifact.Name}\"?"))
             {
-                PackArchive(artifact.Name);
+                if (artifact.ArchiveVersion == V1ArchiveMetaData.VERSION)
+                {
+                    PackArchive(artifact.Name);
+                }
+                else
+                {
+                    UpdateArchive(artifact.Name);
+                }
             }
         }
 
@@ -365,12 +394,17 @@ namespace BeatSaberKeeper.App
 
         private void UnpackArtifact(Artifact artifact)
         {
+            if (!ValidateGameDirectory())
+            {
+                return;
+            }
+
             SetStatus("Unpacking archive ...");
             new BackgroundProcessControl(
                     $"Unpacking {artifact.Name} ...",
                     d =>
                     {
-                        BeatKeeperPackageProcessor.UnpackArchive(
+                        _compressionInterface.UnpackArchiveToFolder(
                             artifact.FullPath,
                             _configManager.Config.GamePath,
                             d.SetStatus);
@@ -383,6 +417,11 @@ namespace BeatSaberKeeper.App
 
         private void UnpackAndRunArtifact(Artifact artifact)
         {
+            if (!ValidateGameDirectory())
+            {
+                return;
+            }
+
             UnpackArtifact(artifact);
             SetStatus("Launching game ...");
             this.RunInBackgroundThread(() =>
@@ -446,8 +485,6 @@ namespace BeatSaberKeeper.App
 
         private void PackArchive(string archiveName)
         {
-            string versionFile = Path.Combine(_configManager.Config.GamePath, "BeatSaberVersion.txt");
-            string gameVersion = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "<unknown>";
             SetStatus("Creating new archive ...");
             new BackgroundProcessControl(
                     $"Packing {archiveName} ...",
@@ -456,10 +493,9 @@ namespace BeatSaberKeeper.App
                         bgDialog.SetStatus("Packing archive ...");
                         try
                         {
-                            BeatKeeperPackageProcessor.PackBackupArtifactV1(
+                            _compressionInterface.CreateArchiveFromFolder(
                                 _configManager.Config.GamePath,
                                 Path.Combine(BSKConstants.Paths.Archives, $"{archiveName}.bskeep"),
-                                gameVersion,
                                 (s, v, m) =>
                                 {
                                     bgDialog.SetStatus(s, v, m);
@@ -473,6 +509,55 @@ namespace BeatSaberKeeper.App
                         }
                     }, UpdateGrids,
                     TimeSpan.FromMilliseconds(100))
+                .ShowDialog();
+        }
+
+        private void UpdateArchive(string archiveName)
+        {
+            SetStatus("Updating archive ...");
+            new BackgroundProcessControl(
+                $"Updating {archiveName}",
+                bgDialog =>
+                {
+                    try
+                    {
+                        _compressionInterface.UpdateArchiveFromFolder(
+                            _configManager.Config.GamePath,
+                            Path.Combine(BSKConstants.Paths.Archives, $"{archiveName}.bskeep"),
+                            (s, v, m) =>
+                            {
+                                bgDialog.SetStatus(s, v, m);
+                                SetStatus(s.Split('\n').FirstOrDefault(), (int)Math.Floor((double)v / m * 100));
+                            });
+                    }
+                    catch (IOException ex)
+                    {
+                        SetStatus($"Failed to pack game state", 0);
+                        MessageBoxUtils.Error($"Could not create archive.\n{ex.Message}");
+                    }
+                }, UpdateGrids,
+                TimeSpan.FromMilliseconds(10))
+                .ShowDialog();
+        }
+
+        private bool ValidateGameDirectory()
+        {
+            if (!_configManager.IsGamePathValid())
+            {
+                MessageBoxUtils.Warn("You haven't set the game directory yet or the game directory you have " +
+                                     "chosen doesn't exist. " +
+                                     "Please select the folder where Beat Saber is installed.");
+                return SetGameDirectory();
+            }
+            return true;
+        }
+
+        private void ShowHistory(Artifact artifact)
+        {
+            new HistoryExplorer(
+                artifact.FullPath,
+                new Kernel.V2.V2CompressionInterface(new FileSystem()),
+                _configManager)
                 .ShowDialog();
         }
 
@@ -523,6 +608,9 @@ namespace BeatSaberKeeper.App
             UpdateMenuItems(GetSelectedArtifact(sender as ListView));
         }
 
+        private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
+            => DoArtifactContextAction(UnpackAndRunArtifact);
+
         private void DeleteMenuItem_Click(object sender, EventArgs e)
             => DoArtifactContextAction(DeleteArtifact);
 
@@ -559,6 +647,12 @@ namespace BeatSaberKeeper.App
         private void SetGameDirectoryMenuItem_Click(object sender, EventArgs e)
             => SetGameDirectory();
 
+        private void showHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction((ToolStripMenuItem)sender, ShowHistory);
+
+        private void ShowHistoryMenuItem_Click(object sender, EventArgs e)
+            => DoArtifactContextAction(ShowHistory);
+
         private void aboutBeatSaberKeeperToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBoxUtils.AboutApp();
@@ -574,17 +668,10 @@ namespace BeatSaberKeeper.App
 
         private void NewMenuItem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(_configManager.Config.GamePath))
+            if (ValidateGameDirectory())
             {
-                MessageBoxUtils.Warn("You haven't set the game directory yet. " +
-                                     "Please select the folder where Beat Saber is installed.");
-                if (!SetGameDirectory())
-                {
-                    return;
-                }
+                PackArchive();
             }
-
-            PackArchive();
         }
 
         private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -615,6 +702,16 @@ namespace BeatSaberKeeper.App
         {
             UpdateGrids();
             UpdateMenuItems(null);
+        }
+
+        private void OpenDataDirectoryMenuItem_Click(object sender, EventArgs e)
+        {
+            WindowsUtils.ShowFolderInExplorer(BSKConstants.Paths.DefaultWorkingPath);
+        }
+
+        private void OpenGameDirectoryMenuItem_Click(object sender, EventArgs e)
+        {
+            WindowsUtils.ShowFolderInExplorer(_configManager.Config.GamePath);
         }
     }
 }

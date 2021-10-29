@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BeatSaberKeeper.App.Core.Steam.Manifest;
 using BeatSaberKeeper.App.Core.Utils;
+using Polly;
 
 namespace BeatSaberKeeper.App.Core.Steam
 {
@@ -40,8 +41,10 @@ namespace BeatSaberKeeper.App.Core.Steam
 
         private IReadOnlyCollection<SteamApps.LicenseListCallback.License> _userLicenses;
         private Dictionary<uint, ulong> _appTokens = new Dictionary<uint, ulong>();
+
         private Dictionary<uint, SteamApps.PICSProductInfoCallback.PICSProductInfo> _appInfo
             = new Dictionary<uint, SteamApps.PICSProductInfoCallback.PICSProductInfo>();
+
         private ConcurrentDictionary<string, SteamApps.CDNAuthTokenCallback> _cdnAuthTokens
             = new ConcurrentDictionary<string, SteamApps.CDNAuthTokenCallback>();
 
@@ -95,6 +98,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                         action?.Invoke(e);
                     }
                 }
+
                 eventHandler?.Invoke(this, e);
             });
         }
@@ -112,38 +116,52 @@ namespace BeatSaberKeeper.App.Core.Steam
             TimeSpan timeout,
             params Action<T>[] doBeforeReturn) where T : CallbackMsg
         {
-            return Task.Run(() =>
-            {
-                bool didCallbackRun = false;
-                T returnValue = default;
-                var started = DateTime.UtcNow;
-
-                var sub = _callbackManager.Subscribe<T>(t =>
+            return Policy
+                .Handle<TimeoutException>()
+                .WaitAndRetryAsync(new[]
                 {
-                    returnValue = t;
-                    didCallbackRun = true;
-
-                    if (doBeforeReturn?.Any() ?? false)
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(9)
+                })
+                .ExecuteAsync(() =>
+                {
+                    return Task.Run(() =>
                     {
-                        foreach (var action in doBeforeReturn)
-                            action?.Invoke(t);
-                    }
+                        bool didCallbackRun = false;
+                        T returnValue = default;
+                        var started = DateTime.UtcNow;
+
+                        var sub = _callbackManager.Subscribe<T>(t =>
+                        {
+                            returnValue = t;
+                            didCallbackRun = true;
+
+                            if (doBeforeReturn?.Any() ?? false)
+                            {
+                                foreach (var action in doBeforeReturn)
+                                    action?.Invoke(t);
+                            }
+                        });
+
+                        runBefore();
+                        while (!didCallbackRun && (DateTime.UtcNow - started) < timeout)
+                        {
+                            _callbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
+                        }
+
+                        sub.Dispose();
+
+                        if (!didCallbackRun)
+                        {
+                            _logger.Warning("Did not receive callback for {Type} within {Timeout}",
+                                typeof(T), timeout);
+                            throw new TimeoutException($"Did not receive callback for {typeof(T)} within {timeout}");
+                        }
+
+                        return returnValue;
+                    });
                 });
-
-                runBefore();
-                while (!didCallbackRun && (DateTime.UtcNow - started) < timeout)
-                {
-                    _callbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
-                }
-                sub.Dispose();
-
-                if (!didCallbackRun)
-                {
-                    throw new TimeoutException($"Did not receive callback for {typeof(T)} within {timeout}");
-                }
-
-                return returnValue;
-            });
         }
 
         private Task<T> CallbackResult<T>(
@@ -151,37 +169,51 @@ namespace BeatSaberKeeper.App.Core.Steam
             TimeSpan timeout,
             params Action<T>[] doBeforeReturn) where T : CallbackMsg
         {
-            return Task.Run(() =>
-            {
-                bool didCallbackRun = false;
-                T returnValue = default;
-                var started = DateTime.UtcNow;
-
-                var sub = _callbackManager.Subscribe<T>(job, t =>
+            return Policy
+                .Handle<TimeoutException>()
+                .WaitAndRetryAsync(new[]
                 {
-                    returnValue = t;
-                    didCallbackRun = true;
-
-                    if (doBeforeReturn?.Any() ?? false)
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(9)
+                })
+                .ExecuteAsync(() =>
+                {
+                    return Task.Run(() =>
                     {
-                        foreach (var action in doBeforeReturn)
-                            action?.Invoke(t);
-                    }
+                        bool didCallbackRun = false;
+                        T returnValue = default;
+                        var started = DateTime.UtcNow;
+
+                        var sub = _callbackManager.Subscribe<T>(job, t =>
+                        {
+                            returnValue = t;
+                            didCallbackRun = true;
+
+                            if (doBeforeReturn?.Any() ?? false)
+                            {
+                                foreach (var action in doBeforeReturn)
+                                    action?.Invoke(t);
+                            }
+                        });
+
+                        while (!didCallbackRun && (DateTime.UtcNow - started) < timeout)
+                        {
+                            _callbackManager.RunWaitCallbacks();
+                        }
+
+                        sub.Dispose();
+
+                        if (!didCallbackRun)
+                        {
+                            _logger.Warning("Did not receive callback for {Type} within {Timeout}",
+                                typeof(T), timeout);
+                            throw new TimeoutException($"Did not receive callback for {typeof(T)} within {timeout}");
+                        }
+
+                        return returnValue;
+                    });
                 });
-
-                while (!didCallbackRun && (DateTime.UtcNow - started) < timeout)
-                {
-                    _callbackManager.RunWaitCallbacks();
-                }
-                sub.Dispose();
-
-                if (!didCallbackRun)
-                {
-                    throw new TimeoutException($"Did not receive callback for {typeof(T)} within {timeout}");
-                }
-
-                return returnValue;
-            });
         }
 
         private Task<List<T>> CallbackResultUntil<T>(
@@ -190,31 +222,45 @@ namespace BeatSaberKeeper.App.Core.Steam
             TimeSpan timeout,
             bool returnOnTimeout = false) where T : CallbackMsg
         {
-            return Task.Run(() =>
-            {
-                bool didFinish = false;
-                var returnValue = new List<T>();
-                var started = DateTime.UtcNow;
-
-                var sub = _callbackManager.Subscribe<T>(job, t =>
+            return Policy
+                .Handle<TimeoutException>()
+                .WaitAndRetryAsync(new[]
                 {
-                    returnValue.Add(t);
-                    didFinish = condition(t);
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(9)
+                })
+                .ExecuteAsync(() =>
+                {
+                    return Task.Run(() =>
+                    {
+                        bool didFinish = false;
+                        var returnValue = new List<T>();
+                        var started = DateTime.UtcNow;
+
+                        var sub = _callbackManager.Subscribe<T>(job, t =>
+                        {
+                            returnValue.Add(t);
+                            didFinish = condition(t);
+                        });
+
+                        while (!didFinish && (DateTime.UtcNow - started) < timeout)
+                        {
+                            _callbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(5));
+                        }
+
+                        sub.Dispose();
+
+                        if (!didFinish && !returnOnTimeout)
+                        {
+                            _logger.Warning("Did not receive callback for {Type} within {Timeout}",
+                                typeof(T), timeout);
+                            throw new TimeoutException($"Did not receive callback for {typeof(T)} within {timeout}");
+                        }
+
+                        return returnValue;
+                    });
                 });
-
-                while (!didFinish && (DateTime.UtcNow - started) < timeout)
-                {
-                    _callbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(5));
-                }
-                sub.Dispose();
-
-                if (!didFinish && !returnOnTimeout)
-                {
-                    throw new TimeoutException($"Did not receive callback for {typeof(T)} within {timeout}");
-                }
-
-                return returnValue;
-            });
         }
 
         private void UpdateMachineAuth(SteamSession session, SteamUser.UpdateMachineAuthCallback e)
@@ -292,6 +338,7 @@ namespace BeatSaberKeeper.App.Core.Steam
             // TODO: replace
             File.WriteAllText("login.sav", $"{username}\n{key}");
         }
+
         internal Tuple<string, string> LoadLoginKey()
         {
             // TODO: replace
@@ -307,6 +354,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                     File.Delete("login.sav");
                 }
             }
+
             return null;
         }
 
@@ -314,6 +362,7 @@ namespace BeatSaberKeeper.App.Core.Steam
         {
             File.Delete("login.sav");
         }
+
         public string GetSavedLoginName() => LoadLoginKey()?.Item1;
         public bool HasSavedLogin => File.Exists("login.sav");
 
@@ -347,6 +396,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                 {
                     return SteamLoginResult.SavedLoginNotExistant;
                 }
+
                 username = loginInfo.Item1;
                 loginKey = loginInfo.Item2;
                 authCode = null;
@@ -358,10 +408,12 @@ namespace BeatSaberKeeper.App.Core.Steam
                 await Disconnect();
                 await Task.Delay(2500);
             }
+
             if (!IsConnected)
             {
                 await Connect();
             }
+
             if (!IsConnected)
             {
                 _logger.Error($"Connection failed, could not connect to Steam!");
@@ -382,7 +434,8 @@ namespace BeatSaberKeeper.App.Core.Steam
                 Username = username,
                 Password = tryLoadingFromSaved ? null : password,
                 ShouldRememberPassword = rememeberPassword,
-                LoginID = 0x534b32,
+                //LoginID = 0x534b32,
+                LoginID = null,
                 LoginKey = tryLoadingFromSaved ? loginKey : null,
 
                 AuthCode = authCode,
@@ -441,7 +494,7 @@ namespace BeatSaberKeeper.App.Core.Steam
 
             _logger.Debug("Informing Steam that user wants to log off ...");
             _steamUser.LogOff();
-            
+
             _logger.Debug("Disconnecting from Steam network ...");
             await Disconnect();
         }
@@ -475,12 +528,13 @@ namespace BeatSaberKeeper.App.Core.Steam
 
         public async Task<SteamApps.CDNAuthTokenCallback> RequestCDNAuthToken(uint appId, uint depotId, string host)
         {
-            _logger.Debug("Requesting CDN auth token for app {appId}, depot {depotId}, host {host}", appId, depotId, host);
             var key = $"{depotId:D}:{host}";
 
             if (_cdnAuthTokens.ContainsKey(key))
                 return _cdnAuthTokens.GetValueOrDefault(key);
 
+            _logger.Debug("Requesting CDN auth token for app {AppId}, depot {DepotId}, host {Host}", appId, depotId,
+                host);
             var authResult = await CallbackResult(
                 _steamApps.GetCDNAuthToken(appId, depotId, host),
                 TimeSpan.FromSeconds(10));
@@ -488,6 +542,7 @@ namespace BeatSaberKeeper.App.Core.Steam
             {
                 _cdnAuthTokens.AddOrUpdate(key, _ => authResult, (_, _) => authResult);
             }
+
             return (authResult.Result == EResult.OK) ? authResult : null;
         }
 
@@ -496,7 +551,8 @@ namespace BeatSaberKeeper.App.Core.Steam
             if (depotId == uint.MaxValue)
             {
                 _logger.Warning("No valid depot ID provided, currently not supported");
-                throw new NotImplementedException($"{nameof(GetManifestForApp)} does not currently support operation without specifying a valid depot ID");
+                throw new NotImplementedException(
+                    $"{nameof(GetManifestForApp)} does not currently support operation without specifying a valid depot ID");
             }
 
             var depots = await GetAppSection(appId, EAppInfoSection.Depots);
@@ -514,13 +570,15 @@ namespace BeatSaberKeeper.App.Core.Steam
 
                     if (!uint.TryParse(depotSection.Name, out id))
                     {
-                        _logger.Information("Depot section {depotSection} contains an invalid ID (not uint)", depotSection.Name);
+                        _logger.Information("Depot section {depotSection} contains an invalid ID (not uint)",
+                            depotSection.Name);
                         continue;
                     }
 
                     if (depotId != uint.MaxValue && id != depotId)
                     {
-                        _logger.Information("Depot ID of section does not match provided depot ID; expected={expected} got={got}",
+                        _logger.Information(
+                            "Depot ID of section does not match provided depot ID; expected={expected} got={got}",
                             depotId, id);
                         continue;
                     }
@@ -533,7 +591,8 @@ namespace BeatSaberKeeper.App.Core.Steam
 
             if (!depotIds?.Any() ?? true)
             {
-                _logger.Error("Could not find any depots to download for app {appId} or depot {depotId} is not listed!", appId, depotId);
+                _logger.Error("Could not find any depots to download for app {appId} or depot {depotId} is not listed!",
+                    appId, depotId);
             }
 
             var infos = new List<DepotDownloadInfo>();
@@ -547,7 +606,8 @@ namespace BeatSaberKeeper.App.Core.Steam
             }
         }
 
-        public async Task<DepotFileData> GetFileListForDepotAndManifest(uint appId, DepotDownloadInfo depot, CancellationTokenSource cts)
+        public async Task<DepotFileData> GetFileListForDepotAndManifest(uint appId, DepotDownloadInfo depot,
+            CancellationTokenSource cts)
         {
             var pool = new CDNClientPool(this, appId);
             var counter = new DepotDownloadCounter();
@@ -572,9 +632,11 @@ namespace BeatSaberKeeper.App.Core.Steam
             }
 
             newProtoManifest = ProtoManifest.LoadFromFile(manifestFileName, out var currentChecksum);
-            if (newProtoManifest != null && (expectedChecksum == null || !expectedChecksum.SequenceEqual(currentChecksum)))
+            if (newProtoManifest != null &&
+                (expectedChecksum == null || !expectedChecksum.SequenceEqual(currentChecksum)))
             {
-                _logger.Error("Manifest {depotId},{manifestId} on disk did not match expected checksum", depot.Id, depot.ManifestId);
+                _logger.Error("Manifest {depotId},{manifestId} on disk did not match expected checksum", depot.Id,
+                    depot.ManifestId);
                 newProtoManifest = null;
             }
 
@@ -605,8 +667,10 @@ namespace BeatSaberKeeper.App.Core.Steam
                     }
                     catch (SteamKitWebRequestException ex)
                     {
-                        _logger.Error("Encountered HTTP error {ex} while downloading {depotId},{manifestId}", ex.StatusCode, depot.Id, depot.ManifestId);
-                        if (ex.StatusCode == HttpStatusCode.Unauthorized || ex.StatusCode == HttpStatusCode.Forbidden || ex.StatusCode == HttpStatusCode.NotFound)
+                        _logger.Error("Encountered HTTP error {ex} while downloading {depotId},{manifestId}",
+                            ex.StatusCode, depot.Id, depot.ManifestId);
+                        if (ex.StatusCode == HttpStatusCode.Unauthorized || ex.StatusCode == HttpStatusCode.Forbidden ||
+                            ex.StatusCode == HttpStatusCode.NotFound)
                         {
                             break;
                         }
@@ -636,7 +700,8 @@ namespace BeatSaberKeeper.App.Core.Steam
             }
 
             newProtoManifest.Files.Sort((x, y) => string.Compare(x.FileName, y.FileName, StringComparison.Ordinal));
-            _logger.Debug("Manifest {depotId},{manifestId} received, created {creationTime}", depot.Id, depot.ManifestId, newProtoManifest.CreationTime);
+            _logger.Debug("Manifest {depotId},{manifestId} received, created {creationTime}", depot.Id,
+                depot.ManifestId, newProtoManifest.CreationTime);
 
 #if DEBUG
             var manifestDump = Path.Combine(tempFolder, $"manifest_{depot.Id}_{depot.ManifestId}.json");
@@ -645,9 +710,11 @@ namespace BeatSaberKeeper.App.Core.Steam
 
             var filesToDownload = newProtoManifest.Files;
             var allFileNames = new HashSet<string>(filesToDownload.Count);
-            _logger.Debug("{count} files to download from {depotId},{manifestId}", allFileNames.Count, depot.Id, depot.ManifestId);
+            _logger.Debug("{count} files to download from {depotId},{manifestId}", allFileNames.Count, depot.Id,
+                depot.ManifestId);
 
-            var baseStagingPath = PathUtils.ConstructStagingFilePath(appId, depot.Id, depot.ManifestId).EnsureDirectory();
+            var baseStagingPath =
+                PathUtils.ConstructStagingFilePath(appId, depot.Id, depot.ManifestId).EnsureDirectory();
 
             foreach (var file in filesToDownload)
             {
@@ -679,7 +746,8 @@ namespace BeatSaberKeeper.App.Core.Steam
             };
         }
 
-        public async Task DownloadDepot(uint appId, DepotFileData depotFileData, Action<string, float?> actionReport, CancellationTokenSource cts)
+        public async Task DownloadDepot(uint appId, DepotFileData depotFileData, Action<string, float?> actionReport,
+            CancellationTokenSource cts)
         {
             var depot = depotFileData.DepotDownloadInfo;
             var counter = depotFileData.DepotCounter;
@@ -687,22 +755,25 @@ namespace BeatSaberKeeper.App.Core.Steam
             var files = depotFileData.AllFiles
                 .Where(f => !f.Flags.HasFlag(EDepotFileFlag.Directory))
                 .ToArray();
-            var networkChunkQueue = new ConcurrentQueue<Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData>>();
+            var networkChunkQueue =
+                new ConcurrentQueue<Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData>>();
 
             await files.Select(f => new Func<Task>(async () =>
-                await Task.Run(() => DownloadFileInfoAsync(depotFileData, f, networkChunkQueue, actionReport, cts))))
+                    await Task.Run(() =>
+                        DownloadFileInfoAsync(depotFileData, f, networkChunkQueue, actionReport, cts))))
                 .RunParallel();
 
             int i = 0;
             var total = networkChunkQueue.Count;
+            var downloadPool = new CDNClientPool(this, appId);
             await networkChunkQueue
                 .Select(x => new Func<Task>(async () =>
                 {
                     await Task.Run(async () =>
                     {
                         i++;
-                        actionReport?.Invoke($"Downloading chunk {i} / {total} ...", i / (float) total);
-                        await DownloadFileChunkAsync(appId, counter, depotFileData, x, cts);
+                        actionReport?.Invoke($"Downloading chunk {i} / {total} ...", i / (float)total);
+                        await DownloadFileChunkAsync(appId, counter, downloadPool, depotFileData, x, cts);
                     });
                 }))
                 .RunParallel();
@@ -750,6 +821,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                 {
                     fs.SetLength((long)file.TotalSize);
                 }
+
                 neededChunks = SteamUtils.ValidateSteamFileChecksums(fs, file.Chunks.OrderBy(x => x.Offset).ToArray());
             }
 
@@ -760,6 +832,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                 {
                     counter.SizeDownloaded += file.TotalSize;
                 }
+
                 if (fs != null)
                     fs.Dispose();
                 return;
@@ -790,6 +863,7 @@ namespace BeatSaberKeeper.App.Core.Steam
         private async Task DownloadFileChunkAsync(
             uint appId,
             DepotDownloadCounter globalCounter,
+            CDNClientPool pool,
             DepotFileData depotFileData,
             Tuple<FileStreamData, ProtoManifest.FileData, ProtoManifest.ChunkData> chunkInfo,
             CancellationTokenSource cts)
@@ -802,9 +876,10 @@ namespace BeatSaberKeeper.App.Core.Steam
             var fsData = chunkInfo.Item1;
             var file = chunkInfo.Item2;
             var chunk = chunkInfo.Item3;
-            
+
             string chunkId = Convert.ToHexString(chunk.ChunkID);
-            var data = new DepotManifest.ChunkData {
+            var data = new DepotManifest.ChunkData
+            {
                 ChunkID = chunk.ChunkID,
                 Checksum = chunk.Checksum,
                 Offset = chunk.Offset,
@@ -813,15 +888,13 @@ namespace BeatSaberKeeper.App.Core.Steam
             };
 
             CDNClient.DepotChunk chunkData = null;
-            // TODO: This pool needs to be reusable
-            var pool = new CDNClientPool(this, appId);
 
             _logger.Debug("{fileName}: Downloading file chunk {chunkId} ...", file.FileName, chunkId);
 
             do
             {
                 cts.Token.ThrowIfCancellationRequested();
-                CDNClient.Server connection;
+                CDNClient.Server connection = null;
 
                 try
                 {
@@ -830,29 +903,39 @@ namespace BeatSaberKeeper.App.Core.Steam
 
                     chunkData = await pool.CDNClient.DownloadDepotChunkAsync(depot.Id, data,
                         connection, token, depot.DepotKey).ConfigureAwait(false);
-
-                    pool.ReturnConnection(connection);
-                } catch (TaskCanceledException)
+                }
+                catch (TaskCanceledException)
                 {
-                    _logger.Warning("{fileName}: Connection timed out while downloading chunk {chunk}", file.FileName, chunkId);
-                } catch (SteamKitWebRequestException e)
+                    _logger.Warning("{fileName}: Connection timed out while downloading chunk {chunk}", file.FileName,
+                        chunkId);
+                }
+                catch (SteamKitWebRequestException e)
                 {
                     if (e.StatusCode == HttpStatusCode.Unauthorized || e.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        _logger.Warning("{fileName}: Encountered 401 for chunk {chunk}, aborting!", file.FileName, chunkId);
+                        _logger.Warning("{fileName}: Encountered 401 for chunk {chunk}, aborting!", file.FileName,
+                            chunkId);
                         break;
                     }
                     else
                     {
-                        _logger.Warning("{fileName}: Failed to download chunk {chunk}, got {statusCode}", file.FileName, chunkId, e.StatusCode);
+                        _logger.Warning("{fileName}: Failed to download chunk {chunk}, got {statusCode}", file.FileName,
+                            chunkId, e.StatusCode);
                     }
                 }
                 catch (OperationCanceledException)
                 {
                     break;
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
-                    _logger.Error(e, "{fileName}: Unexpected exception while downloading chunk {chunk}", file.FileName, chunkId);
+                    _logger.Error(e, "{fileName}: Unexpected exception while downloading chunk {chunk}", file.FileName,
+                        chunkId);
+                }
+                finally
+                {
+                    _logger.Debug("Returning connection to connection pool");
+                    pool.ReturnConnection(connection);
                 }
             } while (chunkData == null);
 
@@ -862,6 +945,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                     chunkId, depot.Id);
                 cts.Cancel();
             }
+
             cts.Token.ThrowIfCancellationRequested();
 
             try
@@ -903,7 +987,8 @@ namespace BeatSaberKeeper.App.Core.Steam
             }
         }
 
-        public async Task<DepotDownloadInfo> GetDepotDownloadInfo(uint appId, uint depotId, ulong manifestId, string branch)
+        public async Task<DepotDownloadInfo> GetDepotDownloadInfo(uint appId, uint depotId, ulong manifestId,
+            string branch)
         {
             string contentName = await GetAppOrDepotName(appId, depotId);
             // TODO: Check license access
@@ -996,6 +1081,7 @@ namespace BeatSaberKeeper.App.Core.Steam
                 {
                     _appInfo[app.Key] = app.Value;
                 }
+
                 foreach (var app in response.UnknownApps)
                 {
                     _appInfo[app] = null;
@@ -1036,7 +1122,11 @@ namespace BeatSaberKeeper.App.Core.Steam
                 try
                 {
                     Disconnect().GetAwaiter().GetResult();
-                } catch { /* ignore */ }
+                }
+                catch
+                {
+                    /* ignore */
+                }
             }
 
             _onClientConnectedSub?.Dispose();

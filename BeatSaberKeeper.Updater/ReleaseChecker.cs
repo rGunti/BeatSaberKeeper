@@ -56,7 +56,9 @@ namespace BeatSaberKeeper.Updater
         {
             Release release = await _gitHubClient.Repository.Release.Get(
                 REPO_AUTHOR, REPO_NAME, version);
-            return release?.AssetsUrl;
+            return release?.Assets
+                .FirstOrDefault(r => r.Name.ToLowerInvariant().EndsWith(".zip"))?
+                .BrowserDownloadUrl;
         }
     }
 }

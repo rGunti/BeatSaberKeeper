@@ -6,12 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Windows.Forms;
 using BeatSaberKeeper.App.Cmd;
 using BeatSaberKeeper.App.Config;
 using BeatSaberKeeper.App.Tools;
 using BeatSaberKeeper.App.Utils;
+using BeatSaberKeeper.Kernel.Abstraction;
+using BeatSaberKeeper.Kernel.V1;
+using BeatSaberKeeper.Kernel.V2;
 using CommandLine;
 using CommandLine.Text;
 
@@ -66,7 +70,7 @@ namespace BeatSaberKeeper.App
 
         private static int DefaultMain(CommandLineOptions options)
         {
-            LogInitializer.Init(!options.NoLogFile, BSKConstants.Paths.Logs);
+            LogInitializer.Init(!options.NoLogFile, BSKConstants.Paths.Logs, options.EnableDebugLogging);
 
             if (!string.IsNullOrWhiteSpace(options.DataDirectory))
             {
@@ -77,19 +81,27 @@ namespace BeatSaberKeeper.App
             ConfigManager.Initialize(Path.Combine(BSKConstants.Paths.DefaultWorkingPath, "config.json"));
 
             AppDomain.CurrentDomain.UnhandledException += HandleException;
+            
+            // Construct some dependencies
+            ICompressionInterface compressionInterface = new WrappedCompressionInterface(
+                new Dictionary<string, ICompressionInterface>
+                {
+                    { V2ArchiveMetaData.VERSION, new V2CompressionInterface(new FileSystem()) },
+                    { V1ArchiveMetaData.VERSION, new V1CompressionInterface(new FileSystem()) }
+                }, V2ArchiveMetaData.VERSION);
 
             Form mainForm;
             switch (options.StartupWindow)
             {
                 case StartupWindowType.Downloader:
-                    mainForm = new DownloadGameArchiveForm();
+                    mainForm = new DownloadGameArchiveForm(compressionInterface);
                     break;
                 case StartupWindowType.SongExplorer:
                     mainForm = new SongExplorer();
                     break;
                 case StartupWindowType.Default:
                 default:
-                    mainForm = new MainForm();
+                    mainForm = new MainForm(compressionInterface);
                     break;
             }
 

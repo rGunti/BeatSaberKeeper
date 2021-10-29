@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Serilog;
+using Serilog.Events;
 
 namespace BeatSaberKeeper.App.Core.Logging
 {
@@ -9,7 +10,10 @@ namespace BeatSaberKeeper.App.Core.Logging
             "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} | {SourceContext} | [{Level:u3}] {Message:lj}{NewLine}{Exception}";
         private const string LOG_FILE = "bsk-.log";
 
-        public static void Init(bool enableFile = true, string logPath = null)
+        public static void Init(
+            bool enableFile = true,
+            string logPath = null,
+            bool enableDebugLogging = false)
         {
             var config = new LoggerConfiguration()
                 .Enrich.FromLogContext();
@@ -21,6 +25,7 @@ namespace BeatSaberKeeper.App.Core.Logging
                 )
                 .MinimumLevel.Verbose();
 #endif
+
             if (enableFile)
             {
                 // TODO: Debug?
@@ -33,7 +38,7 @@ namespace BeatSaberKeeper.App.Core.Logging
                             retainedFileCountLimit: 5,
                             outputTemplate: LOG_FORMAT
                         )
-                        .MinimumLevel.Information();
+                        .MinimumLevel.Is(enableDebugLogging ? LogEventLevel.Verbose : LogEventLevel.Information);
                     });
             }
 
