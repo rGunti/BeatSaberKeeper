@@ -1,4 +1,12 @@
 # BeatSaberKeeper
+
+> ⚠ **Important**: As I was made aware, BSKs download feature is unfortunately 
+> broken due to a change on Steams CDN API and the way it handles authentication.
+> 
+> I am currently not able to fix this without some major analysis but you can use
+> [this tool](https://github.com/SteamRE/DepotDownloader) as a workaround. Find a
+> detailed guide [here](https://beatsaberkeeper.rgunti.ch/help/download-old-versions).
+
 BeatSaberKeeper (or "BSK" for short) is a little utility program 
 for the VR rhythm game [BeatSaber](https://beatsaber.com/). It allows the user to
 download and run multiple and older versions of BeatSaber. This is especially
