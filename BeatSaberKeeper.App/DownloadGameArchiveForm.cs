@@ -290,5 +290,13 @@ namespace BeatSaberKeeper.App
                 }
             }
         }
+
+        private void WorkaroundGuideLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (sender is LinkLabel { Tag: string url })
+            {
+                WindowsUtils.OpenUrl(url);
+            }
+        }
     }
 }
